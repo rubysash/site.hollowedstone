@@ -7,8 +7,8 @@ import {
 import { loadTheme, getTheme, getRoleInfo, getObjective } from './themes.js';
 import { initBoard, updateBoard, highlightSelectable, highlightSelected, showValidTargets, clearHighlights } from './board.js';
 import {
-  setStatus, setLore, flashLore, updatePlayerPanels, addLogEntries, showWaiting,
-  showSplitChoice, showWaitingForSplit, showPlacementInstructions,
+  setStatus, setLore, flashLore, setTurnIndicator, updatePlayerPanels, addLogEntries,
+  showWaiting, showSplitChoice, showWaitingForSplit, showPlacementInstructions,
   showFreeMove, showGameOver, hideOverlay, showStonePicker
 } from './ui.js';
 import { getValidMoves, getSelectableStones } from './shared/engine.js';
@@ -133,14 +133,20 @@ async function onStateUpdate(state) {
     hideOverlay();
   }
 
-  // Adaptive polling — poll fast when waiting for opponent, slow when it's our turn
+  // Determine if it's the current player's turn (for polling + indicators)
   const isMyTurn = state.turn?.player === me;
-  const isWaitingPhase = state.phase === PHASE.WAITING
-    || (state.phase === PHASE.SPLITS && state.players[me].split)
-    || (state.phase === PHASE.PLACING && state.setup?.placementTurn !== me)
-    || (state.phase === PHASE.FREE_MOVE && state.turn?.player !== me)
-    || (state.phase === PHASE.PLAY && !isMyTurn);
-  setPollRate(!isWaitingPhase);
+  const isMyAction = state.phase === PHASE.PLAY && isMyTurn
+    || state.phase === PHASE.FREE_MOVE && isMyTurn
+    || state.phase === PHASE.PLACING && state.setup?.placementTurn === me
+    || state.phase === PHASE.SPLITS && !state.players[me].split;
+
+  // Adaptive polling
+  setPollRate(isMyAction);
+
+  // Turn indicator (glow, tab title, flash on turn change)
+  if (state.phase === PHASE.PLAY || state.phase === PHASE.FREE_MOVE || state.phase === PHASE.PLACING) {
+    setTurnIndicator(isMyAction, phaseChanged);
+  }
 
   // Phase-specific UI
   switch (state.phase) {

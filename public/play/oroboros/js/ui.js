@@ -14,6 +14,36 @@ function text(sel, t) { const el = $(sel); if (el) el.textContent = t; }
 // Track current lore so we don't re-roll every poll tick
 let _currentLorePhase = null;
 let _currentLoreText = '';
+let _wasMyTurn = false;
+const _originalTitle = document.title;
+
+// ─── Turn Indicator ───
+
+export function setTurnIndicator(isMyTurn, phaseChanged) {
+  const bar = $('.status-bar');
+  if (!bar) return;
+
+  bar.classList.toggle('your-turn', isMyTurn);
+  bar.classList.toggle('opponent-turn', !isMyTurn);
+
+  // Flash when turn switches TO you
+  if (isMyTurn && !_wasMyTurn) {
+    bar.classList.remove('turn-flash');
+    void bar.offsetWidth; // force reflow
+    bar.classList.add('turn-flash');
+  }
+  _wasMyTurn = isMyTurn;
+
+  // Update browser tab title
+  document.title = isMyTurn ? '>> YOUR TURN << | Ouroboros' : _originalTitle;
+
+  // Update player panels
+  document.querySelectorAll('.player-panel').forEach(p => p.classList.remove('you-active'));
+  if (isMyTurn) {
+    const myPanel = $('.player-panel.you');
+    if (myPanel) myPanel.classList.add('you-active');
+  }
+}
 
 // ─── Status Bar (objective header) ───
 
@@ -63,6 +93,7 @@ export function updatePlayerPanels(state, myPlayer) {
 
     const isActive = state.turn?.player === p;
     panel.classList.toggle('active', isActive);
+    panel.classList.toggle('you', p === myPlayer);
 
     const nameEl = panel.querySelector('.player-name');
     if (nameEl) {

@@ -151,6 +151,15 @@ svg.board {
   border-color: var(--accent);
   box-shadow: 0 0 8px rgba(106, 13, 173, 0.4);
 }
+.player-panel.you-active {
+  border-color: #4ade80;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.4);
+  animation: panelPulse 2s ease-in-out infinite;
+}
+@keyframes panelPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(74, 222, 128, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.6); }
+}
 
 .holding-area {
   display: flex;
@@ -175,7 +184,7 @@ svg.board {
 /* ─── Status bar ─── */
 .status-bar {
   background: var(--panel-bg);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 6px;
   padding: 0.6rem 1rem;
   text-align: center;
@@ -183,10 +192,38 @@ svg.board {
   width: 100%;
   max-width: 900px;
   margin: 0.5rem 0;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
 }
 .status-bar .turn-info {
   font-weight: bold;
   line-height: 1.4;
+}
+
+/* Your turn — green glow + pulse */
+.status-bar.your-turn {
+  border-color: #4ade80;
+  background: linear-gradient(135deg, rgba(74,222,128,0.08), var(--panel-bg));
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.25);
+  animation: statusPulse 2.5s ease-in-out infinite;
+}
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(74, 222, 128, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.45); }
+}
+
+/* Opponent's turn — dim, no glow */
+.status-bar.opponent-turn {
+  border-color: var(--border);
+  opacity: 0.7;
+}
+
+/* Turn just changed to you — brief flash */
+.status-bar.turn-flash {
+  animation: turnFlash 0.8s ease;
+}
+@keyframes turnFlash {
+  0% { background: rgba(74, 222, 128, 0.3); box-shadow: 0 0 30px rgba(74, 222, 128, 0.6); }
+  100% { background: linear-gradient(135deg, rgba(74,222,128,0.08), var(--panel-bg)); }
 }
 
 /* ─── Lore callout (bottom of page) ─── */
