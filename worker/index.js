@@ -155,6 +155,7 @@ async function handleJoin(request, env) {
   state.players.p2.token = token;
   state.players.p2.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   state.phase = 'splits';
+  state.requests = (state.requests || 0) + 1;
   state.updatedAt = new Date().toISOString();
 
   await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
@@ -179,6 +180,12 @@ async function handleState(request, env) {
   const state = JSON.parse(raw);
   const player = identifyPlayer(state, token);
   if (!player) return json({ error: 'Invalid token' }, 403);
+
+  // Increment request counter — persist every 25th poll to avoid excess KV writes
+  state.requests = (state.requests || 0) + 1;
+  if (state.requests % 25 === 0) {
+    await kv.put(`game:${accessCode}`, JSON.stringify(state));
+  }
 
   const sanitized = sanitizeForPlayer(state, player);
   sanitized.you = player;
@@ -206,6 +213,7 @@ async function handleSetup(request, env) {
   const player = identifyPlayer(state, token);
   if (!player) return json({ error: 'Invalid token' }, 403);
 
+  state.requests = (state.requests || 0) + 1;
   await loadThemeData(state, request, env);
 
   let result;
@@ -239,6 +247,7 @@ async function handleMove(request, env) {
   const player = identifyPlayer(state, token);
   if (!player) return json({ error: 'Invalid token' }, 403);
 
+  state.requests = (state.requests || 0) + 1;
   await loadThemeData(state, request, env);
 
   const result = makeMove(state, player, from, to, restoreRole || null);
@@ -328,6 +337,7 @@ async function handleAdminGames(request, env) {
           holding: state.players.p2.holding?.length || 0
         },
         moves: state.logSeq || 0,
+        requests: state.requests || 0,
         result: state.result
       });
       fetched++;

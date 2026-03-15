@@ -31,6 +31,7 @@ export function createGame(accessCode, theme) {
 
     board: {},    // hexKey -> { id, owner, role }
     stoneSeq: 0, // counter for stone IDs
+    requests: 0, // total API requests for this game (polls + actions)
 
     turn: {
       player: 'p1',

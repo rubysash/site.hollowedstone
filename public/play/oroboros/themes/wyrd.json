@@ -71,7 +71,7 @@
     "free_move": "The Aesir adjust their footing before the first blow falls.",
     "play_normal": "Advance toward Yggdrasil. Maintain your shield wall. Outmaneuver your foe.",
     "play_holding": "You command the World Tree. Three moves are yours — press your advantage.",
-    "play_berserker": "The shield wall is broken! Send your lone wolves to strike.",
+    "play_berserker": "The shield wall is broken! Send your berserkers to strike.",
     "play_waiting": "Your opponent weaves their thread. Watch. Prepare.",
     "finished": "The web is woven. Wyrd is fulfilled."
   },
@@ -99,7 +99,7 @@
       "The power at the center of all things demands a price. Do not claim the center without formation arriving behind you."
     ],
     "berserker": [
-      "The shield wall breaks — lone wolves run free. A well-placed lone wolf can cut an enemy formation at its weakest point, isolating stones permanently and changing the shape of the whole board.",
+      "The shield wall breaks — berserkers run free. A well-placed berserker can cut an enemy formation at its weakest point, isolating stones permanently and changing the shape of the whole board.",
       "When your opponent holds Yggdrasil your formation rule breaks entirely. This is your most powerful moment and your most exposed one. Choose wisely."
     ],
     "finished": [

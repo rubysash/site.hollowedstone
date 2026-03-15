@@ -119,11 +119,14 @@ async function loadGames() {
     const waiting = data.games.filter(g => g.phase === 'waiting').length;
     const finished = data.games.filter(g => g.phase === 'finished').length;
 
+    const totalRequests = data.games.reduce((sum, g) => sum + (g.requests || 0), 0);
+
     document.getElementById('stats').innerHTML = `
       <div class="stat-card"><div class="label">Total Games</div><div class="value">${total}</div></div>
       <div class="stat-card"><div class="label">Active</div><div class="value">${active}</div></div>
       <div class="stat-card"><div class="label">Waiting</div><div class="value">${waiting}</div></div>
       <div class="stat-card"><div class="label">Finished</div><div class="value">${finished}</div></div>
+      <div class="stat-card"><div class="label">Total Requests</div><div class="value">${totalRequests.toLocaleString()}</div></div>
     `;
 
     if (data.games.length === 0) {
@@ -142,6 +145,8 @@ async function loadGames() {
         <th>P2 IP</th>
         <th>Score</th>
         <th>Moves</th>
+        <th>Requests</th>
+        <th>Req/Move</th>
         <th>Created</th>
       </tr>`;
 
@@ -149,6 +154,7 @@ async function loadGames() {
       const p1Won = g.result?.winner === 'p1';
       const p2Won = g.result?.winner === 'p2';
       const created = g.created ? new Date(g.created).toLocaleString() : 'n/a';
+      const reqPerMove = g.moves > 0 ? (g.requests / g.moves).toFixed(0) : '-';
 
       html += `<tr>
         <td><span class="code">${g.code}</span></td>
@@ -160,6 +166,8 @@ async function loadGames() {
         <td><span class="ip">${g.p2.ip}</span></td>
         <td><span class="score">${g.p1.score}</span> - <span class="score">${g.p2.score}</span></td>
         <td>${g.moves}</td>
+        <td>${(g.requests || 0).toLocaleString()}</td>
+        <td>${reqPerMove}</td>
         <td><span class="time">${created}</span></td>
       </tr>`;
     }

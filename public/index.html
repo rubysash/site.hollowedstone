@@ -36,17 +36,20 @@
     flex-wrap: wrap;
     gap: 1.5rem;
     justify-content: center;
-    max-width: 800px;
+    max-width: 900px;
   }
   .game-card {
     background: #161b22;
     border: 1px solid #30363d;
     border-radius: 10px;
-    padding: 2rem 1.8rem;
-    width: 260px;
+    padding: 1.5rem 1.5rem 1.8rem;
+    width: 300px;
     text-decoration: none;
     color: #c9d1d9;
     transition: border-color 0.2s, transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .game-card:hover {
     border-color: #6a0dad;
@@ -54,13 +57,14 @@
   }
   .game-card h2 {
     font-size: 1.4rem;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.3rem;
     letter-spacing: 0.1em;
   }
   .game-card p {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #7a8599;
     line-height: 1.5;
+    margin-top: 0.6rem;
   }
   .game-card .play-tag {
     display: inline-block;
@@ -69,6 +73,11 @@
     color: #6a0dad;
     letter-spacing: 0.1em;
     text-transform: uppercase;
+  }
+  .game-thumb {
+    width: 180px;
+    height: 160px;
+    margin: 0.5rem 0;
   }
   .footer {
     margin-top: 3rem;
@@ -85,18 +94,12 @@
 <div class="games">
   <a href="/play/oroboros/" class="game-card">
     <h2>Ouroboros</h2>
+    <svg class="game-thumb" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg"></svg>
     <p>Four forces on a hex board. Displace, restore, seize the center. Nothing is ever permanently lost.</p>
     <span class="play-tag">Play Now</span>
   </a>
 
   <!-- Future games go here -->
-  <!--
-  <a href="/play/another-game/" class="game-card">
-    <h2>Game Name</h2>
-    <p>Description.</p>
-    <span class="play-tag">Play Now</span>
-  </a>
-  -->
 </div>
 
 <div class="footer">
@@ -108,5 +111,86 @@
   </div>
 </div>
 
+<script>
+// Generate a mini hex board thumbnail with stones
+(function() {
+  const svg = document.querySelector('.game-thumb');
+  if (!svg) return;
+
+  const S = 1; // hex size
+  const sqrt3 = Math.sqrt(3);
+
+  function hexToPixel(q, r) {
+    return {
+      x: sqrt3 * S * q + (sqrt3 / 2) * S * r,
+      y: 1.5 * S * r
+    };
+  }
+
+  function hexPath(cx, cy) {
+    const pts = [];
+    for (let i = 0; i < 6; i++) {
+      const a = -Math.PI / 2 + (Math.PI / 3) * i;
+      pts.push((cx + S * Math.cos(a)).toFixed(3) + ',' + (cy + S * Math.sin(a)).toFixed(3));
+    }
+    return 'M' + pts.join('L') + 'Z';
+  }
+
+  function getRing(q, r) {
+    return Math.max(Math.abs(q), Math.abs(r), Math.abs(q + r));
+  }
+
+  // Ring fill colors (dark theme)
+  const ringColors = ['#6a0dad', '#2d1b4e', '#1e1533', '#17112a', '#120e22'];
+
+  // Generate all 61 hexes
+  const hexes = [];
+  for (let q = -4; q <= 4; q++) {
+    for (let r = -4; r <= 4; r++) {
+      if (Math.abs(q + r) <= 4) hexes.push({ q, r });
+    }
+  }
+
+  // Draw hexes
+  for (const h of hexes) {
+    const p = hexToPixel(h.q, h.r);
+    const ring = getRing(h.q, h.r);
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', hexPath(p.x, p.y));
+    path.setAttribute('fill', ringColors[ring] || '#120e22');
+    path.setAttribute('stroke', '#3d2f5c');
+    path.setAttribute('stroke-width', '0.06');
+    svg.appendChild(path);
+  }
+
+  // Place some stones to show a game in progress
+  const stones = [
+    // P1 — ice (blue) and wood (yellow)
+    { q: 0, r: -3, color: '#2471a3', stroke: '#1a5276' },
+    { q: 1, r: -2, color: '#2471a3', stroke: '#1a5276' },
+    { q: -1, r: -1, color: '#d4ac0d', stroke: '#9a7d0a' },
+    { q: 0, r: -1, color: '#2471a3', stroke: '#1a5276' },
+    { q: 1, r: -1, color: '#d4ac0d', stroke: '#9a7d0a' },
+    // P2 — fire (red) and wind (white)
+    { q: -1, r: 2, color: '#c0392b', stroke: '#922b21' },
+    { q: 0, r: 2, color: '#c0392b', stroke: '#922b21' },
+    { q: 1, r: 1, color: '#ecf0f1', stroke: '#95a5a6' },
+    { q: -1, r: 3, color: '#ecf0f1', stroke: '#95a5a6' },
+    { q: 0, r: 1, color: '#c0392b', stroke: '#922b21' },
+  ];
+
+  for (const s of stones) {
+    const p = hexToPixel(s.q, s.r);
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', p.x);
+    circle.setAttribute('cy', p.y);
+    circle.setAttribute('r', S * 0.42);
+    circle.setAttribute('fill', s.color);
+    circle.setAttribute('stroke', s.stroke);
+    circle.setAttribute('stroke-width', '0.1');
+    svg.appendChild(circle);
+  }
+})();
+</script>
 </body>
 </html>

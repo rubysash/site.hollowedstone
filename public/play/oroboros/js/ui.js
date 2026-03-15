@@ -109,19 +109,33 @@ export function updatePlayerPanels(state, myPlayer) {
     if (holdingEl) {
       holdingEl.innerHTML = '';
       const holding = state.players[p].holding || [];
+      const canRestore = p === myPlayer && state.turn?.player === myPlayer && holding.length > 0;
       for (const s of holding) {
         const roleInfo = getRoleInfo(s.role);
         if (!roleInfo) continue;
         const div = document.createElement('div');
         div.className = 'holding-stone';
-        if (p !== myPlayer || state.turn?.player !== myPlayer) {
+        if (!canRestore) {
           div.classList.add('not-interactive');
+        } else {
+          div.classList.add('restorable');
         }
         div.style.background = roleInfo.color;
         div.style.borderColor = roleInfo.strokeColor;
         div.textContent = roleInfo.symbol;
         div.dataset.role = s.role;
         holdingEl.appendChild(div);
+      }
+      // Show restore hint arrow when it's your turn and you have captured stones
+      const hintEl = panel.querySelector('.holding-hint');
+      if (hintEl) {
+        if (canRestore) {
+          hintEl.style.display = '';
+          hintEl.classList.add('holding-hint-flash');
+        } else {
+          hintEl.style.display = 'none';
+          hintEl.classList.remove('holding-hint-flash');
+        }
       }
     }
   }

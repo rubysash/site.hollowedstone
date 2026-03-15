@@ -88,6 +88,8 @@ let _paused = false;
 let _stopped = false;
 let _pollTimeout = null;
 let _burstUntil = 0;  // timestamp when burst mode ends
+let _nextPollAt = 0;  // timestamp of next scheduled poll
+let _countdownInterval = null;
 
 export function pollState(callback) {
   _onStateUpdate = callback;
@@ -112,8 +114,46 @@ export function triggerBurst() {
 
 function _scheduleNext() {
   if (_pollTimeout) clearTimeout(_pollTimeout);
-  if (_paused || _stopped) return;
+  if (_paused || _stopped) {
+    _updatePollDisplay();
+    return;
+  }
+  _nextPollAt = Date.now() + _currentPollRate;
   _pollTimeout = setTimeout(doPoll, _currentPollRate);
+  _startCountdown();
+}
+
+// ─── Poll countdown display ───
+
+function _startCountdown() {
+  if (_countdownInterval) clearInterval(_countdownInterval);
+  _updatePollDisplay();
+  _countdownInterval = setInterval(_updatePollDisplay, 250);
+}
+
+function _updatePollDisplay() {
+  const el = document.getElementById('poll-status');
+  if (!el) return;
+
+  if (_stopped) {
+    el.textContent = 'Game over — polling stopped';
+    if (_countdownInterval) { clearInterval(_countdownInterval); _countdownInterval = null; }
+    return;
+  }
+  if (_paused) {
+    el.textContent = 'Paused — click anywhere to reconnect';
+    if (_countdownInterval) { clearInterval(_countdownInterval); _countdownInterval = null; }
+    return;
+  }
+
+  const remaining = Math.max(0, Math.ceil((_nextPollAt - Date.now()) / 1000));
+  const rate = (_currentPollRate / 1000).toFixed(1);
+  const mode = Date.now() < _burstUntil ? 'burst'
+    : _isIdle ? 'idle'
+    : _currentPollRate <= POLL_WAITING ? 'active'
+    : 'thinking';
+
+  el.textContent = `Sync in ${remaining}s (${rate}s ${mode})`;
 }
 
 function _effectiveRate() {
@@ -151,14 +191,18 @@ export function stopPolling() {
   _stopped = true;
   _paused = true;
   if (_pollTimeout) { clearTimeout(_pollTimeout); _pollTimeout = null; }
+  if (_countdownInterval) { clearInterval(_countdownInterval); _countdownInterval = null; }
   _removeActivityWatch();
+  _updatePollDisplay();
 }
 
 function _pauseForIdle() {
   if (_paused) return;
   _paused = true;
   if (_pollTimeout) { clearTimeout(_pollTimeout); _pollTimeout = null; }
+  if (_countdownInterval) { clearInterval(_countdownInterval); _countdownInterval = null; }
   _showIdleOverlay();
+  _updatePollDisplay();
 }
 
 async function doPoll() {
