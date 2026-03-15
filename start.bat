@@ -10,4 +10,4 @@ for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /i "IPv4"') do echo     
 echo.
 echo Press Ctrl+C to stop.
 echo.
-npx wrangler pages dev public --kv GAME_STATE --port 8788
+npx wrangler dev --port 8788

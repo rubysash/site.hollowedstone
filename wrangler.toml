@@ -1,8 +1,14 @@
-name = "ouroboros"
-compatibility_date = "2024-09-01"
-compatibility_flags = ["nodejs_compat"]
+name = "hollowedstone"
+compatibility_date = "2026-03-15"
+main = "worker/index.js"
 
-# KV namespace binding — replace "placeholder" with actual namespace ID after running:
+# Static files served from public/
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/play/*/api/*"]
+
+# KV namespace — replace "placeholder" with actual namespace ID after running:
 #   npx wrangler kv:namespace create GAME_STATE
 [[kv_namespaces]]
 binding = "GAME_STATE"

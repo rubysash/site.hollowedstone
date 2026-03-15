@@ -1,9 +1,9 @@
 {
-  "name": "ouroboros",
+  "name": "hollowedstone",
   "private": true,
   "scripts": {
-    "dev": "wrangler pages dev public --kv GAME_STATE --port 8788",
-    "deploy": "wrangler pages deploy public"
+    "dev": "wrangler dev --port 8788",
+    "deploy": "wrangler deploy"
   },
   "devDependencies": {
     "wrangler": "^4.73.0"

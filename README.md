@@ -1,17 +1,18 @@
 # Hollowed Stone
 
-A platform for hosting strategic 2-player board games at [hollowedstone.com](https://hollowedstone.com). Built on Cloudflare Pages (free tier) with Cloudflare KV for game state persistence. No backend servers — static files + edge functions + key-value storage.
+A platform for hosting strategic 2-player board games at [hollowedstone.com](https://hollowedstone.com). Built on Cloudflare Workers (free tier) with static assets and KV for game state persistence. No backend servers to manage.
 
 ## Tech Stack
 
 | Layer | Technology | Notes |
 |-------|-----------|-------|
-| Static hosting | Cloudflare Pages | Free tier, global CDN |
-| API / game logic | Pages Functions (Cloudflare Workers) | Free tier: 100k requests/day |
+| Static hosting | Cloudflare Workers (static assets) | Free tier, global CDN |
+| API / game logic | Cloudflare Worker (`worker/index.js`) | Free tier: 100k requests/day |
 | Game state | Cloudflare KV | JSON game states, TTL-based expiration |
-| Real-time sync | Polling with exponential backoff | No WebSocket/Durable Objects needed (free tier) |
+| Real-time sync | Polling with exponential backoff | No WebSocket/Durable Objects needed |
 | Auth | Access code + per-player token | No accounts, no passwords |
 | Frontend | Vanilla JS, ES modules, SVG rendering | No frameworks, no build step |
+| Deploy | GitHub → Cloudflare auto-deploy | Push to `main` = live in ~60s |
 
 Total cost: **$0**
 
@@ -46,8 +47,8 @@ All dependencies install locally in `node_modules/` — nothing is installed glo
 See **[cloudflare-install-guide.md](cloudflare-install-guide.md)** for full step-by-step instructions covering:
 
 1. Pushing to GitHub (`rubysash/site.hollowedstone`)
-2. Connecting Cloudflare Pages to the repo
-3. Build settings (`npm install`, output directory: `public`)
+2. Creating a Worker from the GitHub repo
+3. Build and deploy settings (`npm install` → `npx wrangler deploy`)
 4. Creating and binding the KV namespace (`GAME_STATE`)
 5. Custom domain setup (`hollowedstone.com`)
 6. Adding future games
@@ -56,9 +57,8 @@ See **[cloudflare-install-guide.md](cloudflare-install-guide.md)** for full step
 
 | Setting | Value |
 |---------|-------|
-| Framework preset | None |
 | Build command | `npm install` |
-| Build output directory | `public` |
+| Deploy command | `npx wrangler deploy` *(default)* |
 | KV binding variable | `GAME_STATE` |
 
 ## URL Structure
@@ -105,17 +105,9 @@ site.hollowedstone/
 │               ├── inner-work.json          Psychology: roles, colors, quotes, objectives
 │               └── neutral.json             Plain: roles, colors, no lore
 │
-├── functions/                               DEPLOYED — Cloudflare Workers (API)
-│   └── play/
-│       └── oroboros/
-│           └── api/
-│               ├── create.js                POST — create game, return access code
-│               ├── join.js                  POST — join game with access code
-│               ├── state.js                 GET  — poll current game state
-│               ├── setup.js                 POST — split selection + stone placement
-│               ├── move.js                  POST — submit a move
-│               └── replay/
-│                   └── [id].js              GET  — full move log for replay
+├── worker/                                 DEPLOYED — Cloudflare Worker (API router)
+│   └── index.js                            Routes /play/*/api/* to game logic,
+│                                            everything else to static assets
 │
 ├── docs/                                    NOT DEPLOYED — design reference only
 │   ├── css/
@@ -129,8 +121,8 @@ site.hollowedstone/
 │           ├── inner-work.html              Psychology theme rulebook
 │           └── mechanics.html               Theme-neutral rules reference
 │
-├── package.json                             wrangler dev dependency
-├── wrangler.toml                            Cloudflare Workers config
+├── package.json                             npm config (wrangler dependency)
+├── wrangler.toml                            Cloudflare Worker config (assets, KV, routing)
 ├── start.bat                                Windows: double-click to run dev server
 ├── .gitignore                               Excludes node_modules, .wrangler, .claude, etc.
 ├── .npmrc                                   Keeps npm cache local to project
@@ -145,12 +137,12 @@ site.hollowedstone/
 Each game is self-contained under its own path. To add a second game:
 
 1. Create static files in `public/play/new-game/` (lobby, board, CSS, JS, themes)
-2. Create API endpoints in `functions/play/new-game/api/`
+2. Add API route handling in `worker/index.js` (new route prefix)
 3. Add a card to `public/index.html` linking to `/play/new-game/`
 4. Add design rulebooks to `docs/rulebooks/new-game/`
 5. Push to `main` — Cloudflare auto-deploys
 
-Games share the KV namespace (keys are prefixed by access code, so no collisions) but are otherwise fully independent — their own engine, themes, styles, and API.
+Games share the KV namespace (keys are prefixed by access code, so no collisions) but are otherwise fully independent — their own engine, themes, styles, and API. The `worker/index.js` router dispatches to the correct game's logic based on the URL path.
 
 ## Games
 
