@@ -1,0 +1,59 @@
+/* Dominion / Christian theme */
+:root {
+  --bg: #1a1610;
+  --panel-bg: #2a2318;
+  --text: #e8dcc8;
+  --text-dim: #9a8b74;
+  --accent: #8b6914;
+  --border: #4a3d2a;
+}
+
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  color: var(--text);
+}
+
+.game-header h1 {
+  font-variant: small-caps;
+  letter-spacing: 0.2em;
+  color: #d4a843;
+}
+.game-header .subtitle { color: var(--text-dim); }
+.access-code { background: var(--panel-bg); border-color: var(--border); color: var(--text); }
+
+/* Board — stained glass / manuscript feel */
+.hex-cell.ring-0 { fill: #8b6914; stroke: #6a4f0d; }
+.hex-cell.ring-1 { fill: #3d3020; }
+.hex-cell.ring-2 { fill: #35291a; }
+.hex-cell.ring-3 { fill: #2d2215; }
+.hex-cell.ring-4 { fill: #261c10; }
+.hex-cell.empty { fill: #2a2015; stroke: #4a3d2a; }
+
+.hex-cell.edge-p1 { stroke: #2471a3; }
+.hex-cell.edge-p2 { stroke: #c0392b; }
+
+/* Panels */
+.player-panel { background: var(--panel-bg); border-color: var(--border); }
+.player-panel.active { border-color: #d4a843; box-shadow: 0 0 10px rgba(212,168,67,0.3); }
+.status-bar { background: var(--panel-bg); border-color: var(--border); color: var(--text); }
+.move-log { background: var(--panel-bg); border-color: var(--border); color: var(--text-dim); }
+
+/* Lore callout — gold-tinted parchment */
+.lore-callout {
+  background: linear-gradient(135deg, rgba(139,105,20,0.08), rgba(139,105,20,0.02));
+  border-color: rgba(212,168,67,0.25);
+  color: var(--text-dim);
+}
+
+/* Buttons */
+.btn { background: #8b6914; }
+.btn:hover { background: #a07a18; }
+.btn-secondary { border-color: var(--border); color: var(--text); }
+.btn-secondary:hover { background: rgba(255,255,255,0.05); }
+
+/* Overlays */
+.setup-overlay { background: rgba(26,22,16,0.9); }
+.setup-card { background: var(--panel-bg); border-color: #d4a843; color: var(--text); }
+.split-option { background: #35291a; border-color: var(--border); color: var(--text); }
+.split-option:hover { border-color: #d4a843; background: #3d3020; }
+.split-option .label { color: var(--text-dim); }

@@ -13,6 +13,11 @@ export const BEATS = {
   fire: 'wood',
   wood: 'wind',
   wind: 'ice',
+  // Dominion (Christian)
+  teacher: 'herald',
+  herald: 'servant',
+  shepherd: 'teacher',
+  servant: 'shepherd',
   // Inner Work (Psychology)
   courage: 'planning',
   planning: 'compassion',

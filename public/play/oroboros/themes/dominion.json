@@ -1,0 +1,114 @@
+{
+  "id": "dominion",
+  "name": "Dominion",
+  "subtitle": "A game of calling and stewardship",
+  "cssFile": "css/themes/dominion.css",
+
+  "players": {
+    "p1": { "name": "The Church", "title": "Player 1" },
+    "p2": { "name": "The World", "title": "Player 2" }
+  },
+
+  "roles": {
+    "role1": {
+      "id": "teacher",
+      "name": "Teacher",
+      "color": "#2471a3",
+      "strokeColor": "#1a5276",
+      "symbol": "T",
+      "beats": "herald",
+      "beatsLabel": "overcomes Herald"
+    },
+    "role2": {
+      "id": "herald",
+      "name": "Herald",
+      "color": "#c0392b",
+      "strokeColor": "#922b21",
+      "symbol": "H",
+      "beats": "servant",
+      "beatsLabel": "overcomes Servant"
+    },
+    "role3": {
+      "id": "shepherd",
+      "name": "Shepherd",
+      "color": "#d4ac0d",
+      "strokeColor": "#9a7d0a",
+      "symbol": "S",
+      "beats": "teacher",
+      "beatsLabel": "overcomes Teacher"
+    },
+    "role4": {
+      "id": "servant",
+      "name": "Servant",
+      "color": "#ecf0f1",
+      "strokeColor": "#95a5a6",
+      "symbol": "V",
+      "beats": "shepherd",
+      "beatsLabel": "overcomes Shepherd"
+    }
+  },
+
+  "center": {
+    "name": "The Stance",
+    "description": "The Public Stance",
+    "color": "#6a0dad",
+    "symbol": "✝"
+  },
+
+  "terms": {
+    "displace": "displace",
+    "holding": "exile",
+    "restore": "restore from exile",
+    "partnership": "partnership",
+    "berserker": "restoration turn",
+    "advance": "advance",
+    "ko": "remembrance"
+  },
+
+  "objectives": {
+    "splits": "Choose your callings. Your opponent chooses simultaneously.",
+    "placing": "Arrange your callings with care. This is your first act of stewardship.",
+    "free_move": "Player 2 adjusts their position before the first turn.",
+    "play_normal": "Advance in partnership toward the Public Stance. No calling advances alone.",
+    "play_holding": "You hold the Public Stance. Three moves — press your community forward.",
+    "play_berserker": "The community has lost its order. God sends you to restore it.",
+    "play_waiting": "Your opponent stewards their turn. Watch and prepare.",
+    "finished": "Well done, good and faithful servant."
+  },
+
+  "lore": {
+    "splits": [
+      "There are different kinds of gifts, but the same Spirit distributes them. There are different kinds of service, but the same Lord. — 1 Corinthians 12:4-6",
+      "God blessed them and said, 'Be fruitful and increase in number; fill the earth and subdue it.' — Genesis 1:28",
+      "Just as a body, though one, has many parts, but all its many parts form one body, so it is with Christ. — 1 Corinthians 12:12"
+    ],
+    "placing": [
+      "Suppose a king is about to go to war against another king. Will he not first sit down and consider whether he is able with ten thousand men to oppose the one coming against him with twenty thousand? — Luke 14:31",
+      "Your opening arrangement is a statement of intent. This choice is your first act of stewardship over what God has given you."
+    ],
+    "play": [
+      "Two are better than one, because they have a good return for their labor. If either of them falls down, one can help the other up. But pity anyone who falls and has no one to help them up. — Ecclesiastes 4:9-10",
+      "After this the Lord appointed seventy-two others and sent them two by two ahead of him to every town and place where he was about to go. — Luke 10:1",
+      "Walk with the wise and become wise, for a companion of fools suffers harm. — Proverbs 13:20",
+      "I press on toward the goal to win the prize for which God has called me heavenward in Christ Jesus. — Philippians 3:14"
+    ],
+    "capture": [
+      "Brothers and sisters, if someone is caught in a sin, you who live by the Spirit should restore that person gently. But watch yourselves, or you also may be tempted. — Galatians 6:1",
+      "No calling is permanently silenced. Grace does not abandon the fallen calling. It returns it to the journey."
+    ],
+    "center": [
+      "You are the light of the world. A town built on a hill cannot be hidden. Neither do people light a lamp and put it under a bowl. — Matthew 5:14-15",
+      "In fact, everyone who wants to live a godly life in Christ Jesus will be persecuted. — 2 Timothy 3:12",
+      "Whoever holds the Public Stance is on the hill. They cannot be hidden. Opposition comes from every direction in response."
+    ],
+    "berserker": [
+      "Do not be afraid of them. Remember the Lord, who is great and awesome, and fight for your families, your sons and your daughters, your wives and your homes. — Nehemiah 4:14",
+      "The Lord turned to him and said, 'Go in the strength you have and save Israel out of Midian's hand. Am I not sending you?' — Judges 6:14",
+      "God raises up specifically directed individuals to move with urgency toward restoring order so the community can reclaim its Public Stance."
+    ],
+    "finished": [
+      "His master replied, 'Well done, good and faithful servant! You have been faithful with a few things; I will put you in charge of many things.' — Matthew 25:23",
+      "The player who acts with what they have been given will shape the board. The player who waits will find the board shaped for them."
+    ]
+  }
+}

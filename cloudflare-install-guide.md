@@ -1,6 +1,6 @@
 # Deploying Hollowed Stone to Cloudflare Workers (Free Tier)
 
-This guide deploys the site to Cloudflare's free tier using GitHub. The site hosts multiple games, each at its own path (e.g., `hollowedstone.com/play/oroboros/`).
+This guide deploys the site to Cloudflare's free tier. The site hosts multiple games, each at its own path (e.g., `hollowedstone.com/play/oroboros/`).
 
 **GitHub repo:** `https://github.com/rubysash/site.hollowedstone`
 
@@ -12,6 +12,7 @@ This guide deploys the site to Cloudflare's free tier using GitHub. The site hos
 
 - A GitHub account (free)
 - A Cloudflare account (free — sign up at https://dash.cloudflare.com/sign-up)
+- [Node.js](https://nodejs.org/) LTS installed locally (for wrangler CLI)
 - No credit card required
 
 ## Free Tier Limits
@@ -43,9 +44,9 @@ The `run_worker_first` setting in `wrangler.toml` tells Cloudflare to route API 
 
 ---
 
-## Step 1: Push to GitHub
+## Step 1: Set Up the Repo
 
-### 1a. Initialize and push
+### 1a. Initialize and push to GitHub
 
 ```bash
 cd site.hollowedstone
@@ -72,53 +73,31 @@ start.bat                ← Local dev launcher
 ### What's excluded (.gitignore)
 
 ```
-node_modules/            ← Cloudflare installs during build
+node_modules/            ← Installed locally, not committed
 .npm-cache/              ← Local npm cache
 .wrangler/               ← Local dev state
 .claude/                 ← Claude Code settings
 .dev.vars                ← Local env vars
-package-lock.json        ← Regenerated during build
+package-lock.json        ← Regenerated on install
 ```
 
 ---
 
-## Step 2: Create a Worker from GitHub
+## Step 2: Create the KV Namespace
 
-1. Log in to https://dash.cloudflare.com
-2. Go to **Compute (Workers & Pages)** in the sidebar
-3. Click **Create**
-4. You'll see **"Create a Worker"** — click **Import from GitHub**
-   (or "Connect to Git" if prompted)
-5. Authorize Cloudflare to access your GitHub account
-6. Select the `site.hollowedstone` repository
-7. Configure the build settings:
+Before deploying, you need a KV namespace for game state storage.
 
-| Setting | Value |
-|---------|-------|
-| **Production branch** | `main` |
-| **Build command** | `npm install` |
-| **Deploy command** | `npx wrangler deploy` *(should be the default)* |
-| **Root directory** | `/` *(leave default)* |
-
-8. Click **Save and Deploy**
-
-The first deploy may fail because KV isn't bound yet — that's expected. Continue to Step 3.
-
-> **What happens:** On every push to `main`, Cloudflare runs `npm install` (installs wrangler), then `npx wrangler deploy` (reads `wrangler.toml`, uploads static assets from `public/`, bundles and deploys `worker/index.js`).
-
----
-
-## Step 3: Create the KV Namespace
-
-### 3a. Create the namespace
+### 2a. Create the namespace
 
 1. In the Cloudflare dashboard sidebar, go to **Storage & Databases** → **Workers KV**
 2. Click **Create a namespace**
 3. Name it `GAME_STATE`
 4. Click **Create**
-5. Copy the **Namespace ID** (long hex string from end of URL)
+5. Copy the **Namespace ID** (long hex string — visible in the URL or on the namespace page)
 
-### 3b. Update wrangler.toml
+> The namespace ID is not a secret. It's safe to commit in `wrangler.toml`. It's just an identifier — no one can read or write your KV data without your Cloudflare account credentials.
+
+### 2b. Update wrangler.toml
 
 Replace the placeholder in `wrangler.toml`:
 
@@ -135,23 +114,93 @@ git commit -m "Add KV namespace ID"
 git push
 ```
 
-This triggers a new deploy with the KV binding active.
+The namespace starts empty — that's correct. KV pairs (`game:ABCD12`, `code:ABCD12`) are created automatically when players create games.
 
-> **Alternative:** You can also bind KV through the dashboard under your Worker's **Settings → Bindings** instead of putting the ID in `wrangler.toml`. Either approach works.
+---
+
+## Step 3: Deploy
+
+### Deploy from the command line (recommended)
+
+The most reliable way to deploy is directly from your local machine using the wrangler CLI:
+
+```bash
+npm install
+npx wrangler deploy
+```
+
+On first run, wrangler will open a browser window asking you to log in to Cloudflare. After auth, it deploys directly.
+
+You should see output like:
+```
+Uploaded 19 of 19 assets
+✨ Success! Uploaded 19 files
+Your Worker has access to the following bindings:
+  env.GAME_STATE    KV Namespace
+  env.ASSETS        Assets
+Published hollowedstone
+  https://hollowedstone.YOUR_SUBDOMAIN.workers.dev
+```
+
+### Redeploying after changes
+
+Every time you make changes:
+
+```bash
+git add -A
+git commit -m "Description of changes"
+git push
+npx wrangler deploy
+```
+
+Push to GitHub for version control, then `npx wrangler deploy` to go live. Deploy takes ~5 seconds.
+
+### GitHub auto-deploy (optional, may not work reliably)
+
+Cloudflare offers GitHub integration that auto-deploys on push. To set it up:
+
+1. Go to **Compute (Workers & Pages)** in the sidebar
+2. Click **Create** → **Import from GitHub**
+3. Select the `site.hollowedstone` repository
+4. Build command: `npm install`, Deploy command: `npx wrangler deploy`
+
+However, dashboard-triggered deploys and retries have been unreliable. If auto-deploy doesn't trigger, fall back to `npx wrangler deploy` from the command line — it always works.
 
 ---
 
 ## Step 4: Connect Custom Domain
 
-To serve at `hollowedstone.com`:
+### 4a. DNS records
 
-1. Ensure `hollowedstone.com` is added to your Cloudflare account (DNS managed by Cloudflare) amd then selected.
-2. Go to Workers Routes > Add Route 
-3. Route:  `hollowedstone.com/*`
-4. Wroker: `hollowedstone`
-5. Cloudflare provisions a free SSL certificate automatically
+In your Cloudflare DNS settings for `hollowedstone.com`, set up:
 
-note, you'll also do this for `*.hollowedstone.com/*` or CNAME www to `hollowedstone.com`
+| Type | Name | Content | Proxy |
+|------|------|---------|-------|
+| A | `@` | `192.0.2.1` | **Proxied** (orange cloud ON) |
+| CNAME | `www` | `hollowedstone.com` | **Proxied** (orange cloud ON) |
+
+The `192.0.2.1` IP is a dummy address — traffic never reaches it. The orange cloud proxy intercepts all requests and routes them to your Worker instead.
+
+> **Important:** The proxy (orange cloud) MUST be on. If it's set to DNS-only (gray cloud), requests will try to connect to the dummy IP and fail with a timeout error.
+
+### 4b. Worker routes
+
+1. Go to your domain settings for `hollowedstone.com` in the Cloudflare dashboard
+2. Find the **Workers Routes** section
+3. Add two routes:
+
+| Route | Worker |
+|-------|--------|
+| `hollowedstone.com/*` | `hollowedstone` |
+| `*.hollowedstone.com/*` | `hollowedstone` |
+
+The first route handles the bare domain. The second handles subdomains (like `www`).
+
+> **Note:** `*.hollowedstone.com/*` does NOT match `hollowedstone.com` — you need both routes.
+
+### 4c. SSL
+
+Cloudflare provisions a free SSL certificate automatically. No action needed.
 
 After DNS propagates (usually minutes):
 ```
@@ -163,11 +212,12 @@ https://hollowedstone.com/play/oroboros/      ← Ouroboros lobby
 
 ## Step 5: Verify
 
-1. Open `https://hollowedstone.com/` — you should see the landing page
+1. Open `https://hollowedstone.com/` — you should see the Hollowed Stone landing page
 2. Click **Ouroboros** → game lobby at `/play/oroboros/`
 3. Click **Create Game** → get a 6-character access code
-4. Open the same URL in a second browser tab (or incognito)
+4. Open the same URL in a second browser tab (or incognito window)
 5. Join via the game link → both tabs enter split selection
+6. Check Cloudflare dashboard → **Storage & Databases** → **Workers KV** → your namespace should now have entries
 
 ---
 
@@ -180,7 +230,7 @@ Each game is self-contained. To add a second game:
 3. Add a card to `public/index.html` linking to `/play/new-game/`
 4. Add rulebooks to `docs/rulebooks/new-game/`
 5. Update the `run_worker_first` pattern in `wrangler.toml` if needed
-6. Push to `main` — auto-deploys
+6. Deploy: `npx wrangler deploy`
 
 Games share the KV namespace (keys are prefixed by access code, no collisions).
 
@@ -204,7 +254,38 @@ Local KV data is stored in `.wrangler/` and does not affect production.
 
 ---
 
+## Command Reference
+
+| Command | What it does |
+|---------|-------------|
+| `npm install` | Install wrangler locally |
+| `npx wrangler dev --port 8788` | Run locally (dev server) |
+| `npx wrangler deploy` | Deploy to Cloudflare (production) |
+| `npx wrangler kv:namespace list` | List your KV namespaces |
+| `npx wrangler kv:key list --namespace-id=YOUR_ID` | List KV keys (see active games) |
+| `npx wrangler tail` | Stream live Worker logs |
+
+---
+
 ## Troubleshooting
+
+### Site shows "Hello World" instead of the game
+
+The Worker route is pointing to Cloudflare's default template, not your deployed code. Redeploy:
+```bash
+npx wrangler deploy
+```
+
+### Error 1016 (Origin DNS error)
+
+Missing DNS record. Add a proxied A record:
+- Type: `A`, Name: `@`, Content: `192.0.2.1`, Proxy: ON (orange cloud)
+
+### Error 522 (Connection timed out)
+
+The Worker route pattern doesn't match, so Cloudflare is trying to connect to the dummy IP. Check:
+1. Route pattern is `hollowedstone.com/*` (not just `*.hollowedstone.com/*`)
+2. The DNS A record proxy is ON (orange cloud, not gray)
 
 ### API returns 404
 
@@ -214,26 +295,32 @@ main = "worker/index.js"
 [assets]
 run_worker_first = ["/play/*/api/*"]
 ```
-The `run_worker_first` pattern tells Cloudflare to route API paths through the Worker instead of looking for a static file.
 
 ### "Game not found" errors
 
 KV binding is missing:
-1. Check `wrangler.toml` has the correct namespace ID
-2. Or check Worker **Settings → Bindings** in the dashboard
-3. The binding variable name must be `GAME_STATE` (case-sensitive)
+1. Check `wrangler.toml` has the correct namespace ID (not "placeholder")
+2. The binding variable name must be `GAME_STATE` (case-sensitive)
+3. Redeploy after fixing: `npx wrangler deploy`
 
 ### "Unknown theme" on game creation
 
 Theme JSON files must exist in `public/play/oroboros/themes/`. The Worker loads them via `env.ASSETS.fetch()`.
 
-### Build fails with import errors
+### Deploy fails with import errors
 
 The Worker imports shared engine code:
 ```
 worker/index.js → import from '../public/play/oroboros/js/shared/engine.js'
 ```
-Wrangler's bundler (esbuild) resolves this at deploy time. If it fails, verify the path matches the actual file location.
+Wrangler's bundler (esbuild) resolves this at deploy time. Verify the relative path matches the actual file location.
+
+### Dashboard deploy doesn't trigger / retry fails
+
+Use the CLI instead — it always works:
+```bash
+npx wrangler deploy
+```
 
 ---
 
@@ -261,4 +348,4 @@ Browser                          Cloudflare Edge (hollowedstone.com)
   |  <──── { ok }                    |──> validate + KV.put
 ```
 
-One Worker script (`worker/index.js`) handles all API routes. Static files served directly from CDN. Game state in KV.
+One Worker script (`worker/index.js`) handles all API routes. Static files served directly from CDN. Game state in KV. No servers to manage.
