@@ -1,0 +1,110 @@
+{
+  "id": "wyrd",
+  "name": "Wyrd",
+  "subtitle": "A game of fate for two",
+  "cssFile": "css/themes/wyrd.css",
+
+  "players": {
+    "p1": { "name": "The Vanir", "title": "Player 1" },
+    "p2": { "name": "The Aesir", "title": "Player 2" }
+  },
+
+  "roles": {
+    "role1": {
+      "id": "ice",
+      "name": "Ice",
+      "color": "#2471a3",
+      "strokeColor": "#1a5276",
+      "symbol": "❄",
+      "beats": "fire",
+      "beatsLabel": "freezes Fire"
+    },
+    "role2": {
+      "id": "fire",
+      "name": "Fire",
+      "color": "#c0392b",
+      "strokeColor": "#922b21",
+      "symbol": "🔥",
+      "beats": "wood",
+      "beatsLabel": "burns Wood"
+    },
+    "role3": {
+      "id": "wood",
+      "name": "Wood",
+      "color": "#d4ac0d",
+      "strokeColor": "#9a7d0a",
+      "symbol": "🌿",
+      "beats": "wind",
+      "beatsLabel": "blocks Wind"
+    },
+    "role4": {
+      "id": "wind",
+      "name": "Wind",
+      "color": "#ecf0f1",
+      "strokeColor": "#95a5a6",
+      "symbol": "💨",
+      "beats": "ice",
+      "beatsLabel": "erodes Ice"
+    }
+  },
+
+  "center": {
+    "name": "Yggdrasil",
+    "description": "The World Tree",
+    "color": "#6a0dad",
+    "symbol": "🌳"
+  },
+
+  "terms": {
+    "displace": "capture",
+    "holding": "Valhalla",
+    "restore": "return from Valhalla",
+    "partnership": "shield wall",
+    "berserker": "berserker turn",
+    "advance": "advance",
+    "ko": "fate's memory"
+  },
+
+  "objectives": {
+    "splits": "Choose your forces wisely. Your opponent cannot see your choice.",
+    "placing": "Build your shield wall. Position reveals strategy — place with intent.",
+    "free_move": "The Aesir adjust their footing before the first blow falls.",
+    "play_normal": "Advance toward Yggdrasil. Maintain your shield wall. Outmaneuver your foe.",
+    "play_holding": "You command the World Tree. Three moves are yours — press your advantage.",
+    "play_berserker": "The shield wall is broken! Send your lone wolves to strike.",
+    "play_waiting": "Your opponent weaves their thread. Watch. Prepare.",
+    "finished": "The web is woven. Wyrd is fulfilled."
+  },
+
+  "lore": {
+    "splits": [
+      "The Norns — Urd, Verdandi, and Skuld — sit at the roots of Yggdrasil and weave the fate of every living thing. But the Vikings did not believe fate was a cage. They believed it was a web. Every bold action you took wove new threads, pulling destiny toward you.",
+      "Long before the gods, there was Niflheim — the realm of ice and cold — and Muspelheim — the realm of fire. Between them lay the void, Ginnungagap. When ice met fire, the world was born. Then came earth, then wind. Each force called the next into being, and each was consumed by the one that followed."
+    ],
+    "placing": [
+      "Before the great battles were fought, the Norse warrior chose his position with care. The shield wall he built before the first sword was drawn was half the battle already won or lost.",
+      "Your Wyrd was never fixed. It was earned. Every bold action you took wove new threads, pulling destiny toward you. Every moment of hesitation let someone else do the weaving."
+    ],
+    "play": [
+      "The Vikings called it the skjaldborg — the shield wall. Warriors locked shields and advanced together. A man who broke from the wall to fight alone invited death. Courage was not charging forward alone. Courage was holding the line together until the moment was right.",
+      "The Norns do not reward those who wait for fate to arrive. They reward those who act, who press forward, who weave their own thread boldly into the web. A warrior who sat still while the battle raged did not escape his Wyrd. He simply let someone else write it for him.",
+      "At the center of all nine realms stands Yggdrasil, the great ash tree. Its roots reach into Niflheim, Jotunheim, and Asgard. Every realm touches it. No single force owns it. Odin himself hung from its branches for nine days and nine nights to gain the runes — not because it was safe, but because the power at the center of all things demands a price."
+    ],
+    "capture": [
+      "The Valkyries rode over every battlefield, choosing the slain. Those chosen did not simply die — they rode to Valhalla, feasted with Odin, and sharpened their blades for Ragnarok. Death was not the end of a warrior's thread. It was a pause before the weaving continued.",
+      "No stone is ever permanently lost. The Norns are not finished weaving its fate."
+    ],
+    "center": [
+      "At the center of all nine realms stands Yggdrasil, the great ash tree. No single force owns it. Odin himself hung from its branches for nine days and nine nights to gain the runes.",
+      "The power at the center of all things demands a price. Do not claim the center without formation arriving behind you."
+    ],
+    "berserker": [
+      "The shield wall breaks — lone wolves run free. A well-placed lone wolf can cut an enemy formation at its weakest point, isolating stones permanently and changing the shape of the whole board.",
+      "When your opponent holds Yggdrasil your formation rule breaks entirely. This is your most powerful moment and your most exposed one. Choose wisely."
+    ],
+    "finished": [
+      "The web is woven. Your Wyrd is seized.",
+      "Fate was not fixed. It was earned — thread by thread, move by move."
+    ]
+  }
+}

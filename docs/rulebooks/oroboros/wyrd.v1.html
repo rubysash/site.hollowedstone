@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wyrd — A Game of Fate</title>
+<link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Wyrd</h1>
+  <div class="game-sub">A game of fate for two &mdash; 5&times;5 Agon board &mdash; Playtest draft</div>
+</div>
+
+<div class="myth">
+  The Norns — Urd, Verdandi, and Skuld — sit at the roots of Yggdrasil and weave the fate of every living thing. But the Vikings did not believe fate was a cage. They believed it was a web. Every bold action you took wove new threads, pulling destiny toward you. Every moment of hesitation let someone else do the weaving. Your Wyrd was never fixed. It was earned.
+  <cite>— Norse cosmology</cite>
+</div>
+
+<!-- ══════════════════════════════════
+     TLDR
+══════════════════════════════════ -->
+<div class="tldr">
+  <div class="tldr-title">Quick Rules &mdash; Read This First</div>
+  <div class="tldr-steps">
+    <div class="tldr-n">1</div>
+    <div><strong>Four forces, one unbroken cycle.</strong> Ice beats Fire. Fire beats Wood. Wood beats Wind. Wind beats Ice. You control two forces. Your opponent controls the other two. You can never capture your own pieces.</div>
+
+    <div class="tldr-n">2</div>
+    <div><strong>Setup.</strong> Each player places 5 stones — 3 of one force and 2 of the other — across their facing edge in any order they choose.</div>
+
+    <div class="tldr-n">3</div>
+    <div><strong>Every turn you get 2 moves.</strong> One stone, one step each. Both moves must follow formation — a stone may only advance toward center if it starts adjacent to a friendly stone.</div>
+
+    <div class="tldr-n">4</div>
+    <div><strong>Capture</strong> by moving onto an enemy hex your force beats. Captured stones return — the opponent spends one of their moves to bring a stone back to their starting edge.</div>
+
+    <div class="tldr-n">5</div>
+    <div><strong>Yggdrasil</strong> — the center hex — is a siege position. Move there voluntarily and you are locked. While you hold it you get 3 moves per turn. All three must follow formation.</div>
+
+    <div class="tldr-n">6</div>
+    <div><strong>When your opponent holds Yggdrasil</strong> your formation rule is suspended. Your 2 moves are free — lone wolves allowed. 1 of your 2 moves may be a capture.</div>
+
+    <div class="tldr-n">7</div>
+    <div><strong>First to 5 capture points wins.</strong> No stone is ever gone for good. Fate is not finished with them yet.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     THE CYCLE
+══════════════════════════════════ -->
+<h2>The Cycle</h2>
+
+<div class="myth">
+  Long before the gods, there was Niflheim — the realm of ice and cold — and Muspelheim — the realm of fire. Between them lay the void, Ginnungagap. When ice met fire, the world was born. Then came earth, then wind. Each force called the next into being, and each was consumed by the one that followed. The wheel has turned without pause ever since.
+  <cite>— Norse creation myth</cite>
+</div>
+
+<p>Four primordial forces form a closed loop. A stone may only capture an enemy stone it directly beats. No other captures are legal.</p>
+
+<div class="cycle-grid">
+  <div class="cycle-row"><span class="dot dot-water"></span> Ice (Blue) <span class="beat">beats</span> <span class="dot dot-fire"></span> Fire (Red)</div>
+  <div class="cycle-row"><span class="dot dot-fire"></span> Fire (Red) <span class="beat">beats</span> <span class="dot dot-wood"></span> Wood (Yellow)</div>
+  <div class="cycle-row"><span class="dot dot-wood"></span> Wood (Yellow) <span class="beat">beats</span> <span class="dot dot-white"></span> Wind (White)</div>
+  <div class="cycle-row"><span class="dot dot-white"></span> Wind (White) <span class="beat">beats</span> <span class="dot dot-water"></span> Ice (Blue)</div>
+</div>
+
+<div class="players">
+  <div class="player-card">
+    <strong>Player 1 — The Vanir</strong>
+    <span class="dot dot-water"></span> Blue (Ice) &nbsp;&amp;&nbsp; <span class="dot dot-wood"></span> Yellow (Wood)
+  </div>
+  <div class="player-card">
+    <strong>Player 2 — The Aesir</strong>
+    <span class="dot dot-fire"></span> Red (Fire) &nbsp;&amp;&nbsp; <span class="dot dot-white"></span> White (Wind)
+  </div>
+</div>
+
+<p>Your two forces do not interact in the cycle. You can never accidentally capture your own stone.</p>
+
+<!-- ══════════════════════════════════
+     SETUP
+══════════════════════════════════ -->
+<h2>Setup</h2>
+
+<div class="myth">
+  Before the great battles were fought, the Norse warrior chose his position with care. The shield wall he built before the first sword was drawn was half the battle already won or lost.
+  <cite>— Norse battle tradition</cite>
+</div>
+
+<ul>
+  <li>Each player has <strong>5 stones</strong> — 3 of one force and 2 of the other.</li>
+  <li>Place them in any order across your 5-hex facing edge. You choose the arrangement. Your opponent can read it.</li>
+  <li>Bunching one force creates a powerful flank. Alternating spreads threat evenly and is harder to read. This is your first act of fate-weaving.</li>
+  <li><strong>The Vanir move first. The Aesir make one free move before play begins</strong> to offset going second.</li>
+</ul>
+
+<!-- ══════════════════════════════════
+     TURN STRUCTURE
+══════════════════════════════════ -->
+<h2>Your Turn</h2>
+
+<p>Players alternate turns. On your turn you get <strong>2 moves</strong>. Each move is one stone, one step, to any adjacent empty hex. While you occupy Yggdrasil you get <strong>3 moves</strong> instead.</p>
+
+<p>If you have no legal moves you must pass. This should be rare — if it happens often your formation has collapsed.</p>
+
+<!-- ══════════════════════════════════
+     FORMATION
+══════════════════════════════════ -->
+<h2>The Shield Wall</h2>
+
+<div class="myth">
+  The Vikings called it the skjaldborg — the shield wall. Warriors locked shields and advanced together. A man who broke from the wall to fight alone invited death. Courage was not charging forward alone. Courage was holding the line together until the moment was right.
+  <cite>— Norse warfare</cite>
+</div>
+
+<p>A stone may only advance toward center if it begins its move adjacent to at least one other friendly stone. Isolated stones may only move sideways or away from center.</p>
+
+<p>Friendly means either of your two forces. Your Ice stone and your Wood stone shield each other equally.</p>
+
+<div class="callout warning">
+  The shield wall is suspended on your turn when your opponent holds Yggdrasil. See below.
+</div>
+
+<!-- ══════════════════════════════════
+     CAPTURES & RESPAWN
+══════════════════════════════════ -->
+<h2>Capture &amp; Return</h2>
+
+<div class="myth">
+  The Valkyries rode over every battlefield, choosing the slain. Those chosen did not simply die — they rode to Valhalla, feasted with Odin, and sharpened their blades for Ragnarök. Death was not the end of a warrior's thread. It was a pause before the weaving continued.
+  <cite>— Norse afterlife belief</cite>
+</div>
+
+<p>Move your stone onto a hex occupied by an enemy stone your force beats. Your stone takes the hex. The captured stone goes to your opponent's holding area.</p>
+
+<div class="callout respawn">
+  <strong>No stone is ever permanently lost.</strong> On any of your turns you may spend one of your 2 moves to return one stone from holding to any empty hex on your starting edge. The Norns are not finished weaving its fate.
+</div>
+
+<p>A capture costs your opponent tempo — one of their precious moves. Sustained pressure forces them to keep respawning instead of advancing. That is how you win the weave without winning every fight.</p>
+
+<h3>Ko Rule</h3>
+<p>A stone may not return to a hex it occupied two or fewer moves ago. No back-and-forth stalling.</p>
+
+<!-- ══════════════════════════════════
+     YGGDRASIL
+══════════════════════════════════ -->
+<h2>Yggdrasil — The World Tree</h2>
+
+<div class="myth">
+  At the center of all nine realms stands Yggdrasil, the great ash tree. Its roots reach into Niflheim, Jotunheim, and Asgard. Every realm touches it. No single force owns it. Odin himself hung from its branches for nine days and nine nights to gain the runes — not because it was safe, but because the power at the center of all things demands a price.
+  <cite>— Norse cosmology</cite>
+</div>
+
+<p>The single center hex — marked purple on the board — is Yggdrasil. It is the most powerful position in the game and the most dangerous. Claiming it changes the rules for both players.</p>
+
+<table class="move-table">
+  <tr>
+    <th>State</th>
+    <th>Your moves</th>
+    <th>Shield wall</th>
+    <th>Captures</th>
+  </tr>
+  <tr>
+    <td><span class="tag tag-normal">Normal</span> Center empty</td>
+    <td>2</td>
+    <td>Required</td>
+    <td>Any move</td>
+  </tr>
+  <tr>
+    <td><span class="tag tag-center">Siege</span> You hold Yggdrasil</td>
+    <td>3 (locked on center)</td>
+    <td>Required for all 3</td>
+    <td>Any move</td>
+  </tr>
+  <tr>
+    <td><span class="tag tag-counter">Counter</span> Opponent holds Yggdrasil</td>
+    <td>2, formation suspended</td>
+    <td>Suspended entirely</td>
+    <td>1 capture across both moves</td>
+  </tr>
+</table>
+
+<div class="callout center-rule">
+  <strong>Claiming Yggdrasil:</strong> Move onto the center hex on your turn. That stone is now locked — it cannot leave voluntarily. It can only be captured off. Your extra move applies to your other pieces, not to the stone holding the tree.
+</div>
+
+<div class="callout center-rule">
+  <strong>Wild power:</strong> The stone on Yggdrasil may capture any adjacent enemy regardless of the cycle. Any adjacent enemy may also capture it regardless of the cycle. Every force threatens it simultaneously. The world tree belongs to no one.
+</div>
+
+<div class="callout warning">
+  <strong>When your opponent holds Yggdrasil — the Berserker turn.</strong> Your shield wall is suspended. You get 2 free moves and may make 1 capture across them. Send a lone wolf sprinting to dislodge the tree. Pick off an isolated enemy stone to break their formation. Or split both moves between two threats. You cannot make 2 captures in the same turn. Choose wisely — this is your most powerful moment and your most exposed one.
+</div>
+
+<!-- ══════════════════════════════════
+     WINNING
+══════════════════════════════════ -->
+<h2>Winning — Seizing Your Wyrd</h2>
+
+<div class="myth">
+  The Norns do not reward those who wait for fate to arrive. They reward those who act, who press forward, who weave their own thread boldly into the web. A warrior who sat still while the battle raged did not escape his Wyrd. He simply let someone else write it for him.
+  <cite>— Norse philosophy of fate</cite>
+</div>
+
+<p>First player to reach <strong>5 capture points</strong> wins immediately. All captures worth 1 point regardless of location.</p>
+
+<h3>Tiebreaker</h3>
+<p>If both players reach 5 in the same turn: higher total capture count wins. If equal, the player who scored their fifth point later in the turn wins. If simultaneous, the Aesir win.</p>
+
+<div class="ornament">&mdash; &#10022; &mdash;</div>
+
+<!-- ══════════════════════════════════
+     STRATEGY
+══════════════════════════════════ -->
+<h2>Weaving Your Fate</h2>
+
+<ul>
+  <li><strong>Your opening arrangement is your first act of will.</strong> Bunching one force creates a dominant flank your opponent can see coming. Alternating is harder to read but none of your edges are overwhelming. Choose deliberately.</li>
+
+  <li><strong>The shield wall is not a limitation — it is your weapon.</strong> Two stones advancing together threaten more hexes than one stone advancing alone ever could. Formation discipline wins games.</li>
+
+  <li><strong>Respawn costs tempo, not pieces.</strong> Forcing your opponent to spend moves returning stones means they are not advancing. Relentless pressure on one flank is often more valuable than one clean capture on another.</li>
+
+  <li><strong>Yggdrasil demands a price.</strong> Do not claim the center without formation arriving behind you. A locked stone with no support is one Berserker move away from being captured. Plant your flag only when you are ready to hold it.</li>
+
+  <li><strong>The Berserker turn is an offensive weapon, not just a rescue.</strong> When your opponent holds the center your formation rule breaks entirely. A well-placed lone wolf can cut an enemy formation at its weakest point, isolating stones permanently and changing the shape of the whole board.</li>
+
+  <li><strong>The cycle is your compass.</strong> Before every move, know which forces your stones threaten — and which threaten them. Moving a stone into range of something it cannot beat is handing your opponent a free point.</li>
+</ul>
+
+<div class="ornament">&mdash; &#10022; &mdash;</div>
+
+<!-- ══════════════════════════════════
+     FIVE YEAR OLD
+══════════════════════════════════ -->
+<h2>The Simple Version</h2>
+
+<p style="font-style:italic">Ice beats Fire. Fire beats Wood. Wood beats Wind. Wind beats Ice.</p>
+<p style="font-style:italic">Stay with your friends or you get stuck. Together you can march forward. Alone you cannot.</p>
+<p style="font-style:italic">The purple middle is the most powerful place on the board. Stand there and you get an extra move. But you are stuck there until someone pushes you off, and anyone can try.</p>
+<p style="font-style:italic">If someone catches your piece it comes back. Nothing is over. First to catch five wins.</p>
+<p style="font-style:italic">The more you do, the more you control. Waiting just lets the other person decide what happens to you.</p>
+
+<div class="version-notes">
+  <h2>Playtest Variables</h2>
+  <ul>
+    <li>5-point target — try 4 if games run long, 6 if too fast</li>
+    <li>3 moves while holding Yggdrasil — try 2 if siege feels too dominant</li>
+    <li>Berserker capture limit of 1 — try 2 if dislodging center feels too hard</li>
+    <li>Shield wall rule — relax to "within 2 steps of a friendly" if opening feels too slow</li>
+    <li>Aesir free move — remove if Aesir consistently wins despite it</li>
+    <li>Ko rule — extend to 3 moves if stalling persists</li>
+  </ul>
+</div>
+
+</body>
+</html>

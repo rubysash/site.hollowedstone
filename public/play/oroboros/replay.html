@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ouroboros — Replay</title>
+<link rel="stylesheet" href="css/board.css">
+<style>
+  .replay-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    margin: 0.5rem 0;
+    flex-wrap: wrap;
+  }
+  .replay-controls .step-display {
+    font-family: monospace;
+    font-size: 0.85rem;
+    min-width: 80px;
+    text-align: center;
+  }
+  .replay-controls input[type="range"] {
+    width: 120px;
+  }
+  .replay-entry {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.5rem;
+    max-width: 400px;
+    width: 100%;
+    margin: 2rem auto;
+    text-align: center;
+  }
+  .replay-entry input {
+    background: #2a2a44;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem;
+    color: var(--text);
+    font-family: monospace;
+    font-size: 1.2rem;
+    text-align: center;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    width: 100%;
+    max-width: 200px;
+    margin-bottom: 0.8rem;
+  }
+  .replay-entry input:focus { outline: none; border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="game-header">
+  <h1>Ouroboros — Replay</h1>
+  <div class="subtitle" id="replay-info"></div>
+</div>
+
+<div id="entry-screen" class="replay-entry">
+  <h2>Watch a Replay</h2>
+  <input id="replay-code" placeholder="ABC123" maxlength="6">
+  <br>
+  <button class="btn" id="load-btn">Load Replay</button>
+  <div class="error" id="replay-error" style="color:#e74c3c;font-size:0.8rem;margin-top:0.5rem;"></div>
+</div>
+
+<div id="replay-view" style="display:none">
+  <div class="status-bar">
+    <div class="turn-info" id="replay-status"></div>
+  </div>
+
+  <div class="game-container">
+    <div class="side-panel">
+      <div class="player-panel p2">
+        <h3><span class="player-name">Player 2</span></h3>
+        <div>Score: <span class="score">0</span></div>
+      </div>
+    </div>
+
+    <div class="board-area">
+      <svg class="board" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <div class="side-panel">
+      <div class="player-panel p1">
+        <h3><span class="player-name">Player 1</span></h3>
+        <div>Score: <span class="score">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="replay-controls">
+    <button class="btn btn-secondary" id="btn-start">|&lt;</button>
+    <button class="btn btn-secondary" id="btn-prev">&lt;</button>
+    <button class="btn" id="btn-play">Play</button>
+    <button class="btn btn-secondary" id="btn-next">&gt;</button>
+    <button class="btn btn-secondary" id="btn-end">&gt;|</button>
+    <span class="step-display" id="step-display">0 / 0</span>
+    <label style="font-size:0.75rem;color:var(--text-dim)">Speed:
+      <input type="range" id="speed" min="200" max="3000" value="1000" step="100">
+    </label>
+    <button class="btn btn-secondary" id="btn-download">Download JSON</button>
+  </div>
+</div>
+
+<script type="module">
+  import { fetchReplay } from './js/net.js';
+  import { loadTheme, getRoleInfo } from './js/themes.js';
+  import { initBoard, updateBoard } from './js/board.js';
+  import { createGame, chooseSplit, placeStone, makeMove } from './js/shared/engine.js';
+  import { hexKey, parseHexKey } from './js/shared/board-data.js';
+
+  let replayData = null;
+  let currentStep = 0;
+  let playInterval = null;
+  let states = []; // reconstructed state at each step
+
+  // Check URL for code
+  const params = new URLSearchParams(location.search);
+  const urlCode = params.get('code');
+  if (urlCode) {
+    document.getElementById('replay-code').value = urlCode;
+    loadReplay(urlCode);
+  }
+
+  document.getElementById('load-btn').addEventListener('click', () => {
+    const code = document.getElementById('replay-code').value.trim().toUpperCase();
+    if (code) loadReplay(code);
+  });
+  document.getElementById('replay-code').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('load-btn').click();
+  });
+
+  async function loadReplay(code) {
+    try {
+      replayData = await fetchReplay(code);
+      if (replayData.error) {
+        document.getElementById('replay-error').textContent = replayData.error;
+        return;
+      }
+
+      const theme = await loadTheme(replayData.theme);
+      document.getElementById('entry-screen').style.display = 'none';
+      document.getElementById('replay-view').style.display = '';
+      document.getElementById('replay-info').textContent =
+        `${theme.players.p1.name} vs ${theme.players.p2.name} — ${replayData.log.length} moves`;
+
+      // Init board
+      const svg = document.querySelector('svg.board');
+      initBoard(svg, () => {});
+
+      // Reconstruct states by replaying log
+      reconstructStates(replayData, theme);
+      currentStep = 0;
+      renderStep();
+      setupControls();
+    } catch (e) {
+      document.getElementById('replay-error').textContent = 'Failed to load replay.';
+    }
+  }
+
+  function reconstructStates(data, theme) {
+    // Build initial empty state and replay each log entry
+    const state = createGame(data.accessCode, theme);
+    state.players.p1.token = 'replay';
+    state.players.p2.token = 'replay';
+    states = [JSON.parse(JSON.stringify(state))];
+
+    for (const entry of data.log) {
+      switch (entry.action) {
+        case 'split':
+          chooseSplit(state, entry.player, entry.extra?.split
+            ? Object.values(entry.extra.split).find(v => v === 3) ? 3 : 2
+            : 3);
+          break;
+        case 'place': {
+          const to = parseHexKey(entry.to);
+          placeStone(state, entry.player, to.q, to.r, entry.role);
+          break;
+        }
+        case 'move':
+        case 'displace':
+          makeMove(state, entry.player, entry.from, entry.to);
+          break;
+        case 'restore':
+          makeMove(state, entry.player, 'holding', entry.to, entry.role);
+          break;
+      }
+      states.push(JSON.parse(JSON.stringify(state)));
+    }
+  }
+
+  function renderStep() {
+    if (!states[currentStep]) return;
+    const s = states[currentStep];
+    updateBoard(s.board);
+
+    const p1Score = s.players.p1.score;
+    const p2Score = s.players.p2.score;
+    document.querySelector('.p1 .score').textContent = p1Score;
+    document.querySelector('.p2 .score').textContent = p2Score;
+
+    const entry = currentStep > 0 ? replayData.log[currentStep - 1] : null;
+    const status = entry
+      ? `Step ${currentStep}: ${entry.player} — ${entry.action}${entry.role ? ' (' + entry.role + ')' : ''}`
+      : 'Start';
+    document.getElementById('replay-status').textContent = status;
+    document.getElementById('step-display').textContent = `${currentStep} / ${states.length - 1}`;
+  }
+
+  function setupControls() {
+    document.getElementById('btn-start').onclick = () => { currentStep = 0; renderStep(); };
+    document.getElementById('btn-end').onclick = () => { currentStep = states.length - 1; renderStep(); };
+    document.getElementById('btn-prev').onclick = () => { if (currentStep > 0) { currentStep--; renderStep(); } };
+    document.getElementById('btn-next').onclick = () => { if (currentStep < states.length - 1) { currentStep++; renderStep(); } };
+
+    document.getElementById('btn-play').onclick = () => {
+      if (playInterval) {
+        clearInterval(playInterval);
+        playInterval = null;
+        document.getElementById('btn-play').textContent = 'Play';
+      } else {
+        document.getElementById('btn-play').textContent = 'Pause';
+        const speed = parseInt(document.getElementById('speed').value);
+        playInterval = setInterval(() => {
+          if (currentStep < states.length - 1) {
+            currentStep++;
+            renderStep();
+          } else {
+            clearInterval(playInterval);
+            playInterval = null;
+            document.getElementById('btn-play').textContent = 'Play';
+          }
+        }, speed);
+      }
+    };
+
+    document.getElementById('btn-download').onclick = () => {
+      const blob = new Blob([JSON.stringify(replayData, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `ouroboros-${replayData.accessCode}.json`;
+      a.click();
+    };
+  }
+</script>
+</body>
+</html>

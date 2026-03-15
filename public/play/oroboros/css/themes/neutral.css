@@ -1,0 +1,13 @@
+/* Neutral theme — clean, minimal */
+:root {
+  --bg: #1a1a1a;
+  --panel-bg: #252525;
+  --text: #e0e0e0;
+  --text-dim: #888;
+  --accent: #6a0dad;
+  --border: #444;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}

@@ -1,0 +1,6 @@
+node_modules/
+.npm-cache/
+.wrangler/
+.claude/
+.dev.vars
+package-lock.json

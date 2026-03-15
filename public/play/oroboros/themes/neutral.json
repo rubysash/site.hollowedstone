@@ -1,0 +1,81 @@
+{
+  "id": "neutral",
+  "name": "Ouroboros",
+  "subtitle": "A strategic game for two",
+  "cssFile": "css/themes/neutral.css",
+
+  "players": {
+    "p1": { "name": "Player 1", "title": "Player 1" },
+    "p2": { "name": "Player 2", "title": "Player 2" }
+  },
+
+  "roles": {
+    "role1": {
+      "id": "red",
+      "name": "Red",
+      "color": "#c0392b",
+      "strokeColor": "#922b21",
+      "symbol": "R",
+      "beats": "blue",
+      "beatsLabel": "beats Blue"
+    },
+    "role2": {
+      "id": "blue",
+      "name": "Blue",
+      "color": "#2471a3",
+      "strokeColor": "#1a5276",
+      "symbol": "B",
+      "beats": "green",
+      "beatsLabel": "beats Green"
+    },
+    "role3": {
+      "id": "green",
+      "name": "Green",
+      "color": "#1e8449",
+      "strokeColor": "#145a32",
+      "symbol": "G",
+      "beats": "gold",
+      "beatsLabel": "beats Gold"
+    },
+    "role4": {
+      "id": "gold",
+      "name": "Gold",
+      "color": "#d4ac0d",
+      "strokeColor": "#9a7d0a",
+      "symbol": "D",
+      "beats": "red",
+      "beatsLabel": "beats Red"
+    }
+  },
+
+  "center": {
+    "name": "Center",
+    "description": "The Wild Hex",
+    "color": "#6a0dad",
+    "symbol": "★"
+  },
+
+  "terms": {
+    "displace": "displace",
+    "holding": "holding area",
+    "restore": "restore",
+    "partnership": "partnership",
+    "berserker": "restoration turn",
+    "advance": "advance",
+    "ko": "Ko"
+  },
+
+  "objectives": {
+    "splits": "Choose your 3/2 split. Your opponent picks simultaneously.",
+    "placing": "Place your stones strategically on your starting edge.",
+    "free_move": "Player 2: make your free opening move.",
+    "play_normal": "Move toward the center. Maintain partnerships. Outplay your opponent.",
+    "play_holding": "You hold the center. Use your 3 moves wisely.",
+    "play_berserker": "Opponent holds center. Partnership suspended. Max 1 displacement.",
+    "play_waiting": "Opponent's turn. Plan your next moves.",
+    "finished": "Game over."
+  },
+
+  "lore": {}
+
+}

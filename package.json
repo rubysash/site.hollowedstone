@@ -1,0 +1,11 @@
+{
+  "name": "ouroboros",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler pages dev public --kv GAME_STATE --port 8788",
+    "deploy": "wrangler pages deploy public"
+  },
+  "devDependencies": {
+    "wrangler": "^4.73.0"
+  }
+}

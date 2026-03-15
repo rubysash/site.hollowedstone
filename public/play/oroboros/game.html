@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ouroboros — Game</title>
+<link rel="stylesheet" href="css/board.css">
+</head>
+<body>
+
+<div class="game-header">
+  <h1>Ouroboros</h1>
+  <div class="subtitle">Loading...</div>
+  <div class="access-code">------</div>
+</div>
+
+<div class="status-bar">
+  <div class="turn-info">Connecting...</div>
+</div>
+
+<div class="game-container">
+  <div class="side-panel">
+    <div class="player-panel p2">
+      <h3><span class="player-name">Player 2</span></h3>
+      <div>Score: <span class="score">0</span> / 5</div>
+      <div class="holding-area" onclick="if(event.target.classList.contains('holding-stone')) window.onHoldingClick(event.target.dataset.role)"></div>
+    </div>
+    <div class="move-log"></div>
+  </div>
+
+  <div class="board-area">
+    <svg class="board" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <div class="side-panel">
+    <div class="player-panel p1">
+      <h3><span class="player-name">Player 1</span></h3>
+      <div>Score: <span class="score">0</span> / 5</div>
+      <div class="holding-area" onclick="if(event.target.classList.contains('holding-stone')) window.onHoldingClick(event.target.dataset.role)"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="location.href='/'">Leave</button>
+    </div>
+  </div>
+</div>
+
+<div class="lore-callout" style="display:none"></div>
+
+<script type="module">
+  import { startGame } from './js/game.js';
+  startGame();
+</script>
+</body>
+</html>

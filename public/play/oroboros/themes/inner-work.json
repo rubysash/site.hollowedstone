@@ -1,0 +1,117 @@
+{
+  "id": "inner-work",
+  "name": "The Inner Work",
+  "subtitle": "A game of balance and lifelong growth",
+  "cssFile": "css/themes/inner-work.css",
+
+  "players": {
+    "p1": { "name": "The Heart", "title": "Player 1" },
+    "p2": { "name": "The Mind", "title": "Player 2" }
+  },
+
+  "roles": {
+    "role1": {
+      "id": "courage",
+      "name": "Courage",
+      "color": "#c0392b",
+      "strokeColor": "#922b21",
+      "symbol": "C",
+      "beats": "planning",
+      "beatsLabel": "breaks through Planning"
+    },
+    "role2": {
+      "id": "planning",
+      "name": "Planning",
+      "color": "#2471a3",
+      "strokeColor": "#1a5276",
+      "symbol": "P",
+      "beats": "compassion",
+      "beatsLabel": "structures Compassion"
+    },
+    "role3": {
+      "id": "compassion",
+      "name": "Compassion",
+      "color": "#1e8449",
+      "strokeColor": "#145a32",
+      "symbol": "H",
+      "beats": "discipline",
+      "beatsLabel": "softens Discipline"
+    },
+    "role4": {
+      "id": "discipline",
+      "name": "Discipline",
+      "color": "#d4ac0d",
+      "strokeColor": "#9a7d0a",
+      "symbol": "D",
+      "beats": "courage",
+      "beatsLabel": "channels Courage"
+    }
+  },
+
+  "center": {
+    "name": "The Work",
+    "description": "The Inner Work",
+    "color": "#6a0dad",
+    "symbol": "✦"
+  },
+
+  "terms": {
+    "displace": "displace",
+    "holding": "shadow",
+    "restore": "restore from shadow",
+    "partnership": "partnership",
+    "berserker": "restoration turn",
+    "advance": "grow",
+    "ko": "pattern memory"
+  },
+
+  "objectives": {
+    "splits": "Choose which capacities you lead with. Your opponent chooses simultaneously.",
+    "placing": "Arrange your capacities. Your opening is your first act of self-awareness.",
+    "free_move": "Player 2 adjusts before the work begins.",
+    "play_normal": "Advance your capacities in partnership toward the center. No one grows alone.",
+    "play_holding": "You hold the center. Three moves — keep your capacities advancing behind you.",
+    "play_berserker": "Your patterns are broken. Move with urgency to restore balance.",
+    "play_waiting": "Your opponent does their work. Observe. Prepare your response.",
+    "finished": "The work continues. But the shape of growth has been decided."
+  },
+
+  "lore": {
+    "splits": [
+      "The privilege of a lifetime is to become who you truly are. — Carl Jung",
+      "An unexamined life is not worth living. — Socrates",
+      "Knowing yourself is the beginning of all wisdom. — Aristotle"
+    ],
+    "placing": [
+      "Your opening arrangement is a self-portrait. How you place your capacities tells you which ones you trust most and which ones you keep at a distance.",
+      "Between stimulus and response there is a space. In that space is our power to choose our response. In our response lies our growth and our freedom. — Viktor Frankl"
+    ],
+    "play": [
+      "No man is an island, entire of itself. Every man is a piece of the continent, a part of the main. — John Donne",
+      "You do not have to be good. You do not have to walk on your knees for a hundred miles through the desert repenting. You only have to let the soft animal of your body love what it loves. — Mary Oliver",
+      "Growth is not meant to be done alone. The capacities we neglect most are usually the ones we most need a partner to model for us. — Brene Brown",
+      "We are not human beings having a spiritual experience. We are spiritual beings having a human experience. — Pierre Teilhard de Chardin"
+    ],
+    "capture": [
+      "You may encounter many defeats, but you must not be defeated. It may be necessary to encounter the defeats so you can know who you are, what you can rise from, how you can still come out of it. — Maya Angelou",
+      "Fall seven times, stand up eight. — Japanese proverb",
+      "The wound is the place where the light enters you. — Rumi",
+      "Displacement is not failure. When a capacity is pushed back it returns. It is humbled and reoriented, not destroyed."
+    ],
+    "center": [
+      "The most terrifying thing is to accept oneself completely. — Carl Jung",
+      "Owning our story and loving ourselves through that process is the bravest thing we will ever do. — Brene Brown",
+      "To know what you prefer instead of humbly saying Amen to what the world tells you you ought to prefer, is to have kept your soul alive. — Robert Louis Stevenson"
+    ],
+    "berserker": [
+      "The curious paradox is that when I accept myself just as I am, then I can change. — Carl Rogers",
+      "We cannot solve our problems with the same thinking we used when we created them. — Albert Einstein",
+      "When your opponent dominates the center, your normal patterns break open. That is an opportunity. A single focused capacity can cut through the imbalance."
+    ],
+    "finished": [
+      "It is not the mountain we conquer, but ourselves. — Edmund Hillary",
+      "What you are is God's gift to you. What you become is your gift to God. — Hans Urs von Balthasar",
+      "The person who keeps moving toward the center shapes who they become. The person who waits lets imbalance decide for them."
+    ]
+  }
+}

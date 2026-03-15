@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dominion — A Game of Calling</title>
+<link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Dominion</h1>
+  <div class="game-sub">A game of calling and stewardship for two players — Playtest draft</div>
+</div>
+
+<div class="scripture">
+  God blessed them and said, "Be fruitful and increase in number; fill the earth and subdue it. Rule over the fish in the sea and the birds in the sky and over every living creature that moves on the ground."
+  <cite>Genesis 1:28</cite>
+</div>
+
+<p>Dominion is a game about stewardship. Two communities, each carrying two callings, press forward toward the Public Stance at the center of the board. The player who acts boldly with what God has given them will shape what happens. The player who waits will find it shaped for them.</p>
+
+<!-- ══════════════════════════
+     TLDR
+══════════════════════════ -->
+<div class="tldr">
+  <div class="tldr-title">Quick Rules — Read This First</div>
+  <div class="tldr-steps">
+    <div class="tldr-n">1</div>
+    <div><strong>Four callings, each effective against one other.</strong> No calling is greater than another. Each displaces a specific opposition in specific circumstances. You carry two callings. Your opponent carries the other two. You can never work against your own community.</div>
+
+    <div class="tldr-n">2</div>
+    <div><strong>Setup.</strong> Each player places 5 stones, 3 of one calling and 2 of the other, across their starting edge in any order they choose. That arrangement is your first strategic decision.</div>
+
+    <div class="tldr-n">3</div>
+    <div><strong>Every turn you get 2 moves.</strong> One stone, one step each. Both moves must respect partnership: a stone may only advance toward center if it starts adjacent to a friendly stone.</div>
+
+    <div class="tldr-n">4</div>
+    <div><strong>Displace</strong> by moving onto an enemy hex your calling overcomes. That stone is set aside, not destroyed. Your opponent may spend one of their moves to restore it to their starting edge.</div>
+
+    <div class="tldr-n">5</div>
+    <div><strong>The Public Stance</strong> is the center hex. Move there voluntarily and you are committed. You cannot leave until your opponent displaces you. While you hold it you get 3 moves per turn. Any calling can displace you and your stone there can challenge any calling in return.</div>
+
+    <div class="tldr-n">6</div>
+    <div><strong>When your opponent holds the Public Stance</strong> your community loses its ordered direction. God raises up specifically directed individuals to restore order. Partnership is suspended. You get 2 moves and 1 of those moves may displace an enemy stone, aimed at reclaiming the Public Stance and restoring the community to proper formation.</div>
+
+    <div class="tldr-n">7</div>
+    <div><strong>First to 5 points wins.</strong> No calling is ever permanently silenced. The community is always restored. Press forward with what you have been given.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     THE CALLINGS
+══════════════════════════ -->
+<h2>The Four Callings</h2>
+
+<div class="scripture">
+  There are different kinds of gifts, but the same Spirit distributes them. There are different kinds of service, but the same Lord. There are different kinds of working, but in all of them and in everyone it is the same God at work.
+  <cite>1 Corinthians 12:4-6</cite>
+</div>
+
+<div class="scripture">
+  Just as a body, though one, has many parts, but all its many parts form one body, so it is with Christ. Even so the body is not made up of one part but of many. The eye cannot say to the hand, "I don't need you."
+  <cite>1 Corinthians 12:12, 14, 21</cite>
+</div>
+
+<p>No calling is superior to another. Each is uniquely effective in specific circumstances against a specific opposition. No single calling can win this game. That is the point.</p>
+
+<div class="calling-grid">
+  <div class="calling-row">
+    <span class="dot dot-teacher"></span>
+    <div class="calling-inner">
+      <span class="calling-name">The Teacher (Blue)</span>
+      <span class="calling-desc">Brings truth that cannot be softened. Shapes understanding over time. Overcomes the Herald's bold proclamation with precision and depth.</span>
+    </div>
+  </div>
+  <div class="calling-row">
+    <span class="dot dot-herald"></span>
+    <div class="calling-inner">
+      <span class="calling-name">The Herald (Red)</span>
+      <span class="calling-desc">Speaks boldly into the world. Calls the community to action and urgency. Overcomes the Servant's quiet practical labor with vision and direction.</span>
+    </div>
+  </div>
+  <div class="calling-row">
+    <span class="dot dot-shepherd"></span>
+    <div class="calling-inner">
+      <span class="calling-name">The Shepherd (Yellow)</span>
+      <span class="calling-desc">Restores the wandering. Cares for the weak. Overcomes the Teacher's hard truth with mercy, patience, and relationship.</span>
+    </div>
+  </div>
+  <div class="calling-row">
+    <span class="dot dot-servant"></span>
+    <div class="calling-inner">
+      <span class="calling-name">The Servant (White)</span>
+      <span class="calling-desc">Builds, gives, and sustains. Does what words alone cannot accomplish. Overcomes the Shepherd's inward focus with outward and practical action.</span>
+    </div>
+  </div>
+</div>
+
+<p>The cycle is the Body functioning as God designed it. Each calling addresses the blind spot of another. None can be removed without the whole suffering for it.</p>
+
+<div class="cycle-grid">
+  <div class="cycle-row"><span class="dot dot-teacher"></span> Teacher <span class="beat">overcomes</span> <span class="dot dot-herald"></span> Herald</div>
+  <div class="cycle-row"><span class="dot dot-herald"></span> Herald <span class="beat">overcomes</span> <span class="dot dot-servant"></span> Servant</div>
+  <div class="cycle-row"><span class="dot dot-shepherd"></span> Shepherd <span class="beat">overcomes</span> <span class="dot dot-teacher"></span> Teacher</div>
+  <div class="cycle-row"><span class="dot dot-servant"></span> Servant <span class="beat">overcomes</span> <span class="dot dot-shepherd"></span> Shepherd</div>
+</div>
+
+<div class="players">
+  <div class="player-card">
+    <strong>Player 1</strong>
+    <span class="dot dot-teacher"></span> Teacher (Blue) &nbsp;&amp;&nbsp; <span class="dot dot-shepherd"></span> Shepherd (Yellow)
+  </div>
+  <div class="player-card">
+    <strong>Player 2</strong>
+    <span class="dot dot-herald"></span> Herald (Red) &nbsp;&amp;&nbsp; <span class="dot dot-servant"></span> Servant (White)
+  </div>
+</div>
+
+<p>Your two callings do not overcome each other in the cycle. You will never work against your own community.</p>
+
+<!-- ══════════════════════════
+     SETUP
+══════════════════════════ -->
+<h2>Setup</h2>
+
+<div class="scripture">
+  Suppose a king is about to go to war against another king. Will he not first sit down and consider whether he is able with ten thousand men to oppose the one coming against him with twenty thousand?
+  <cite>Luke 14:31</cite>
+</div>
+
+<ul>
+  <li>Each player has <strong>5 stones</strong>, 3 of one calling and 2 of the other.</li>
+  <li>Place them in any order across your 5-hex starting edge. Your opponent can see your arrangement before the first move is made.</li>
+  <li>Grouping one calling creates a concentrated front. Alternating spreads influence and is harder to read. This choice is your first act of stewardship over what God has given you.</li>
+  <li><strong>Player 2 makes one free move before Player 1 takes their first turn</strong> to balance going second.</li>
+</ul>
+
+<!-- ══════════════════════════
+     YOUR TURN
+══════════════════════════ -->
+<h2>Your Turn</h2>
+
+<p>Players alternate turns. On your turn you get <strong>2 moves</strong>. Each move is one stone, one step, to any adjacent empty hex. While you hold the Public Stance at center you get <strong>3 moves</strong> instead of 2.</p>
+
+<p>If you have no legal moves you must pass. If this happens your formation has likely collapsed. The community that stops advancing loses its purpose.</p>
+
+<!-- ══════════════════════════
+     PARTNERSHIP
+══════════════════════════ -->
+<h2>The Partnership Rule</h2>
+
+<div class="scripture">
+  Two are better than one, because they have a good return for their labor. If either of them falls down, one can help the other up. But pity anyone who falls and has no one to help them up.
+  <cite>Ecclesiastes 4:9-10</cite>
+</div>
+
+<div class="scripture">
+  After this the Lord appointed seventy-two others and sent them two by two ahead of him to every town and place where he was about to go.
+  <cite>Luke 10:1</cite>
+</div>
+
+<div class="scripture">
+  Walk with the wise and become wise, for a companion of fools suffers harm.
+  <cite>Proverbs 13:20</cite>
+</div>
+
+<p>A stone may only advance toward center if it begins its move adjacent to at least one other friendly stone. Isolated stones may only move sideways or away from center. Friendly means either of your two callings.</p>
+
+<p>Partnership is not a rule imposed from outside. It is God's design for how the Body advances. The Teacher and the Shepherd cover each other's blind spots. They move forward together or they do not move forward at all.</p>
+
+<div class="callout warning">
+  The partnership rule is suspended on your turn when your opponent holds the Public Stance. The reason is explained below.
+</div>
+
+<!-- ══════════════════════════
+     PREVAILING AND RESTORATION
+══════════════════════════ -->
+<h2>Displacement and Restoration</h2>
+
+<div class="scripture">
+  Brothers and sisters, if someone is caught in a sin, you who live by the Spirit should restore that person gently. But watch yourselves, or you also may be tempted.
+  <cite>Galatians 6:1</cite>
+</div>
+
+<p>Move your stone onto a hex occupied by an enemy stone your calling overcomes. Your stone takes the hex. The opposing stone is removed to your opponent's holding area.</p>
+
+<div class="callout restore">
+  <strong>No calling is permanently silenced.</strong> When your stone is set aside, your opponent may spend one of their 2 moves on any turn to restore it to any empty hex on their starting edge. The community restores what opposition has pushed aside. Grace does not abandon the fallen calling. It returns it to the journey.
+</div>
+
+<p>Restoration costs your opponent one of their 2 moves, which means one less step forward. Sustained pressure that forces constant restoration is often more powerful than a single decisive displacement. Keep the opposition spending their turns looking backward.</p>
+
+<h3>Ko Rule</h3>
+<p>A stone may not return to a hex it occupied two or fewer moves ago. No retreating back and forth between the same positions.</p>
+
+<!-- ══════════════════════════
+     PUBLIC STANCE
+══════════════════════════ -->
+<h2>The Public Stance</h2>
+
+<div class="scripture">
+  You are the light of the world. A town built on a hill cannot be hidden. Neither do people light a lamp and put it under a bowl. Instead they put it on its stand, and it gives light to everyone in the house.
+  <cite>Matthew 5:14-15</cite>
+</div>
+
+<div class="scripture">
+  In fact, everyone who wants to live a godly life in Christ Jesus will be persecuted.
+  <cite>2 Timothy 3:12</cite>
+</div>
+
+<p>The center hex is the Public Stance. Whoever holds it is on the hill. They cannot be hidden. Their community gains strength and additional reach. Opposition comes from every direction in response.</p>
+
+<p>Even someone occupying the Public Stance for the wrong reasons gains its influence while they hold it. The board does not judge the heart. But opposition will come for them too, and they cannot leave until it does.</p>
+
+<table class="move-table">
+  <tr>
+    <th>State</th>
+    <th>Your moves</th>
+    <th>Partnership rule</th>
+    <th>Displacement</th>
+  </tr>
+  <tr>
+    <td><span class="tag tag-normal">Normal</span> Center empty</td>
+    <td>2</td>
+    <td>Required</td>
+    <td>Any move</td>
+  </tr>
+  <tr>
+    <td><span class="tag tag-stance">Your Stance</span> You hold center</td>
+    <td>3 (locked at center)</td>
+    <td>Required for all 3</td>
+    <td>Any move</td>
+  </tr>
+  <tr>
+    <td><span class="tag tag-counter">Restore</span> Opponent holds center</td>
+    <td>2, partnership suspended</td>
+    <td>Suspended entirely</td>
+    <td>1 displacement across both moves</td>
+  </tr>
+</table>
+
+<div class="callout stance">
+  <strong>Taking the Public Stance:</strong> Move onto the center hex on your turn. That stone is now committed and cannot leave voluntarily. It can only be displaced by your opponent. Your extra third move each turn applies to your other stones, not to the one holding the center.
+</div>
+
+<div class="callout stance">
+  <strong>The Public Stance is open to every calling.</strong> The stone holding the center may displace any adjacent enemy regardless of the normal cycle. Any adjacent enemy of any calling may also displace it regardless of the cycle. Standing publicly draws opposition from every direction. The normal rules of the cycle do not apply at the center.
+</div>
+
+<h3>When the Opponent Holds the Public Stance</h3>
+
+<div class="scripture">
+  Do not be afraid of them. Remember the Lord, who is great and awesome, and fight for your families, your sons and your daughters, your wives and your homes.
+  <cite>Nehemiah 4:14</cite>
+</div>
+
+<div class="scripture">
+  The Lord turned to him and said, "Go in the strength you have and save Israel out of Midian's hand. Am I not sending you?"
+  <cite>Judges 6:14</cite>
+</div>
+
+<p>When the enemy holds the Public Stance, your community loses its ordered direction. Without the leadership of the Public Stance guiding the advance, the normal formation breaks down. God raises up specifically directed individuals, commissioned by Him, to move with urgency toward restoring order so the community can reclaim its Public Stance and advance together again.</p>
+
+<p>These are not people acting outside God's will. They are people responding to a specific commission in a specific moment of disorder. Nehemiah stationed his people at exposed points with urgent and clear purpose. Gideon was sent alone before his army followed. The directed individual is not breaking partnership out of selfishness. They are the instrument God uses to restore it.</p>
+
+<div class="callout warning">
+  <strong>The Restoration Turn:</strong> When your opponent holds the Public Stance your partnership rule is fully suspended. You get 2 moves. One of those 2 moves may displace an enemy stone. Use a directed stone to challenge the Public Stance directly, or use it to displace an isolated enemy stone and cut their partnership before they can restore formation. You may not make 2 displacements in the same turn. One directed act of restoration per turn.
+</div>
+
+<!-- ══════════════════════════
+     WINNING
+══════════════════════════ -->
+<h2>Winning — Faithful Stewardship</h2>
+
+<div class="scripture">
+  His master replied, "Well done, good and faithful servant! You have been faithful with a few things; I will put you in charge of many things. Come and share your master's happiness."
+  <cite>Matthew 25:23</cite>
+</div>
+
+<div class="scripture">
+  I press on toward the goal to win the prize for which God has called me heavenward in Christ Jesus.
+  <cite>Philippians 3:14</cite>
+</div>
+
+<p>First player to reach <strong>5 points</strong> wins immediately. Every displacement scores 1 point regardless of location on the board.</p>
+
+<p>The player who acts with what they have been given will shape the board. The player who waits for a perfect moment will find the board shaped for them. The Parable of the Talents is not just a story about money. It is about what you do with everything God places in your hands.</p>
+
+<h3>Tiebreaker</h3>
+<p>If both players reach 5 in the same turn, the player with the higher total count of displacements wins. If equal, the player who scored their fifth point later in the turn wins. If simultaneous, Player 2 wins.</p>
+
+<div class="ornament">— ✦ —</div>
+
+<!-- ══════════════════════════
+     STRATEGY
+══════════════════════════ -->
+<h2>Stewardship Notes</h2>
+
+<ul>
+  <li><strong>Your opening arrangement is a statement of intent.</strong> Grouping one calling creates a dominant front your opponent can prepare for. Alternating spreads your influence and makes your strategy harder to read before the first move is made.</li>
+
+  <li><strong>Partnership is your primary weapon, not a restriction.</strong> Two callings advancing together cover more ground and present more threats than any stone pressing forward alone. Communities that hold together advance further and faster.</li>
+
+  <li><strong>Restoration costs tempo, not calling.</strong> Forcing your opponent to spend their moves restoring instead of advancing is a strategy in itself. Sustained pressure on one side of the board, even without scoring, can win by tempo alone.</li>
+
+  <li><strong>Do not take the Public Stance without support arriving behind you.</strong> A committed stone with no partners nearby is vulnerable to a single directed restoration move. Step into the Public Stance only when you are prepared to hold it.</li>
+
+  <li><strong>The Restoration Turn is an offensive tool.</strong> When your opponent holds the Public Stance, your partnership rule breaks entirely. A directed stone can sprint to challenge the center. It can also cut an enemy partnership at its weakest point, isolating stones that will struggle to advance again. Sometimes that is worth more than the center itself.</li>
+
+  <li><strong>Know the cycle before every move.</strong> Before moving any stone, confirm which callings it overcomes and which overcome it. Advancing into a hex where your stone can be taken is handing your opponent a free point.</li>
+</ul>
+
+<div class="ornament">— ✦ —</div>
+
+<!-- ══════════════════════════
+     SIMPLE VERSION
+══════════════════════════ -->
+<h2>The Simple Version</h2>
+
+<p style="font-style:italic">God gave everyone different gifts. Teachers, Shepherds, Heralds, and Servants. Each one is needed. No single gift can do everything alone.</p>
+<p style="font-style:italic">Stay with a partner or you get stuck. Nobody was made to go it alone. Jesus sent people out two by two for a reason.</p>
+<p style="font-style:italic">The middle of the board is where everyone can see you. Standing there boldly gives you an extra move every turn. But everyone can come for you from any direction, and you cannot leave until they push you out. That is what it costs to stand openly for what you believe.</p>
+<p style="font-style:italic">If someone pushes your piece aside it comes back. Your calling does not disappear. God is not finished with it yet. You return to the start and press forward again.</p>
+<p style="font-style:italic">When the other team stands boldly at the center, your normal rules change. God sends specific people with a specific job: restore the order and take back the ground. That is not rebellion. That is a commission.</p>
+<p style="font-style:italic">God gave you gifts for a reason. The more you use them, the more you shape what happens. Waiting for the perfect moment just lets someone else decide what the board looks like.</p>
+
+<div class="version-notes">
+  <h2>Playtest Variables</h2>
+  <ul>
+    <li>5-point target: try 4 if games run long, try 6 if games end too quickly</li>
+    <li>3 moves while holding the Public Stance: try 2 if the center position feels too dominant</li>
+    <li>Restoration Turn capture limit of 1: try 2 if dislodging the Public Stance feels too difficult</li>
+    <li>Partnership rule: relax to "within 2 steps of a friendly" if the opening feels too slow</li>
+    <li>Player 2 free move: remove if Player 2 wins too consistently despite it</li>
+    <li>Ko rule: extend to 3 moves if stalling persists</li>
+  </ul>
+</div>
+
+</body>
+</html>

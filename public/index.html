@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hollowed Stone</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: Georgia, 'Times New Roman', serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+  }
+  h1 {
+    font-size: 2.8rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-variant: small-caps;
+    margin-bottom: 0.5rem;
+  }
+  .tagline {
+    color: #7a8599;
+    font-style: italic;
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+  }
+  .games {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    max-width: 800px;
+  }
+  .game-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 2rem 1.8rem;
+    width: 260px;
+    text-decoration: none;
+    color: #c9d1d9;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .game-card:hover {
+    border-color: #6a0dad;
+    transform: translateY(-3px);
+  }
+  .game-card h2 {
+    font-size: 1.4rem;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.1em;
+  }
+  .game-card p {
+    font-size: 0.95rem;
+    color: #7a8599;
+    line-height: 1.5;
+  }
+  .game-card .play-tag {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #6a0dad;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .footer {
+    margin-top: 3rem;
+    font-size: 0.8rem;
+    color: #484f58;
+  }
+</style>
+</head>
+<body>
+
+<h1>Hollowed Stone</h1>
+<div class="tagline">Strategic board games for two</div>
+
+<div class="games">
+  <a href="/play/oroboros/" class="game-card">
+    <h2>Ouroboros</h2>
+    <p>Four forces on a hex board. Displace, restore, seize the center. Nothing is ever permanently lost.</p>
+    <span class="play-tag">Play Now</span>
+  </a>
+
+  <!-- Future games go here -->
+  <!--
+  <a href="/play/another-game/" class="game-card">
+    <h2>Game Name</h2>
+    <p>Description.</p>
+    <span class="play-tag">Play Now</span>
+  </a>
+  -->
+</div>
+
+<div class="footer">More games coming soon.</div>
+
+</body>
+</html>

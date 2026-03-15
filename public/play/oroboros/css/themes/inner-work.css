@@ -1,0 +1,65 @@
+/* The Inner Work / Psychology theme */
+:root {
+  --bg: #f5f0e8;
+  --panel-bg: #ece5d8;
+  --text: #2c2416;
+  --text-dim: #7a6e5d;
+  --accent: #6a0dad;
+  --border: #c8bda8;
+}
+
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  color: var(--text);
+}
+
+.game-header h1 {
+  font-variant: small-caps;
+  letter-spacing: 0.2em;
+  color: #3d2e1a;
+}
+.game-header .subtitle { color: var(--text-dim); }
+.access-code { background: #ddd4c4; border-color: var(--border); color: var(--text); }
+
+/* Board — warm earthy feel */
+.hex-cell.ring-0 { fill: #6a0dad; }
+.hex-cell.ring-1 { fill: #d6c8a8; }
+.hex-cell.ring-2 { fill: #c9b996; }
+.hex-cell.ring-3 { fill: #bcaa84; }
+.hex-cell.ring-4 { fill: #b09b72; }
+.hex-cell.empty { fill: #c2b49a; stroke: #a89878; }
+
+.hex-cell.edge-p1 { stroke: #c0392b; }
+.hex-cell.edge-p2 { stroke: #2471a3; }
+
+/* Panels */
+.player-panel { background: var(--panel-bg); border-color: var(--border); }
+.player-panel.active { border-color: #6a0dad; box-shadow: 0 0 10px rgba(106,13,173,0.3); }
+.status-bar { background: var(--panel-bg); border-color: var(--border); color: var(--text); }
+.move-log { background: var(--panel-bg); border-color: var(--border); color: var(--text-dim); }
+
+/* Lore callout — warm parchment */
+.lore-callout {
+  background: linear-gradient(135deg, rgba(106,13,173,0.06), rgba(106,13,173,0.02));
+  border-color: rgba(106,13,173,0.2);
+  color: var(--text-dim);
+}
+
+/* Buttons */
+.btn { background: #6a0dad; }
+.btn:hover { background: #7b1fa2; }
+.btn-secondary { border-color: var(--border); color: var(--text); }
+.btn-secondary:hover { background: rgba(0,0,0,0.04); }
+
+/* Overlays */
+.setup-overlay { background: rgba(245,240,232,0.92); }
+.setup-card { background: var(--panel-bg); border-color: #6a0dad; color: var(--text); }
+.split-option { background: #ddd4c4; border-color: var(--border); color: var(--text); }
+.split-option:hover { border-color: #6a0dad; background: #e8dfd0; }
+.split-option .label { color: var(--text-dim); }
+
+/* Valid target markers — softer green on light bg */
+.hex-cell.valid-target-marker { fill: rgba(30,132,73,0.2); stroke: #1e8449; }
+
+/* Stone text readable on light board */
+.stone text { fill: #fff; }

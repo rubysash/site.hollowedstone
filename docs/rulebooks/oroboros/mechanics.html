@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Game Mechanics Reference</title>
+<link rel="stylesheet" href="../../css/style.css">
+<style>
+:root {
+  --color-1: #c0392b;
+  --color-2: #2471a3;
+  --color-3: #1e8449;
+  --color-4: #8a6914;
+  --accent:  #4a3728;
+  --warn:    #c0392b;
+  --restore: #1e8449;
+}
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>The Mechanics</h1>
+  <div class="game-sub">Theme-neutral reference sheet — 5&times;5 Agon board — 2 players</div>
+</div>
+
+<h2>Components</h2>
+<p>One 5x5 Agon board (61 hexes). Each player has 5 stones in two colors: 3 of Role A and 2 of Role B, or any 3+2 split agreed before play.</p>
+
+<div class="role-grid">
+  <div class="role-row"><span class="dot dot-1"></span><div class="role-inner"><span class="role-name">Role 1 (Red)</span><span class="role-desc">Beats Role 2</span></div></div>
+  <div class="role-row"><span class="dot dot-2"></span><div class="role-inner"><span class="role-name">Role 2 (Blue)</span><span class="role-desc">Beats Role 3</span></div></div>
+  <div class="role-row"><span class="dot dot-3"></span><div class="role-inner"><span class="role-name">Role 3 (Green)</span><span class="role-desc">Beats Role 4</span></div></div>
+  <div class="role-row"><span class="dot dot-4"></span><div class="role-inner"><span class="role-name">Role 4 (Gold)</span><span class="role-desc">Beats Role 1</span></div></div>
+</div>
+
+<p>Player 1 uses Roles 1 and 3. Player 2 uses Roles 2 and 4. Your two roles do not beat each other.</p>
+
+<h2>Setup</h2>
+<ul>
+  <li>Each player places their 5 stones in any order across their 5-hex starting edge.</li>
+  <li>Player 2 takes one free move before Player 1's first turn.</li>
+</ul>
+
+<h2>Turn</h2>
+<p>Players alternate. Each turn: <strong>2 moves</strong>. One move = one stone, one step to an adjacent empty hex. If you hold the center you get <strong>3 moves</strong> instead.</p>
+<p>If you have no legal move you must pass.</p>
+
+<h2>Partnership Rule</h2>
+<p>A stone may only advance toward center if it <strong>starts its move adjacent to at least one friendly stone</strong>. Isolated stones may only move sideways or away from center.</p>
+<div class="callout warning">Suspended entirely when your opponent holds the center. See Restoration Turn below.</div>
+
+<h2>Displacement</h2>
+<p>Move your stone onto a hex occupied by an enemy stone your role beats. Your stone takes the hex. The displaced stone goes to your opponent's holding area.</p>
+<div class="callout restore"><strong>Restoration:</strong> Spend 1 of your 2 moves to return any held stone to any empty hex on your starting edge. Nothing is permanently lost.</div>
+
+<h3>Ko Rule</h3>
+<p>A stone may not return to a hex it occupied 2 or fewer moves ago.</p>
+
+<h2>The Center Hex</h2>
+
+<table class="move-table">
+  <tr>
+    <th>State</th>
+    <th>Moves</th>
+    <th>Partnership</th>
+    <th>Displacement</th>
+  </tr>
+  <tr>
+    <td><span class="tag tag-normal">Normal</span> Center empty</td>
+    <td>2</td>
+    <td>Required</td>
+    <td>Cycle applies</td>
+  </tr>
+  <tr>
+    <td><span class="tag tag-center">Holding</span> You hold center</td>
+    <td>3 (center stone locked)</td>
+    <td>Required for all 3</td>
+    <td>Any role displaces any role</td>
+  </tr>
+  <tr>
+    <td><span class="tag tag-counter">Restore</span> Opponent holds center</td>
+    <td>2, partnership suspended</td>
+    <td>Suspended</td>
+    <td>1 displacement across both moves</td>
+  </tr>
+</table>
+
+<div class="callout center"><strong>Claiming the center:</strong> Move any stone onto the center hex. It is now locked — it cannot leave voluntarily. While you hold it, your other stones get 3 moves per turn. The stone holding the center may displace any adjacent enemy regardless of cycle. Any adjacent enemy of any role may also displace it regardless of cycle.</div>
+
+<h2>Winning</h2>
+<p>First to <strong>5 displacement points</strong> wins. Every displacement = 1 point regardless of location. If both reach 5 in the same turn: higher total displacement count wins; if equal, later scorer wins; if simultaneous, Player 2 wins.</p>
+
+<div class="ornament">— ✦ —</div>
+
+<div class="version-notes">
+  <h2>Playtest Variables</h2>
+  <ul>
+    <li>Win target: try 4 (shorter) or 6 (longer)</li>
+    <li>Center bonus: try 2 moves instead of 3 if center feels too dominant</li>
+    <li>Restoration turn displacement limit: try 2 if dislodging center is too hard</li>
+    <li>Partnership rule: relax to "within 2 steps of a friendly" if opening is too slow</li>
+    <li>Player 2 free move: remove if Player 2 wins too often</li>
+    <li>Ko rule: extend to 3 moves if stalling persists</li>
+  </ul>
+</div>
+
+</body>
+</html>

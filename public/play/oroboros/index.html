@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ouroboros</title>
+<link rel="stylesheet" href="css/board.css">
+<style>
+  .landing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    text-align: center;
+  }
+  .landing h1 {
+    font-size: 2.5rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+    font-variant: small-caps;
+  }
+  .landing .tagline {
+    color: var(--text-dim);
+    font-style: italic;
+    margin-bottom: 2rem;
+  }
+  .landing-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+  .landing-card h2 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    letter-spacing: 0.1em;
+  }
+  .theme-select {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+  }
+  .theme-btn {
+    background: #2a2a44;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .theme-btn.active { border-color: var(--accent); background: #333355; }
+  .theme-btn:hover { border-color: var(--accent); }
+  input.code-input {
+    background: #2a2a44;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem;
+    color: var(--text);
+    font-family: monospace;
+    font-size: 1.2rem;
+    text-align: center;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    width: 100%;
+    max-width: 200px;
+    margin-bottom: 0.8rem;
+  }
+  input.code-input:focus { outline: none; border-color: var(--accent); }
+  .error { color: #e74c3c; font-size: 0.8rem; margin-top: 0.5rem; }
+  .divider {
+    color: var(--text-dim);
+    margin: 0.5rem 0;
+    font-size: 0.8rem;
+  }
+  .links {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+  .links a { color: var(--accent); text-decoration: none; }
+  .links a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="landing">
+  <h1>Ouroboros</h1>
+  <div class="tagline">A strategic game of fate for two</div>
+
+  <div class="landing-card">
+    <h2>Create New Game</h2>
+    <div class="theme-select">
+      <button class="theme-btn active" data-theme="wyrd">Wyrd (Norse)</button>
+      <button class="theme-btn" data-theme="inner-work">Inner Work (Psychology)</button>
+      <button class="theme-btn" data-theme="neutral">Neutral</button>
+    </div>
+    <button class="btn" id="create-btn">Create Game</button>
+    <div class="error" id="create-error"></div>
+  </div>
+
+  <div class="landing-card">
+    <h2>Join Game</h2>
+    <input class="code-input" id="join-code" placeholder="ABC123" maxlength="6">
+    <br>
+    <button class="btn" id="join-btn">Join</button>
+    <div class="error" id="join-error"></div>
+  </div>
+
+  <div class="links">
+    <a href="/play/oroboros/replay">Watch a Replay</a>
+  </div>
+</div>
+
+<script type="module">
+  import { createGame, joinGame, saveSession } from './js/net.js';
+
+  let selectedTheme = 'wyrd';
+
+  // Theme buttons
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedTheme = btn.dataset.theme;
+    });
+  });
+
+  // Create game
+  document.getElementById('create-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('create-btn');
+    btn.disabled = true;
+    btn.textContent = 'Creating...';
+
+    try {
+      const result = await createGame(selectedTheme);
+      if (result.error) {
+        document.getElementById('create-error').textContent = result.error;
+        btn.disabled = false;
+        btn.textContent = 'Create Game';
+        return;
+      }
+      saveSession(result.accessCode, result.player, result.token);
+      location.href = `/play/oroboros/game?code=${result.accessCode}&player=${result.player}&token=${result.token}`;
+    } catch (e) {
+      document.getElementById('create-error').textContent = 'Network error. Try again.';
+      btn.disabled = false;
+      btn.textContent = 'Create Game';
+    }
+  });
+
+  // Join game
+  document.getElementById('join-btn').addEventListener('click', async () => {
+    const code = document.getElementById('join-code').value.trim().toUpperCase();
+    if (!code) {
+      document.getElementById('join-error').textContent = 'Enter an access code.';
+      return;
+    }
+
+    const btn = document.getElementById('join-btn');
+    btn.disabled = true;
+    btn.textContent = 'Joining...';
+
+    try {
+      const result = await joinGame(code);
+      if (result.error) {
+        document.getElementById('join-error').textContent = result.error;
+        btn.disabled = false;
+        btn.textContent = 'Join';
+        return;
+      }
+      saveSession(result.accessCode, result.player, result.token);
+      location.href = `/play/oroboros/game?code=${result.accessCode}&player=${result.player}&token=${result.token}`;
+    } catch (e) {
+      document.getElementById('join-error').textContent = 'Network error. Try again.';
+      btn.disabled = false;
+      btn.textContent = 'Join';
+    }
+  });
+
+  // Enter key on code input
+  document.getElementById('join-code').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('join-btn').click();
+  });
+</script>
+</body>
+</html>
