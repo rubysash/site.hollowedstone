@@ -112,11 +112,11 @@ The first deploy may fail because KV isn't bound yet — that's expected. Contin
 
 ### 3a. Create the namespace
 
-1. In the Cloudflare dashboard sidebar, go to **Storage & Databases** → **KV**
+1. In the Cloudflare dashboard sidebar, go to **Storage & Databases** → **Workers KV**
 2. Click **Create a namespace**
 3. Name it `GAME_STATE`
-4. Click **Add**
-5. Copy the **Namespace ID** (long hex string)
+4. Click **Create**
+5. Copy the **Namespace ID** (long hex string from end of URL)
 
 ### 3b. Update wrangler.toml
 
@@ -145,11 +145,13 @@ This triggers a new deploy with the KV binding active.
 
 To serve at `hollowedstone.com`:
 
-1. Ensure `hollowedstone.com` is added to your Cloudflare account (DNS managed by Cloudflare)
-2. Go to your Worker → **Settings** → **Domains & Routes**
-3. Click **Add** → **Custom domain**
-4. Enter `hollowedstone.com`
+1. Ensure `hollowedstone.com` is added to your Cloudflare account (DNS managed by Cloudflare) amd then selected.
+2. Go to Workers Routes > Add Route 
+3. Route:  `hollowedstone.com/*`
+4. Wroker: `hollowedstone`
 5. Cloudflare provisions a free SSL certificate automatically
+
+note, you'll also do this for `*.hollowedstone.com/*` or CNAME www to `hollowedstone.com`
 
 After DNS propagates (usually minutes):
 ```
