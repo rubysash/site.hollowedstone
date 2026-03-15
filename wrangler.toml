@@ -12,4 +12,4 @@ run_worker_first = ["/play/*/api/*"]
 #   npx wrangler kv:namespace create GAME_STATE
 [[kv_namespaces]]
 binding = "GAME_STATE"
-id = "placeholder"
+id = "c93c0e9a5aea45598bf2fa7f6fd6ffe2"
