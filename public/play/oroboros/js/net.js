@@ -227,21 +227,26 @@ function _onActivity() {
 
 function _onVisibilityChange() {
   if (document.hidden) {
-    // Tab hidden — jump to slow polling immediately
+    // Tab hidden — slow down but don't stop immediately
+    // Use 10s instead of 30s so returning feels less stale
     if (!_paused && !_stopped) {
-      _currentPollRate = Math.max(_currentPollRate, 30000);
-      _backoffSteps = 3; // start backoff partway so it stops sooner
+      _currentPollRate = 10000;
       _isIdle = true;
       _scheduleNext();
     }
   } else {
-    // Tab visible — reset everything
+    // Tab visible again — immediate poll + burst for instant catch-up
+    _resetIdleTimer();
     if (_paused && !_stopped) {
       _resetToActive();
-      _scheduleNext();
-    } else if (!_stopped) {
-      _resetToActive();
-      doPoll();
+    }
+    if (!_stopped) {
+      _backoffSteps = 0;
+      _burstUntil = Date.now() + BURST_DURATION;
+      _currentPollRate = POLL_BURST;
+      _paused = false;
+      _hideIdleOverlay();
+      doPoll(); // instant refresh
     }
   }
 }

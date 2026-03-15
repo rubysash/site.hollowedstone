@@ -348,6 +348,16 @@ svg.board {
   50% { opacity: 1; }
 }
 
+/* ─── Build tag ─── */
+.build-tag {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  opacity: 0.5;
+  padding: 0.5rem 0 0.8rem;
+  letter-spacing: 0.05em;
+}
+
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
   .game-container {

@@ -81,3 +81,13 @@ Build a JavaScript web application for remote 2-player play with these requireme
 - `style.css` — Shared styles for rulebook pages
 
 These are design references only — the game does not load them at runtime.
+
+## Build Rules
+
+### Version Bumping
+Before every deploy, update the build version in `public/play/oroboros/js/version.js`:
+- Increment the patch number for bug fixes and small changes (0.1.12 → 0.1.13)
+- Increment the minor number for new features (0.1.13 → 0.2.0)
+- Increment the major number for breaking changes or major milestones (0.2.0 → 1.0.0)
+- Update the `BUILD_DATE` to today's date
+- This file is the single source of truth — all pages read from it

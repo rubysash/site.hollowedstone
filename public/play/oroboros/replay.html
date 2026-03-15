@@ -105,12 +105,16 @@
   </div>
 </div>
 
+<div class="build-tag" id="build-tag"></div>
+
 <script type="module">
   import { fetchReplay } from './js/net.js';
   import { loadTheme, getRoleInfo } from './js/themes.js';
   import { initBoard, updateBoard } from './js/board.js';
   import { createGame, chooseSplit, placeStone, makeMove } from './js/shared/engine.js';
   import { hexKey, parseHexKey } from './js/shared/board-data.js';
+  import { BUILD } from './js/version.js';
+  document.getElementById('build-tag').textContent = `v${BUILD}`;
 
   let replayData = null;
   let currentStep = 0;

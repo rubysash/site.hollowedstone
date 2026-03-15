@@ -45,9 +45,12 @@
 </div>
 
 <div class="lore-callout" style="display:none"></div>
+<div class="build-tag" id="build-tag"></div>
 
 <script type="module">
   import { startGame } from './js/game.js';
+  import { BUILD } from './js/version.js';
+  document.getElementById('build-tag').textContent = `v${BUILD}`;
   startGame();
 </script>
 </body>
