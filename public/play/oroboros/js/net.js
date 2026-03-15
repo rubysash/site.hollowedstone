@@ -56,27 +56,38 @@ export async function joinGame(accessCode) {
   return resp.json();
 }
 
-// ─── Polling with exponential backoff on inactivity ───
+// ─── Adaptive polling with burst + exponential backoff ───
 //
-// Active play:  2s or 5s (adaptive)
-// No activity:  doubles each cycle → 4s, 8s, 16s, 32s, 60s (cap)
-// After max:    stops entirely, shows resume overlay
-// Any interaction: instantly resets to fast polling
+// Burst mode (1s):    triggered when you make a move or opponent's move arrives
+//                     lasts 10 seconds then settles to normal rate
+// Waiting (3s):       opponent's turn, waiting for their move
+// My turn (8s):       your turn — you know your own state, slow poll
+// Backoff:            no changes → doubles: 6s, 12s, 24s, 48s, 60s cap
+// Full stop:          after ~4 min of no changes, shows resume overlay
+// Tab hidden:         jumps to 30s, continues backoff
+// Any interaction:    resets to current base rate
 //
-// Tab hidden:   jumps straight to 30s, continues backoff from there
+// Cost estimate:
+//   Active volley (both moving fast): ~2400 req/hr per game (burst 1s)
+//   Thinking time: ~600 req/hr per game (8s + 3s)
+//   Idle/forgotten: 0 after ~4 min
+//   10 concurrent games, mixed: ~10k-15k req/hr → 100k lasts 7-10 hrs
 
-const POLL_FAST = 2000;     // 2s — waiting for opponent
-const POLL_MY_TURN = 5000;  // 5s — it's your turn
-const POLL_MAX = 60000;     // 60s — cap before full stop
+const POLL_BURST = 1000;     // 1s — burst after move (snappy response)
+const POLL_WAITING = 3000;   // 3s — opponent's turn, normal waiting
+const POLL_MY_TURN = 8000;   // 8s — your turn, you know your state
+const POLL_MAX = 60000;      // 60s — cap before full stop
+const BURST_DURATION = 10000; // 10s of burst mode after an event
 const BACKOFF_MULTIPLIER = 2;
-const MAX_BACKOFF_STEPS = 6; // after 6 doublings from max base, stop entirely
+const MAX_BACKOFF_STEPS = 6;
 
-let _basePollRate = POLL_FAST;  // set by setPollRate (turn-aware)
-let _currentPollRate = POLL_FAST;
+let _basePollRate = POLL_WAITING;
+let _currentPollRate = POLL_WAITING;
 let _backoffSteps = 0;
 let _paused = false;
-let _stopped = false; // permanent stop (game over)
+let _stopped = false;
 let _pollTimeout = null;
+let _burstUntil = 0;  // timestamp when burst mode ends
 
 export function pollState(callback) {
   _onStateUpdate = callback;
@@ -84,8 +95,19 @@ export function pollState(callback) {
   _paused = false;
   _stopped = false;
   _backoffSteps = 0;
+  _burstUntil = 0;
   doPoll();
   _startActivityWatch();
+}
+
+// Call after making a move — triggers burst polling for fast opponent response
+export function triggerBurst() {
+  _burstUntil = Date.now() + BURST_DURATION;
+  _backoffSteps = 0;
+  _currentPollRate = POLL_BURST;
+  // Reschedule immediately at burst rate
+  if (_pollTimeout) clearTimeout(_pollTimeout);
+  if (!_paused && !_stopped) _scheduleNext();
 }
 
 function _scheduleNext() {
@@ -94,12 +116,15 @@ function _scheduleNext() {
   _pollTimeout = setTimeout(doPoll, _currentPollRate);
 }
 
+function _effectiveRate() {
+  // If in burst window, use burst rate
+  if (Date.now() < _burstUntil) return POLL_BURST;
+  return _basePollRate;
+}
+
 function _applyBackoff() {
-  // Double the current rate, capped at POLL_MAX
   _currentPollRate = Math.min(_currentPollRate * BACKOFF_MULTIPLIER, POLL_MAX);
   _backoffSteps++;
-
-  // After enough steps at max rate, stop entirely
   if (_currentPollRate >= POLL_MAX && _backoffSteps >= MAX_BACKOFF_STEPS) {
     _pauseForIdle();
   }
@@ -107,19 +132,18 @@ function _applyBackoff() {
 
 function _resetToActive() {
   _backoffSteps = 0;
-  _currentPollRate = _basePollRate;
+  _currentPollRate = _effectiveRate();
   _hideIdleOverlay();
   if (_paused && !_stopped) {
     _paused = false;
-    doPoll(); // immediate refresh
+    doPoll();
   }
 }
 
 export function setPollRate(isMyTurn) {
-  _basePollRate = isMyTurn ? POLL_MY_TURN : POLL_FAST;
-  // Only reset current rate if we're in active mode (not backed off)
+  _basePollRate = isMyTurn ? POLL_MY_TURN : POLL_WAITING;
   if (_backoffSteps === 0) {
-    _currentPollRate = _basePollRate;
+    _currentPollRate = _effectiveRate();
   }
 }
 
@@ -146,36 +170,57 @@ async function doPoll() {
     const hadNewData = data.log && data.log.length > 0;
     if (hadNewData) {
       _lastSeq = data.log[data.log.length - 1].seq;
-      // New data from server = something happened, reset backoff
+      // New data! Enter burst mode — opponent just acted, they may act again soon
+      _burstUntil = Date.now() + BURST_DURATION;
       _backoffSteps = 0;
+      _currentPollRate = POLL_BURST;
+    } else if (Date.now() >= _burstUntil) {
+      // Burst expired, settle to base rate (no backoff — that's driven by activity watcher)
       _currentPollRate = _basePollRate;
-    } else {
-      // No new data — back off
-      _applyBackoff();
     }
 
     if (_onStateUpdate) _onStateUpdate(data);
   } catch (e) {
-    _applyBackoff();
+    // Network error — stay at current rate, don't backoff
   }
   _scheduleNext();
 }
 
-// ─── Activity detection — any interaction resets to fast polling ───
+// ─── Activity detection ───
+// Backoff only happens here (no clicks/keys) — NOT from server returning no data.
+// Active play always polls at the base rate. Backoff = user walked away.
 
 const _activityEvents = ['click', 'keydown', 'touchstart'];
+const IDLE_START = 60000;  // 60s no interaction → start backoff
+let _idleTimer = null;
+let _isIdle = false;
 
 function _startActivityWatch() {
   _activityEvents.forEach(evt => document.addEventListener(evt, _onActivity, { passive: true }));
   document.addEventListener('visibilitychange', _onVisibilityChange);
+  _resetIdleTimer();
 }
 
 function _removeActivityWatch() {
   _activityEvents.forEach(evt => document.removeEventListener(evt, _onActivity));
   document.removeEventListener('visibilitychange', _onVisibilityChange);
+  if (_idleTimer) clearTimeout(_idleTimer);
+}
+
+function _resetIdleTimer() {
+  if (_idleTimer) clearTimeout(_idleTimer);
+  _isIdle = false;
+  _idleTimer = setTimeout(() => { _isIdle = true; _startBackoff(); }, IDLE_START);
+}
+
+function _startBackoff() {
+  // Begin exponential backoff from current rate
+  _applyBackoff();
+  _scheduleNext();
 }
 
 function _onActivity() {
+  _resetIdleTimer();
   _resetToActive();
   _scheduleNext();
 }
@@ -185,10 +230,12 @@ function _onVisibilityChange() {
     // Tab hidden — jump to slow polling immediately
     if (!_paused && !_stopped) {
       _currentPollRate = Math.max(_currentPollRate, 30000);
+      _backoffSteps = 3; // start backoff partway so it stops sooner
+      _isIdle = true;
       _scheduleNext();
     }
   } else {
-    // Tab visible — reset if paused, otherwise refresh immediately
+    // Tab visible — reset everything
     if (_paused && !_stopped) {
       _resetToActive();
       _scheduleNext();

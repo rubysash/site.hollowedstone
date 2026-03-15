@@ -2,7 +2,7 @@
 
 import {
   initNet, getPlayer, getAccessCode, getBasePath, pollState, stopPolling, setPollRate,
-  sendSetup, sendMove, saveSession, loadSession, joinGame
+  triggerBurst, sendSetup, sendMove, saveSession, loadSession, joinGame
 } from './net.js';
 import { loadTheme, getTheme, getRoleInfo, getObjective } from './themes.js';
 import { initBoard, updateBoard, highlightSelectable, highlightSelected, showValidTargets, clearHighlights } from './board.js';
@@ -193,6 +193,8 @@ async function onSplitChosen(roleACount) {
   const result = await sendSetup('split', { roleACount });
   if (result.error) {
     setStatus('Error: ' + result.error, '');
+  } else {
+    triggerBurst();
   }
 }
 
@@ -278,6 +280,7 @@ async function onHexClick(hexKeyStr, q, r) {
     showStonePicker(me, split, placedCounts, async (roleId) => {
       const result = await sendSetup('place', { q, r, role: roleId });
       if (result.error) setStatus('Error: ' + result.error, '');
+      else triggerBurst();
     });
     return;
   }
@@ -297,6 +300,7 @@ async function onHexClick(hexKeyStr, q, r) {
       _selectedHex = null;
       _selectedRole = null;
       if (result.error) setStatus('Error: ' + result.error, '');
+      else triggerBurst();
       return;
     }
   }

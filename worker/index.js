@@ -1,12 +1,15 @@
 // Worker entry point — routes API requests, falls through to static assets
 //
-// API routes:
+// Game API routes:
 //   POST /play/oroboros/api/create    — create a new game
 //   POST /play/oroboros/api/join      — join with access code
 //   GET  /play/oroboros/api/state     — poll game state
 //   POST /play/oroboros/api/setup     — split selection + stone placement
 //   POST /play/oroboros/api/move      — submit a move
 //   GET  /play/oroboros/api/replay/:id — full move log
+//
+// Admin API routes (protected by Cloudflare Access Zero Trust):
+//   GET  /admin/api/games             — list all games with player IPs
 //
 // Everything else falls through to static assets via env.ASSETS
 
@@ -17,9 +20,14 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Only intercept API routes
+    // Game API routes
     if (path.startsWith('/play/oroboros/api/')) {
       return handleApi(path, request, env);
+    }
+
+    // Admin API routes (Zero Trust handles auth before this runs)
+    if (path.startsWith('/admin/api/')) {
+      return handleAdminApi(path, request, env);
     }
 
     // Everything else → static assets
@@ -113,6 +121,7 @@ async function handleCreate(request, env) {
   const token = generateToken();
   const state = createGame(accessCode, theme);
   state.players.p1.token = token;
+  state.players.p1.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   state.phase = 'waiting';
 
   await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
@@ -144,6 +153,7 @@ async function handleJoin(request, env) {
 
   const token = generateToken();
   state.players.p2.token = token;
+  state.players.p2.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   state.phase = 'splits';
   state.updatedAt = new Date().toISOString();
 
@@ -262,4 +272,75 @@ async function handleReplay(route, env) {
     log: state.log,
     createdAt: state.createdAt
   });
+}
+
+// ─── Admin API (protected by Cloudflare Access Zero Trust) ───
+
+async function handleAdminApi(path, request, env) {
+  const route = path.replace('/admin/api', '');
+
+  try {
+    if (route === '/games') return await handleAdminGames(request, env);
+    return json({ error: 'Not found' }, 404);
+  } catch (e) {
+    return json({ error: 'Internal error', detail: e.message }, 500);
+  }
+}
+
+// GET /admin/api/games?limit=50 — list recent games with player IPs, scores, phase
+async function handleAdminGames(request, env) {
+  const kv = env.GAME_STATE;
+  const url = new URL(request.url);
+  const limit = Math.min(parseInt(url.searchParams.get('limit') || '50', 10), 200);
+
+  // Fetch game keys from KV (most recent keys first by insertion order)
+  const games = [];
+  let cursor = null;
+  let fetched = 0;
+
+  do {
+    const listOpts = { prefix: 'game:', limit: Math.min(limit - fetched, 1000) };
+    if (cursor) listOpts.cursor = cursor;
+    const list = await kv.list(listOpts);
+
+    for (const key of list.keys) {
+      if (fetched >= limit) break;
+      const raw = await kv.get(key.name);
+      if (!raw) continue;
+
+      const state = JSON.parse(raw);
+      games.push({
+        code: state.accessCode,
+        theme: state.theme,
+        phase: state.phase,
+        created: state.createdAt,
+        updated: state.updatedAt,
+        p1: {
+          name: state.players.p1.name,
+          ip: state.players.p1.ip || 'n/a',
+          score: state.players.p1.score,
+          holding: state.players.p1.holding?.length || 0
+        },
+        p2: {
+          name: state.players.p2.name,
+          ip: state.players.p2.ip || 'n/a',
+          score: state.players.p2.score,
+          holding: state.players.p2.holding?.length || 0
+        },
+        moves: state.logSeq || 0,
+        result: state.result
+      });
+      fetched++;
+    }
+
+    cursor = list.list_complete ? null : list.cursor;
+  } while (cursor && fetched < limit);
+
+  // Sort newest first
+  games.sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+
+  // Who accessed this admin page
+  const adminEmail = request.headers.get('CF-Access-Authenticated-User-Email') || 'unknown';
+
+  return json({ admin: adminEmail, total: games.length, showing: limit, games });
 }
