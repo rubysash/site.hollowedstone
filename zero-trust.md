@@ -1,6 +1,6 @@
-# Protecting Admin Endpoints with Cloudflare Zero Trust
+# Protecting the Admin Dashboard with Cloudflare Zero Trust
 
-This guide sets up Cloudflare Access (Zero Trust) to protect admin routes like `/admin` so only authorized users can access them. Free tier, no extra cost.
+This guide sets up Cloudflare Access (Zero Trust) to protect `hollowedstone.com/admin` so only authorized users can view the admin dashboard (game logs, player IPs, metrics). Free tier, no extra cost.
 
 ## How It Works
 
@@ -13,136 +13,136 @@ Not authenticated? → Redirects to Cloudflare login page
     ↓
 Enter email → Cloudflare sends a one-time PIN to that email
     ↓
-Enter PIN → Cloudflare checks: is this email in the allow list?
+Enter PIN → Cloudflare checks: is this email in the allow policy?
     ↓
-Yes → Request passes through to Worker → Admin data returned
+Yes → Request passes through to Worker → Admin dashboard loads
 No  → Blocked. Worker never sees the request.
 ```
 
-The Worker doesn't handle auth at all — Cloudflare blocks unauthorized requests at the edge before they arrive. This is real authentication, not security by obscurity.
+The Worker doesn't handle auth at all — Cloudflare blocks unauthorized requests at the edge before they arrive.
 
 ## What You Get (Free Tier)
 
 - Up to 50 users
 - One-time PIN (email OTP) — no identity provider needed
-- Optional: GitHub, Google, or other SSO if you prefer
-- Path-level protection (protect `/admin` without affecting `/api/state`)
+- Optional: GitHub, Google, or other SSO
+- Path-level protection (`/admin` is protected, game pages are not)
 - Session management (configurable timeout)
-- Audit logs of who accessed what and when
+- Audit logs of every access attempt
 
 ---
 
 ## Step 1: Create a Zero Trust Organization
 
 1. Go to https://one.dash.cloudflare.com/
-2. If this is your first time, you'll be asked to create a **team name** (e.g., `hollowedstone`)
+2. If first time, create a **team name** (e.g., `hollowedstone`)
 3. Select the **Free** plan
 4. Complete setup
-
-This creates your Zero Trust dashboard at `https://one.dash.cloudflare.com/`
 
 ---
 
 ## Step 2: Enable One-Time PIN Authentication
 
-The one-time PIN (OTP) lets authorized users log in with just their email — Cloudflare sends a code, they enter it, done. No passwords, no third-party identity provider needed.
-
 1. In the Zero Trust dashboard, go to **Settings** → **Authentication**
 2. Under **Login methods**, find **One-time PIN**
-3. It should be enabled by default. If not, click **Add** and select **One-time PIN**
+3. It should be enabled by default. If not, click **Add** → select **One-time PIN**
 
-> **Optional:** You can also add GitHub, Google, or other identity providers here. Users will see all enabled options on the login screen. OTP is the simplest to start with.
+> **Optional:** You can also add GitHub, Google, or other identity providers here. OTP is the simplest.
 
 ---
 
-## Step 3: Add the Admin Endpoint as a Protected Application
+## Step 3: Create an Access Policy FIRST
 
-1. In the Zero Trust dashboard, go to **Access** → **Applications**
-2. Click **Add an application**
-3. Select **Self-hosted**
-4. Configure the application:
+You must create the policy (who is allowed) before you can apply it to a resource. The policy defines the allow-list of email addresses.
+
+1. In the Zero Trust dashboard, go to **Access** → **Access Policies**
+2. Click **Create a policy**
+3. Configure:
 
 | Setting | Value |
 |---------|-------|
-| **Application name** | `Ouroboros Admin` |
-| **Session duration** | `24 hours` (or your preference) |
-| **Application domain** | `hollowedstone.com` |
-| **Path** | `/admin` |
+| **Policy name** | `Site Admins` |
+| **Action** | `Allow` |
 
-5. Click **Next** to configure the access policy
+4. Under **Configure rules**, add an **Include** rule:
 
----
-
-## Step 4: Create an Access Policy
-
-This defines WHO can access the admin endpoint.
-
-1. **Policy name:** `Admin only`
-2. **Action:** `Allow`
-3. **Configure rules:**
-
-### Allow specific email addresses:
+**To allow specific email addresses:**
 
 | Rule type | Selector | Value |
 |-----------|----------|-------|
 | Include | Emails | `your-email@example.com` |
 
-Add additional emails if other people need admin access.
+Click **+ Add rule** to add more email addresses.
 
-### Or allow an entire email domain:
+**Or to allow an entire email domain:**
 
 | Rule type | Selector | Value |
 |-----------|----------|-------|
 | Include | Emails ending in | `@yourdomain.com` |
 
-4. Click **Next** → **Add application**
+5. Click **Save**
 
-> **Important:** Access is deny-by-default. Only emails matching your Include rules can get through. Everyone else is blocked before the request reaches your Worker.
+> **Important:** Access is deny-by-default. Only emails matching your Include rules get through. Everyone else is blocked before the request reaches your Worker.
+
+---
+
+## Step 4: Protect the Admin Path
+
+Now apply the policy to your admin URL.
+
+1. In the Zero Trust dashboard, go to **Networks** → **Tunnels** → **Public Hostname**
+   (or **Access** → **Applications** depending on your dashboard version)
+2. Click **Add Public Hostname** (or **Add an application** → **Self-hosted**)
+3. Configure:
+
+| Setting | Value |
+|---------|-------|
+| **Application name** | `Hollowed Stone Admin` |
+| **Domain** | `hollowedstone.com` |
+| **Path** | `/admin` |
+| **Session duration** | `24 hours` (or your preference) |
+
+4. Under **Application Policies**, select the **Site Admins** policy you created in Step 3
+5. Click **Save**
+
+> **What this does:** Any request to `hollowedstone.com/admin` or `hollowedstone.com/admin/*` (including `/admin/api/games`) now requires authentication through Cloudflare before the request reaches your Worker. Game pages at `/play/oroboros/` are unaffected.
 
 ---
 
 ## Step 5: Test It
 
-1. Open `https://hollowedstone.com/admin` in a browser
-2. You should see a Cloudflare Access login page (not your Worker)
+1. Open `https://hollowedstone.com/admin` in a browser (or incognito)
+2. You should see a **Cloudflare Access login page** — not your admin dashboard
 3. Enter your authorized email address
-4. Check your inbox for the one-time PIN
-5. Enter the PIN — you should now see the admin response from the Worker
-6. Try with an unauthorized email — it should be blocked after the PIN step
+4. Check your inbox for the one-time PIN (arrives within seconds)
+5. Enter the PIN → admin dashboard should load with game list
+6. Test with an unauthorized email → should be blocked after the PIN step
+7. Open `https://hollowedstone.com/play/oroboros/` → should work without any login (game pages are not protected)
 
 ---
 
 ## Step 6: Protect Additional Paths (Optional)
 
-You can protect multiple paths under the same application or create separate applications:
+You can apply the same policy to multiple paths:
 
-**Same application, multiple paths:**
-- When creating the application, you can add additional path rules
-- More specific paths take precedence (e.g., `/admin/api/games` overrides `/admin`)
-
-**Separate applications (different access rules per path):**
-- Create another self-hosted application with a different path
-- Give it its own policy (different allowed users, different session duration)
-
-Example paths you might protect later:
 ```
-/admin              ← Admin dashboard (game list, player IPs)
-/admin/api/games    ← Admin API endpoint
+/admin              ← Admin dashboard + API
+/admin/api/games    ← Already covered by /admin path protection
 ```
+
+To protect a completely different path with different users, create a second policy and a second application entry.
 
 ---
 
-## How the Worker Knows the User is Authenticated
+## How the Worker Knows Who You Are
 
-When a request passes through Cloudflare Access, it includes a signed JWT in the `CF-Access-JWT-Assertion` header. Your Worker can optionally verify this to get the authenticated user's email:
+When a request passes through Cloudflare Access, it includes a header with the authenticated user's email:
 
-```js
-// In worker/index.js — optional, Access already blocks unauthorized requests
-const identity = request.headers.get('CF-Access-JWT-Assertion');
-// Decode to get the email: { email: "admin@example.com", ... }
+```
+CF-Access-Authenticated-User-Email: admin@example.com
 ```
 
-For the admin endpoint, you don't strictly need to check this — Access already blocked anyone not on the allow list. But it's useful if you want to log WHO accessed the admin panel.
+The admin dashboard reads this and displays "Logged in as: admin@example.com" at the top. No code changes needed — Cloudflare adds the header automatically.
 
 ---
 
@@ -153,19 +153,19 @@ Zero Trust keeps logs of every access attempt:
 1. In the Zero Trust dashboard, go to **Logs** → **Access requests**
 2. See who accessed what, when, from which IP, and whether they were allowed or blocked
 
-This is automatic — no code needed.
+Automatic — no code needed.
 
 ---
 
 ## Revoking Access
 
-### Remove a user immediately:
-1. Go to **Access** → **Applications** → `Ouroboros Admin` → **Edit**
-2. Remove their email from the policy
-3. Their existing session becomes invalid on the next request
+### Remove a user:
+1. Go to **Access** → **Access Policies** → **Site Admins** → **Edit**
+2. Remove their email from the Include rules
+3. Click **Save** — their next request will be blocked
 
 ### Revoke all active sessions:
-1. Go to **Access** → **Applications** → `Ouroboros Admin`
+1. Go to **Access** → **Applications** → **Hollowed Stone Admin**
 2. Click **Revoke existing tokens**
 3. All users must re-authenticate
 
@@ -175,10 +175,11 @@ This is automatic — no code needed.
 
 | Layer | What it does |
 |-------|-------------|
-| **Cloudflare Access** | Blocks unauthorized requests at the edge (never reaches Worker) |
-| **One-time PIN** | Email-based auth, no passwords to manage |
-| **Access policy** | Allow-list of specific email addresses |
-| **Worker admin endpoint** | Returns game data only after Access has verified identity |
-| **Audit logs** | Automatic record of every access attempt |
+| **Access Policy** | Defines who is allowed (email allow-list) — create this first |
+| **Public Hostname / Application** | Applies the policy to a specific path (`/admin`) |
+| **One-time PIN** | Email-based login, no passwords |
+| **Cloudflare Edge** | Blocks unauthorized requests before they reach the Worker |
+| **Worker** | Serves admin data only after Access has verified identity |
+| **Audit Logs** | Automatic record of every access attempt |
 
 No tokens in URLs. No secrets in code. No passwords to rotate. Cloudflare handles the auth — your Worker just serves the data.

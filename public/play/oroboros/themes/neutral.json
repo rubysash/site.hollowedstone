@@ -72,7 +72,11 @@
     "play_normal": "Move toward the center. Maintain partnerships. Outplay your opponent.",
     "play_holding": "You hold the center. Use your 3 moves wisely.",
     "play_berserker": "Opponent holds center. Partnership suspended. Max 1 displacement.",
-    "play_waiting": "Opponent's turn. Plan your next moves.",
+    "wait_normal": "Opponent's turn. Plan your next moves.",
+    "wait_holding": "You hold the center — opponent is trying to dislodge you.",
+    "wait_berserker": "Opponent has a restoration turn. Brace yourself.",
+    "opponent_left": "Your opponent has left the game.",
+    "opponent_timeout": "Your opponent has timed out.",
     "finished": "Game over."
   },
 

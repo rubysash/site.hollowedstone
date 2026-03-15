@@ -48,6 +48,8 @@ async function handleApi(path, request, env) {
     if (route === '/state' && method === 'GET') return await handleState(request, env);
     if (route === '/setup' && method === 'POST') return await handleSetup(request, env);
     if (route === '/move' && method === 'POST') return await handleMove(request, env);
+    if (route === '/leave' && method === 'POST') return await handleLeave(request, env);
+    if (route === '/stats' && method === 'GET') return await handleStats(env);
     if (route.startsWith('/replay/') && method === 'GET') return await handleReplay(route, env);
 
     return json({ error: 'Not found' }, 404);
@@ -181,8 +183,12 @@ async function handleState(request, env) {
   const player = identifyPlayer(state, token);
   if (!player) return json({ error: 'Invalid token' }, 403);
 
-  // Increment request counter — persist every 25th poll to avoid excess KV writes
+  // Track last seen per player + request counter
   state.requests = (state.requests || 0) + 1;
+  if (!state.lastSeen) state.lastSeen = {};
+  state.lastSeen[player] = new Date().toISOString();
+
+  // Persist every 25th poll to avoid excess KV writes
   if (state.requests % 25 === 0) {
     await kv.put(`game:${accessCode}`, JSON.stringify(state));
   }
@@ -256,6 +262,76 @@ async function handleMove(request, env) {
   const ttl = state.phase === 'finished' ? THIRTY_DAYS : SEVEN_DAYS;
   await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: ttl });
   return json({ ok: true, phase: state.phase });
+}
+
+// ─── GET /stats — public game metrics (no auth, no IPs, no tokens) ───
+
+async function handleStats(env) {
+  const kv = env.GAME_STATE;
+  const now = Date.now();
+  const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
+
+  const stats = { total: 0, thisWeek: 0, byTheme: {}, byPhase: {} };
+  let cursor = null;
+
+  do {
+    const listOpts = { prefix: 'game:', limit: 1000 };
+    if (cursor) listOpts.cursor = cursor;
+    const list = await kv.list(listOpts);
+
+    for (const key of list.keys) {
+      const raw = await kv.get(key.name);
+      if (!raw) continue;
+      const state = JSON.parse(raw);
+
+      stats.total++;
+      const theme = state.theme || 'unknown';
+      const phase = state.phase || 'unknown';
+
+      stats.byTheme[theme] = (stats.byTheme[theme] || 0) + 1;
+      stats.byPhase[phase] = (stats.byPhase[phase] || 0) + 1;
+
+      if (state.createdAt && new Date(state.createdAt).getTime() > oneWeekAgo) {
+        stats.thisWeek++;
+      }
+    }
+
+    cursor = list.list_complete ? null : list.cursor;
+  } while (cursor);
+
+  return json(stats);
+}
+
+// ─── POST /leave ───
+
+async function handleLeave(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  // Mark the game as abandoned
+  if (state.phase !== 'finished') {
+    state.phase = 'abandoned';
+    state.result = {
+      winner: player === 'p1' ? 'p2' : 'p1',
+      reason: 'abandon',
+      abandonedBy: player,
+      finalScore: [state.players.p1.score, state.players.p2.score]
+    };
+    state.updatedAt = new Date().toISOString();
+    await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: THIRTY_DAYS });
+  }
+
+  return json({ ok: true });
 }
 
 // ─── GET /replay/:id ───

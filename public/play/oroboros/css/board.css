@@ -179,6 +179,13 @@ svg.board {
   font-size: 14px;
   cursor: pointer;
 }
+.holding-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-top: 0.4rem;
+}
 .holding-stone.not-interactive { cursor: default; opacity: 0.6; }
 .holding-stone.restorable {
   cursor: pointer;
@@ -224,6 +231,22 @@ svg.board {
 .status-bar .turn-info {
   font-weight: bold;
   line-height: 1.4;
+}
+
+/* Timeout warning */
+.timeout-warning {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  color: #fca5a5;
+  animation: timeoutPulse 2s ease-in-out infinite;
+}
+@keyframes timeoutPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
 }
 
 /* Your turn — green glow, flashing text + border */

@@ -261,6 +261,26 @@ Games share the KV namespace (keys are prefixed by access code, no collisions).
 
 ---
 
+## Admin Dashboard
+
+The admin dashboard is at `hollowedstone.com/admin` (not linked from any public page). It shows:
+
+- All active/finished games with access codes, themes, scores, player IPs
+- Request count per game (polling cost tracking)
+- Requests-per-move ratio (polling efficiency)
+- Games played this week per game type
+
+### Protecting with Zero Trust
+
+The admin page should be protected with Cloudflare Access so only authorized emails can view it. See **[zero-trust.md](zero-trust.md)** for the full setup guide. The short version:
+
+1. Create a Zero Trust organization (free) at https://one.dash.cloudflare.com/
+2. Create an **Access Policy** with your email in the allow-list (do this first)
+3. Add a **Public Hostname** for `hollowedstone.com` with path `/admin`, using your policy
+4. Now `hollowedstone.com/admin` requires email + one-time PIN to access
+
+---
+
 ## Local Development
 
 **Windows:** Double-click `start.bat`

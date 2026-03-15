@@ -53,6 +53,8 @@ See **[cloudflare-install-guide.md](cloudflare-install-guide.md)** for full step
 5. Custom domain setup (`hollowedstone.com`)
 6. Adding future games
 
+See **[zero-trust.md](zero-trust.md)** for protecting the admin dashboard (`/admin`) with Cloudflare Access.
+
 **Build settings summary:**
 
 | Setting | Value |

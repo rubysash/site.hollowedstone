@@ -72,7 +72,11 @@
     "play_normal": "Advance your capacities in partnership toward the center. No one grows alone.",
     "play_holding": "You hold the center. Three moves — keep your capacities advancing behind you.",
     "play_berserker": "Your patterns are broken. Move with urgency to restore balance.",
-    "play_waiting": "Your opponent does their work. Observe. Prepare your response.",
+    "wait_normal": "Your opponent does their work. Observe. Prepare your response.",
+    "wait_holding": "You hold the center — your opponent struggles to restore balance.",
+    "wait_berserker": "Your opponent acts from crisis. Stay centered.",
+    "opponent_left": "Your opponent has stepped away from the work. Growth pauses.",
+    "opponent_timeout": "Your opponent has gone quiet. The inner work waits for no one.",
     "finished": "The work continues. But the shape of growth has been decided."
   },
 

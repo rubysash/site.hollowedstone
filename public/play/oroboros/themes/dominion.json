@@ -72,7 +72,11 @@
     "play_normal": "Advance in partnership toward the Public Stance. No calling advances alone.",
     "play_holding": "You hold the Public Stance. Three moves — press your community forward.",
     "play_berserker": "The community has lost its order. God sends you to restore it.",
-    "play_waiting": "Your opponent stewards their turn. Watch and prepare.",
+    "wait_normal": "Your opponent stewards their callings. Watch and prepare.",
+    "wait_holding": "You hold the Public Stance — your opponent seeks to restore order.",
+    "wait_berserker": "Your opponent acts on commission. Stand firm in your calling.",
+    "opponent_left": "Your opponent has withdrawn from the field. The community stands.",
+    "opponent_timeout": "Your opponent has fallen silent. The work continues without them.",
     "finished": "Well done, good and faithful servant."
   },
 

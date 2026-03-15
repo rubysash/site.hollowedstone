@@ -79,6 +79,12 @@
     height: 160px;
     margin: 0.5rem 0;
   }
+  .game-stats {
+    font-size: 0.8rem;
+    color: #7a8599;
+    margin-top: 0.4rem;
+  }
+  .game-stats span { color: #c9d1d9; font-weight: bold; }
   .footer {
     margin-top: 3rem;
     font-size: 0.8rem;
@@ -96,6 +102,7 @@
     <h2>Ouroboros</h2>
     <svg class="game-thumb" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg"></svg>
     <p>Four forces on a hex board. Displace, restore, seize the center. Nothing is ever permanently lost.</p>
+    <div class="game-stats" id="oroboros-stats"></div>
     <span class="play-tag">Play Now</span>
   </a>
 
@@ -112,6 +119,19 @@
 </div>
 
 <script>
+// Fetch game stats for the landing page
+(async function() {
+  try {
+    const resp = await fetch('/play/oroboros/api/stats');
+    if (!resp.ok) return;
+    const stats = await resp.json();
+    const el = document.getElementById('oroboros-stats');
+    if (el && stats.total > 0) {
+      el.innerHTML = `<span>${stats.thisWeek}</span> games this week | <span>${stats.total}</span> total`;
+    }
+  } catch (e) { /* silent */ }
+})();
+
 // Generate a mini hex board thumbnail with stones
 (function() {
   const svg = document.querySelector('.game-thumb');

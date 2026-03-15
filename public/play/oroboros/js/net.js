@@ -323,6 +323,10 @@ export async function sendMove(from, to, restoreRole) {
   return api('/api/move', 'POST', { from, to, restoreRole });
 }
 
+export async function sendLeave() {
+  return api('/api/leave', 'POST', {});
+}
+
 export async function fetchReplay(accessCode) {
   const resp = await fetch(`${BASE}/api/replay/${accessCode}`);
   return resp.json();

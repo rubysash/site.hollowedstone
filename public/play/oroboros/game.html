@@ -23,6 +23,7 @@
     <div class="player-panel p2">
       <h3><span class="player-name">Player 2</span></h3>
       <div>Score: <span class="score">0</span> / 5</div>
+      <div class="holding-label">Captured:</div>
       <div class="holding-hint" style="display:none">Click a stone to restore it to your edge</div>
       <div class="holding-area" onclick="if(event.target.classList.contains('holding-stone')) window.onHoldingClick(event.target.dataset.role)"></div>
     </div>
@@ -37,12 +38,13 @@
     <div class="player-panel p1">
       <h3><span class="player-name">Player 1</span></h3>
       <div>Score: <span class="score">0</span> / 5</div>
+      <div class="holding-label">Captured:</div>
       <div class="holding-hint" style="display:none">Click a stone to restore it to your edge</div>
       <div class="holding-area" onclick="if(event.target.classList.contains('holding-stone')) window.onHoldingClick(event.target.dataset.role)"></div>
     </div>
     <div class="btn-row">
       <button class="btn btn-secondary" id="help-btn">Help</button>
-      <button class="btn btn-secondary" onclick="location.href='/'">Leave</button>
+      <button class="btn btn-secondary" id="leave-btn">Leave</button>
     </div>
   </div>
 </div>
@@ -52,11 +54,16 @@
 <div class="build-tag" id="build-tag"></div>
 
 <script type="module">
-  import { startGame } from './js/game.js';
+  import { startGame, leaveGame } from './js/game.js';
   import { BUILD } from './js/version.js';
   import { toggleHelp } from './js/help.js';
   document.getElementById('build-tag').textContent = `v${BUILD}`;
   document.getElementById('help-btn').addEventListener('click', toggleHelp);
+  document.getElementById('leave-btn').addEventListener('click', async () => {
+    if (confirm('Leave the game? This will forfeit the match.')) {
+      await leaveGame();
+    }
+  });
   startGame();
 </script>
 </body>

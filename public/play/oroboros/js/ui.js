@@ -257,6 +257,56 @@ export function showGameOver(result, theme) {
   setLore('finished');
 }
 
+export function showAbandoned(result, theme, reason) {
+  const code = document.querySelector('.access-code')?.textContent || '';
+  if (reason === 'opponent') {
+    // Opponent left
+    const msg = getObjective('opponent_left') || 'Your opponent has left the game.';
+    showOverlay(`
+      <h2>Opponent Left</h2>
+      <p>${msg}</p>
+      <p style="margin-top:0.5rem;">Final Score: ${result.finalScore[0]} - ${result.finalScore[1]}</p>
+      <div class="btn-row" style="margin-top:1rem;">
+        <button class="btn" onclick="location.href='${getBasePath()}/'">New Game</button>
+        <button class="btn btn-secondary" onclick="location.href='${getBasePath()}/replay?code=${code}'">Watch Replay</button>
+      </div>
+    `);
+  } else {
+    // You left
+    showOverlay(`
+      <h2>You Left the Game</h2>
+      <p>The game has been forfeited.</p>
+      <div class="btn-row" style="margin-top:1rem;">
+        <button class="btn" onclick="location.href='${getBasePath()}/'">New Game</button>
+      </div>
+    `);
+  }
+}
+
+let _timeoutShown = false;
+export function showOpponentTimeout(theme) {
+  if (_timeoutShown) return; // only show once
+  _timeoutShown = true;
+  const msg = getObjective('opponent_timeout') || 'Your opponent appears to have disconnected.';
+  const bar = $('.status-bar');
+  if (bar) {
+    // Add a warning banner above the status text
+    let warning = bar.querySelector('.timeout-warning');
+    if (!warning) {
+      warning = document.createElement('div');
+      warning.className = 'timeout-warning';
+      bar.prepend(warning);
+    }
+    warning.textContent = msg;
+  }
+}
+
+export function clearOpponentTimeout() {
+  _timeoutShown = false;
+  const warning = document.querySelector('.timeout-warning');
+  if (warning) warning.remove();
+}
+
 export function hideOverlay() {
   const overlay = $('.setup-overlay');
   if (overlay) overlay.remove();

@@ -118,15 +118,35 @@ async function loadGames() {
     const active = data.games.filter(g => g.phase === 'play' || g.phase === 'placing' || g.phase === 'free_move' || g.phase === 'splits').length;
     const waiting = data.games.filter(g => g.phase === 'waiting').length;
     const finished = data.games.filter(g => g.phase === 'finished').length;
-
+    const abandoned = data.games.filter(g => g.phase === 'abandoned').length;
     const totalRequests = data.games.reduce((sum, g) => sum + (g.requests || 0), 0);
+
+    // Count by theme
+    const byTheme = {};
+    const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    let thisWeek = 0;
+    const weekByTheme = {};
+    for (const g of data.games) {
+      byTheme[g.theme] = (byTheme[g.theme] || 0) + 1;
+      if (g.created && new Date(g.created).getTime() > oneWeekAgo) {
+        thisWeek++;
+        weekByTheme[g.theme] = (weekByTheme[g.theme] || 0) + 1;
+      }
+    }
+
+    const themeBreakdown = Object.entries(byTheme).map(([t, c]) => `${t}: ${c}`).join(' | ');
+    const weekBreakdown = Object.entries(weekByTheme).map(([t, c]) => `${t}: ${c}`).join(' | ');
 
     document.getElementById('stats').innerHTML = `
       <div class="stat-card"><div class="label">Total Games</div><div class="value">${total}</div></div>
+      <div class="stat-card"><div class="label">This Week</div><div class="value">${thisWeek}</div></div>
       <div class="stat-card"><div class="label">Active</div><div class="value">${active}</div></div>
-      <div class="stat-card"><div class="label">Waiting</div><div class="value">${waiting}</div></div>
       <div class="stat-card"><div class="label">Finished</div><div class="value">${finished}</div></div>
+      <div class="stat-card"><div class="label">Abandoned</div><div class="value">${abandoned}</div></div>
+      <div class="stat-card"><div class="label">Waiting</div><div class="value">${waiting}</div></div>
       <div class="stat-card"><div class="label">Total Requests</div><div class="value">${totalRequests.toLocaleString()}</div></div>
+      <div class="stat-card" style="min-width:200px"><div class="label">All Time by Theme</div><div class="value" style="font-size:1rem">${themeBreakdown || 'none'}</div></div>
+      <div class="stat-card" style="min-width:200px"><div class="label">This Week by Theme</div><div class="value" style="font-size:1rem">${weekBreakdown || 'none'}</div></div>
     `;
 
     if (data.games.length === 0) {
@@ -134,10 +154,17 @@ async function loadGames() {
       return;
     }
 
+    const themeColors = {
+      wyrd: '#6a0dad', dominion: '#8b6914', 'inner-work': '#1e8449', neutral: '#555'
+    };
+    const themeNames = {
+      wyrd: 'Wyrd', dominion: 'Dominion', 'inner-work': 'Inner Work', neutral: 'Neutral'
+    };
+
     let html = `<table>
       <tr>
         <th>Code</th>
-        <th>Theme</th>
+        <th>Game / Theme</th>
         <th>Phase</th>
         <th>P1</th>
         <th>P1 IP</th>
@@ -155,10 +182,12 @@ async function loadGames() {
       const p2Won = g.result?.winner === 'p2';
       const created = g.created ? new Date(g.created).toLocaleString() : 'n/a';
       const reqPerMove = g.moves > 0 ? (g.requests / g.moves).toFixed(0) : '-';
+      const tc = themeColors[g.theme] || '#555';
+      const tn = themeNames[g.theme] || g.theme;
 
       html += `<tr>
         <td><span class="code">${g.code}</span></td>
-        <td>${g.theme}</td>
+        <td><span style="display:inline-block;padding:0.15rem 0.5rem;border-radius:3px;background:${tc};color:#fff;font-size:0.8rem;font-weight:bold;">Ouroboros — ${tn}</span></td>
         <td><span class="phase phase-${g.phase}">${g.phase}</span></td>
         <td>${g.p1.name}${p1Won ? ' <span class="winner">W</span>' : ''}</td>
         <td><span class="ip">${g.p1.ip}</span></td>

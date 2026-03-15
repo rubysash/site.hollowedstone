@@ -72,7 +72,11 @@
     "play_normal": "Advance toward Yggdrasil. Maintain your shield wall. Outmaneuver your foe.",
     "play_holding": "You command the World Tree. Three moves are yours — press your advantage.",
     "play_berserker": "The shield wall is broken! Send your berserkers to strike.",
-    "play_waiting": "Your opponent weaves their thread. Watch. Prepare.",
+    "wait_normal": "Your opponent advances. Hold your ground.",
+    "wait_holding": "You command Yggdrasil — your opponent scrambles to respond.",
+    "wait_berserker": "Your foe's berserkers charge. Brace for impact.",
+    "opponent_left": "Your opponent has abandoned the field. The battle is yours by forfeit.",
+    "opponent_timeout": "Your opponent's thread has gone silent. The Norns wait for no one.",
     "finished": "The web is woven. Wyrd is fulfilled."
   },
 

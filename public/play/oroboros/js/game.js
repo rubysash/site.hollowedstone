@@ -2,14 +2,15 @@
 
 import {
   initNet, getPlayer, getAccessCode, getBasePath, pollState, stopPolling, setPollRate,
-  triggerBurst, sendSetup, sendMove, saveSession, loadSession, joinGame
+  triggerBurst, sendSetup, sendMove, sendLeave, saveSession, loadSession, joinGame
 } from './net.js';
 import { loadTheme, getTheme, getRoleInfo, getObjective } from './themes.js';
 import { initBoard, updateBoard, highlightSelectable, highlightSelected, showValidTargets, clearHighlights } from './board.js';
 import {
   setStatus, setLore, flashLore, setTurnIndicator, updatePlayerPanels, addLogEntries,
   showWaiting, showSplitChoice, showWaitingForSplit, showPlacementInstructions,
-  showFreeMove, showGameOver, hideOverlay, showStonePicker
+  showFreeMove, showGameOver, showAbandoned, showOpponentTimeout, clearOpponentTimeout,
+  hideOverlay, showStonePicker
 } from './ui.js';
 import { getValidMoves, getSelectableStones } from './shared/engine.js';
 import { hexKey, parseHexKey, isOnEdge, getEdge } from './shared/board-data.js';
@@ -188,6 +189,29 @@ async function onStateUpdate(state) {
         showGameOver(state.result, theme);
       }
       break;
+
+    case 'abandoned':
+      stopPolling();
+      updateBoard(state.board);
+      if (state.result) {
+        const reason = state.result.abandonedBy === me ? 'leave' : 'opponent';
+        showAbandoned(state.result, theme, reason);
+      }
+      break;
+  }
+
+  // Check for opponent timeout (no polling from them for 5+ minutes)
+  if (state.phase !== PHASE.FINISHED && state.phase !== 'abandoned' && state.lastSeen) {
+    const opponent = me === 'p1' ? 'p2' : 'p1';
+    const oppLastSeen = state.lastSeen[opponent];
+    if (oppLastSeen) {
+      const silentMs = Date.now() - new Date(oppLastSeen).getTime();
+      if (silentMs > 5 * 60 * 1000) {
+        showOpponentTimeout(theme);
+      } else {
+        clearOpponentTimeout();
+      }
+    }
   }
 }
 
@@ -236,9 +260,9 @@ function getPlacedCounts(state, player) {
 
 function handlePlayPhase(state, me) {
   const isMyTurn = state.turn.player === me;
+  const phase = state.turn.turnPhase;
 
   if (isMyTurn) {
-    const phase = state.turn.turnPhase;
     const moves = state.turn.movesLeft;
     const movesTag = `[${moves} move${moves !== 1 ? 's' : ''} left]`;
 
@@ -257,8 +281,21 @@ function handlePlayPhase(state, me) {
     setLore(loreKey);
     showSelectableStones(state, me);
   } else {
-    setStatus(getObjective('play_waiting') || 'Opponent is thinking...');
-    setLore('play');
+    // Show context-aware message based on what the OPPONENT is doing
+    let waitKey = 'wait_normal';
+    let loreKey = 'play';
+    if (phase === 'berserker') {
+      // Opponent has berserker turn — means WE hold center
+      waitKey = 'wait_berserker';
+      loreKey = 'center';
+    } else if (phase === 'holding') {
+      // Opponent holds center — we'll get berserker next
+      waitKey = 'wait_holding';
+      loreKey = 'berserker';
+    }
+
+    setStatus(getObjective(waitKey) || 'Opponent is thinking...');
+    setLore(loreKey);
     clearHighlights();
   }
 }
@@ -341,6 +378,13 @@ export function onHoldingClick(role) {
   highlightSelected(null);
   const validMoves = getValidMoves(_state, me, 'holding');
   showValidTargets(validMoves);
+}
+
+// ─── Leave Game ───
+export async function leaveGame() {
+  await sendLeave();
+  stopPolling();
+  location.href = getBasePath() + '/';
 }
 
 // Expose for HTML event binding
