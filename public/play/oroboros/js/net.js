@@ -56,140 +56,150 @@ export async function joinGame(accessCode) {
   return resp.json();
 }
 
-// ─── Polling with adaptive rate + inactivity timeout ───
+// ─── Polling with exponential backoff on inactivity ───
+//
+// Active play:  2s or 5s (adaptive)
+// No activity:  doubles each cycle → 4s, 8s, 16s, 32s, 60s (cap)
+// After max:    stops entirely, shows resume overlay
+// Any interaction: instantly resets to fast polling
+//
+// Tab hidden:   jumps straight to 30s, continues backoff from there
 
-const POLL_FAST = 2000;       // 2s — waiting for opponent's move
-const POLL_SLOW = 5000;       // 5s — it's your turn
-const POLL_BACKGROUND = 30000; // 30s — tab hidden
-const IDLE_TIMEOUT = 90000;    // 90s no interaction → pause
-const HIDDEN_TIMEOUT = 120000; // 2min tab hidden → full stop
+const POLL_FAST = 2000;     // 2s — waiting for opponent
+const POLL_MY_TURN = 5000;  // 5s — it's your turn
+const POLL_MAX = 60000;     // 60s — cap before full stop
+const BACKOFF_MULTIPLIER = 2;
+const MAX_BACKOFF_STEPS = 6; // after 6 doublings from max base, stop entirely
 
+let _basePollRate = POLL_FAST;  // set by setPollRate (turn-aware)
 let _currentPollRate = POLL_FAST;
+let _backoffSteps = 0;
 let _paused = false;
-let _idleTimer = null;
-let _hiddenTimer = null;
-let _lastActivity = Date.now();
+let _stopped = false; // permanent stop (game over)
+let _pollTimeout = null;
 
 export function pollState(callback) {
   _onStateUpdate = callback;
   _lastSeq = 0;
   _paused = false;
-  doPoll(); // immediate first poll
-  _schedulePoll();
-  _startIdleWatch();
+  _stopped = false;
+  _backoffSteps = 0;
+  doPoll();
+  _startActivityWatch();
 }
 
-function _schedulePoll() {
-  if (_pollInterval) clearInterval(_pollInterval);
-  if (_paused) return;
-  _pollInterval = setInterval(doPoll, _currentPollRate);
+function _scheduleNext() {
+  if (_pollTimeout) clearTimeout(_pollTimeout);
+  if (_paused || _stopped) return;
+  _pollTimeout = setTimeout(doPoll, _currentPollRate);
+}
+
+function _applyBackoff() {
+  // Double the current rate, capped at POLL_MAX
+  _currentPollRate = Math.min(_currentPollRate * BACKOFF_MULTIPLIER, POLL_MAX);
+  _backoffSteps++;
+
+  // After enough steps at max rate, stop entirely
+  if (_currentPollRate >= POLL_MAX && _backoffSteps >= MAX_BACKOFF_STEPS) {
+    _pauseForIdle();
+  }
+}
+
+function _resetToActive() {
+  _backoffSteps = 0;
+  _currentPollRate = _basePollRate;
+  _hideIdleOverlay();
+  if (_paused && !_stopped) {
+    _paused = false;
+    doPoll(); // immediate refresh
+  }
 }
 
 export function setPollRate(isMyTurn) {
-  const newRate = isMyTurn ? POLL_SLOW : POLL_FAST;
-  if (newRate !== _currentPollRate && !_paused) {
-    _currentPollRate = newRate;
-    _schedulePoll();
+  _basePollRate = isMyTurn ? POLL_MY_TURN : POLL_FAST;
+  // Only reset current rate if we're in active mode (not backed off)
+  if (_backoffSteps === 0) {
+    _currentPollRate = _basePollRate;
   }
 }
 
 export function stopPolling() {
+  _stopped = true;
   _paused = true;
-  if (_pollInterval) { clearInterval(_pollInterval); _pollInterval = null; }
-  if (_idleTimer) { clearTimeout(_idleTimer); _idleTimer = null; }
-  if (_hiddenTimer) { clearTimeout(_hiddenTimer); _hiddenTimer = null; }
-  _removeIdleWatch();
+  if (_pollTimeout) { clearTimeout(_pollTimeout); _pollTimeout = null; }
+  _removeActivityWatch();
 }
 
-// Pause polling and show reconnect overlay
 function _pauseForIdle() {
   if (_paused) return;
   _paused = true;
-  if (_pollInterval) { clearInterval(_pollInterval); _pollInterval = null; }
+  if (_pollTimeout) { clearTimeout(_pollTimeout); _pollTimeout = null; }
   _showIdleOverlay();
 }
 
-// Resume polling after user interaction
-export function resumePolling() {
-  if (!_paused || !_onStateUpdate) return;
-  _paused = false;
-  _hideIdleOverlay();
-  _lastActivity = Date.now();
-  doPoll(); // immediate refresh
-  _schedulePoll();
-  _resetIdleTimer();
-}
-
 async function doPoll() {
-  if (_paused) return;
+  if (_paused || _stopped) return;
   try {
     const data = await api(`/api/state?since=${_lastSeq}`, 'GET');
-    if (data.error) return;
-    if (data.log && data.log.length > 0) {
+    if (data.error) { _scheduleNext(); return; }
+
+    const hadNewData = data.log && data.log.length > 0;
+    if (hadNewData) {
       _lastSeq = data.log[data.log.length - 1].seq;
+      // New data from server = something happened, reset backoff
+      _backoffSteps = 0;
+      _currentPollRate = _basePollRate;
+    } else {
+      // No new data — back off
+      _applyBackoff();
     }
+
     if (_onStateUpdate) _onStateUpdate(data);
   } catch (e) {
-    // Network error — silent retry on next interval
+    _applyBackoff();
   }
+  _scheduleNext();
 }
 
-// ─── Idle detection ───
+// ─── Activity detection — any interaction resets to fast polling ───
 
-function _startIdleWatch() {
+const _activityEvents = ['click', 'keydown', 'touchstart'];
+
+function _startActivityWatch() {
   _activityEvents.forEach(evt => document.addEventListener(evt, _onActivity, { passive: true }));
   document.addEventListener('visibilitychange', _onVisibilityChange);
-  _resetIdleTimer();
 }
 
-function _removeIdleWatch() {
+function _removeActivityWatch() {
   _activityEvents.forEach(evt => document.removeEventListener(evt, _onActivity));
   document.removeEventListener('visibilitychange', _onVisibilityChange);
 }
 
-const _activityEvents = ['click', 'keydown', 'touchstart', 'mousemove'];
-
 function _onActivity() {
-  _lastActivity = Date.now();
-  if (_paused) {
-    resumePolling();
-  } else {
-    _resetIdleTimer();
-  }
-}
-
-function _resetIdleTimer() {
-  if (_idleTimer) clearTimeout(_idleTimer);
-  _idleTimer = setTimeout(() => {
-    if (!_paused) _pauseForIdle();
-  }, IDLE_TIMEOUT);
+  _resetToActive();
+  _scheduleNext();
 }
 
 function _onVisibilityChange() {
   if (document.hidden) {
-    // Tab hidden — slow down immediately, full stop after 2 min
-    if (!_paused) {
-      _currentPollRate = POLL_BACKGROUND;
-      _schedulePoll();
-      _hiddenTimer = setTimeout(() => {
-        if (document.hidden && !_paused) _pauseForIdle();
-      }, HIDDEN_TIMEOUT);
+    // Tab hidden — jump to slow polling immediately
+    if (!_paused && !_stopped) {
+      _currentPollRate = Math.max(_currentPollRate, 30000);
+      _scheduleNext();
     }
   } else {
-    // Tab visible again
-    if (_hiddenTimer) { clearTimeout(_hiddenTimer); _hiddenTimer = null; }
-    if (_paused) {
-      resumePolling();
-    } else {
-      // Restore normal rate and poll immediately
-      _currentPollRate = POLL_FAST;
-      _schedulePoll();
+    // Tab visible — reset if paused, otherwise refresh immediately
+    if (_paused && !_stopped) {
+      _resetToActive();
+      _scheduleNext();
+    } else if (!_stopped) {
+      _resetToActive();
       doPoll();
     }
   }
 }
 
-// ─── Idle overlay UI ───
+// ─── Idle overlay ───
 
 function _showIdleOverlay() {
   if (document.getElementById('idle-overlay')) return;
@@ -199,11 +209,9 @@ function _showIdleOverlay() {
   div.innerHTML = `
     <div style="text-align:center;color:#e0e0e0;font-family:sans-serif;">
       <div style="font-size:1.4rem;margin-bottom:0.8rem;">Connection Paused</div>
-      <div style="color:#8888aa;margin-bottom:1.5rem;font-size:0.95rem;">Polling stopped to save resources.</div>
-      <button id="idle-resume-btn" style="background:#6a0dad;color:white;border:none;border-radius:6px;padding:0.7rem 2rem;font-size:1.1rem;cursor:pointer;">Resume Game</button>
+      <div style="color:#8888aa;margin-bottom:1.5rem;font-size:0.95rem;">Click anywhere or press any key to reconnect.</div>
     </div>`;
   document.body.appendChild(div);
-  document.getElementById('idle-resume-btn').addEventListener('click', resumePolling);
 }
 
 function _hideIdleOverlay() {
