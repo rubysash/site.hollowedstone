@@ -31,7 +31,13 @@ npm install
 npx wrangler pages dev public --kv GAME_STATE --port 8788
 ```
 
-Open http://localhost:8788. Create a game in one browser tab, open the game link in another tab to play as both players.
+**Same machine (testing):** Open http://localhost:8788 in two browser tabs.
+
+**LAN play (two computers):** The host machine runs the server. The other player connects using the host's LAN IP:
+```
+http://192.168.x.x:8788
+```
+To find your LAN IP: `ipconfig` (Windows) or `ifconfig` / `ip a` (Mac/Linux). Both players must be on the same network. No port forwarding or NAT configuration needed for LAN.
 
 All dependencies install locally in `node_modules/` — nothing is installed globally. The `.npmrc` forces the npm cache into the project directory. Delete the folder and everything is gone.
 
