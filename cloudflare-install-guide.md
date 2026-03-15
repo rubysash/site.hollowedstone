@@ -118,53 +118,78 @@ The namespace starts empty — that's correct. KV pairs (`game:ABCD12`, `code:AB
 
 ---
 
-## Step 3: Deploy
+## Step 3: Connect GitHub for Auto-Deploy
 
-### Deploy from the command line (recommended)
+This sets up automatic deployment — every `git push` to `main` triggers a build and deploy on Cloudflare.
 
-The most reliable way to deploy is directly from your local machine using the wrangler CLI:
+### 3a. Install the Cloudflare GitHub App
 
+1. Go to GitHub → **Settings** (your account) → **Applications** → **Installed GitHub Apps**
+2. If **Cloudflare Workers and Pages** is not listed, install it from [GitHub Marketplace](https://github.com/apps/cloudflare-workers-and-pages)
+3. If it IS already installed (from another project), click **Configure** next to it
+4. Under **Repository access**, select **Only select repositories**
+5. Add `site.hollowedstone` to the list
+6. Click **Save**
+
+> **Common issue:** If the app was previously installed for a different repo, your new repo won't auto-deploy until you explicitly add it in this step. Cloudflare will show "disconnected from git" in the dashboard even though the app appears installed on GitHub.
+
+### 3b. Create the Worker and connect the repo
+
+1. Go to Cloudflare dashboard → **Compute (Workers & Pages)**
+2. Click **Create** → you'll see **"Create a Worker"**
+3. Click **Import from GitHub** (or **Connect to Git**)
+4. Select the `site.hollowedstone` repository
+5. Configure build settings:
+
+| Setting | Value |
+|---------|-------|
+| **Production branch** | `main` |
+| **Build command** | `npm install` |
+| **Deploy command** | `npx wrangler deploy` *(should be default)* |
+| **Root directory** | `/` *(leave default)* |
+| **API token** | *(leave blank — auto-generated)* |
+
+6. Click **Save and Deploy**
+
+The first deploy will fail if you haven't updated `wrangler.toml` with the real KV namespace ID yet. That's fine — fix it in Step 2b above, push, and it auto-deploys.
+
+### 3c. Verify auto-deploy works
+
+After setup, test it:
 ```bash
-npm install
-npx wrangler deploy
-```
-
-On first run, wrangler will open a browser window asking you to log in to Cloudflare. After auth, it deploys directly.
-
-You should see output like:
-```
-Uploaded 19 of 19 assets
-✨ Success! Uploaded 19 files
-Your Worker has access to the following bindings:
-  env.GAME_STATE    KV Namespace
-  env.ASSETS        Assets
-Published hollowedstone
-  https://hollowedstone.YOUR_SUBDOMAIN.workers.dev
-```
-
-### Redeploying after changes
-
-Every time you make changes:
-
-```bash
+# Make any small change
 git add -A
-git commit -m "Description of changes"
+git commit -m "Test auto-deploy"
 git push
+```
+
+Watch the **Deployments** tab in your Worker dashboard. A new build should appear within 30 seconds of the push.
+
+### 3d. Manual deploy (fallback)
+
+If auto-deploy doesn't trigger, you can always deploy from the command line:
+
+```bash
 npx wrangler deploy
 ```
 
-Push to GitHub for version control, then `npx wrangler deploy` to go live. Deploy takes ~5 seconds.
+On first run, wrangler opens a browser window for Cloudflare login. After that, it deploys directly in ~5 seconds. This is also useful for quick iterations during development.
 
-### GitHub auto-deploy (optional, may not work reliably)
+### Troubleshooting auto-deploy
 
-Cloudflare offers GitHub integration that auto-deploys on push. To set it up:
+**Push doesn't trigger a build:**
+1. Go to GitHub → **Settings** → **Applications** → **Installed GitHub Apps** → **Cloudflare Workers and Pages** → **Configure**
+2. Verify `site.hollowedstone` is in the selected repositories list
+3. If it's there and still not working, click **Uninstall**, then reconnect from the Cloudflare dashboard (Step 3b)
 
-1. Go to **Compute (Workers & Pages)** in the sidebar
-2. Click **Create** → **Import from GitHub**
-3. Select the `site.hollowedstone` repository
-4. Build command: `npm install`, Deploy command: `npx wrangler deploy`
+**Dashboard shows "disconnected from git":**
+This usually means the GitHub app is installed but the specific repo isn't authorized. Follow Step 3a to add the repo.
 
-However, dashboard-triggered deploys and retries have been unreliable. If auto-deploy doesn't trigger, fall back to `npx wrangler deploy` from the command line — it always works.
+**Build triggers but fails:**
+Check the build log in the Deployments tab. Common causes:
+- KV namespace ID is still "placeholder" in `wrangler.toml`
+- `package.json` or `worker/index.js` has a syntax error
+- Missing files that were gitignored
 
 ---
 
