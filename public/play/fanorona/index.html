@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>9 Men's Morris</title>
+<meta name="color-scheme" content="dark">
+<title>Fanorona</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -22,7 +23,6 @@
     font-size: 2.4rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    font-variant: small-caps;
     margin-bottom: 0.3rem;
   }
   .tagline {
@@ -94,16 +94,6 @@
     margin-top: 0.6rem;
     min-height: 1.2em;
   }
-  .settings-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: #8b949e;
-    margin-bottom: 0.5rem;
-  }
-  .settings-row label { cursor: pointer; }
-  .settings-row input[type="checkbox"] { accent-color: #6a0dad; }
   .footer {
     margin-top: 3rem;
     font-size: 0.8rem;
@@ -115,16 +105,12 @@
 </head>
 <body>
 
-<h1>9 Men's Morris</h1>
-<div class="tagline">A classic strategy game for two</div>
+<h1>Fanorona</h1>
+<div class="tagline">Traditional Malagasy strategy game for two</div>
 
 <div class="lobby">
   <div class="lobby-card">
     <h2>Create New Game</h2>
-    <div class="settings-row">
-      <label for="opt-flying">Flying (3 pieces)</label>
-      <input type="checkbox" id="opt-flying" checked>
-    </div>
     <button class="btn" id="btn-create">Create Game</button>
     <div class="error" id="create-error"></div>
   </div>
@@ -158,10 +144,7 @@ document.getElementById('btn-create').addEventListener('click', async () => {
   btn.disabled = true;
   btn.textContent = 'Creating...';
   try {
-    const settings = {
-      flying: document.getElementById('opt-flying').checked
-    };
-    const data = await createGame(settings);
+    const data = await createGame({});
     if (data.error) {
       errEl.textContent = data.error;
       btn.disabled = false;
@@ -169,7 +152,7 @@ document.getElementById('btn-create').addEventListener('click', async () => {
       return;
     }
     saveSession(data.accessCode, data.player, data.token);
-    window.location.href = `/play/nine-mens-morris/game?code=${data.accessCode}&player=${data.player}&token=${data.token}`;
+    window.location.href = `/play/fanorona/game?code=${data.accessCode}&player=${data.player}&token=${data.token}`;
   } catch (e) {
     errEl.textContent = 'Failed to create game';
     btn.disabled = false;
@@ -194,7 +177,7 @@ document.getElementById('btn-join').addEventListener('click', async () => {
       return;
     }
     saveSession(data.accessCode, data.player, data.token);
-    window.location.href = `/play/nine-mens-morris/game?code=${data.accessCode}&player=${data.player}&token=${data.token}`;
+    window.location.href = `/play/fanorona/game?code=${data.accessCode}&player=${data.player}&token=${data.token}`;
   } catch (e) {
     errEl.textContent = 'Failed to join game';
     btn.disabled = false;
@@ -202,7 +185,6 @@ document.getElementById('btn-join').addEventListener('click', async () => {
   }
 });
 
-// Enter key on join code
 document.getElementById('join-code').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('btn-join').click();
 });

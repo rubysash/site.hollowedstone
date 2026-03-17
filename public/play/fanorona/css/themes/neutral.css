@@ -1,0 +1,7 @@
+/* Fanorona — neutral theme overrides */
+:root {
+  --board-bg: #1a1520;
+  --board-line: #5a4a6a;
+  --board-diag: #4a3a5a;
+  --node-empty: #2a2a44;
+}

@@ -14,7 +14,7 @@
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: var(--base-font);
   line-height: 1.5;
   min-height: 100vh;
@@ -41,7 +41,7 @@ body {
   font-style: italic;
 }
 .access-code {
-  font-family: monospace;
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
   font-size: 1.2rem;
   background: var(--panel-bg);
   border: 1px solid var(--border);
@@ -515,7 +515,7 @@ svg.board {
 .poll-status {
   text-align: center;
   font-size: 0.75rem;
-  font-family: monospace;
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
   color: var(--text-dim);
   opacity: 0.5;
   padding: 0.3rem 0 0;

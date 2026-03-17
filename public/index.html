@@ -9,7 +9,7 @@
   body {
     background: #0d1117;
     color: #c9d1d9;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -111,6 +111,14 @@
     <svg class="game-thumb" id="morris-thumb" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"></svg>
     <p>Three squares, sixteen mills. Place, slide, and fly your way to victory in this timeless classic.</p>
     <div class="game-stats" id="morris-stats"></div>
+    <span class="play-tag">Play Now</span>
+  </a>
+
+  <a href="/play/fanorona/" class="game-card">
+    <h2>Fanorona</h2>
+    <svg class="game-thumb" id="fanorona-thumb" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg"></svg>
+    <p>Approach or withdraw to sweep entire lines. A Malagasy classic of devastating chain captures.</p>
+    <div class="game-stats" id="fanorona-stats"></div>
     <span class="play-tag">Play Now</span>
   </a>
 </div>
@@ -299,6 +307,73 @@ document.getElementById('build-tag').textContent = `v${BUILD}`;
   for (const id of lightPieces) {
     const n = nodes[id];
     svg.appendChild(el('circle', { cx:n.x, cy:n.y, r:6, fill:'#f0e6d3', stroke:'#a08060', 'stroke-width':1 }));
+  }
+})();
+
+// Fanorona stats
+(async function() {
+  try {
+    const resp = await fetch('/play/fanorona/api/stats');
+    if (!resp.ok) return;
+    const stats = await resp.json();
+    const el = document.getElementById('fanorona-stats');
+    if (el && stats.total > 0) {
+      el.innerHTML = `<span>${stats.thisWeek}</span> games this week | <span>${stats.total}</span> total`;
+    }
+  } catch (e) { /* silent */ }
+})();
+
+// Fanorona thumbnail — 5x9 grid with pieces
+(function() {
+  const svg = document.getElementById('fanorona-thumb');
+  if (!svg) return;
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs) => {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    return e;
+  };
+
+  svg.appendChild(el('rect', { width: 200, height: 120, fill: '#1a1520', rx: 6 }));
+
+  const sx = 10, sy = 10, gx = 22.5, gy = 25;
+
+  // Grid lines
+  for (let r = 0; r < 5; r++) {
+    svg.appendChild(el('line', { x1:sx, y1:sy+r*gy, x2:sx+8*gx, y2:sy+r*gy, stroke:'#5a4a6a', 'stroke-width':1 }));
+  }
+  for (let c = 0; c < 9; c++) {
+    svg.appendChild(el('line', { x1:sx+c*gx, y1:sy, x2:sx+c*gx, y2:sy+4*gy, stroke:'#5a4a6a', 'stroke-width':1 }));
+  }
+
+  // Some diagonal lines
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 8; c++) {
+      if ((c + r) % 2 === 0) {
+        const x1 = sx+c*gx, y1 = sy+r*gy;
+        svg.appendChild(el('line', { x1, y1, x2:x1+gx, y2:y1+gy, stroke:'#4a3a5a', 'stroke-width':0.8 }));
+      }
+      if ((c + r) % 2 === 1) {
+        const x1 = sx+(c+1)*gx, y1 = sy+r*gy;
+        svg.appendChild(el('line', { x1, y1, x2:x1-gx, y2:y1+gy, stroke:'#4a3a5a', 'stroke-width':0.8 }));
+      }
+    }
+  }
+
+  // Pieces — rows 0-1 white (top), rows 3-4 black (bottom), row 2 mixed
+  const pr = 3.5;
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 9; c++) {
+      const cx = sx + c * gx, cy = sy + r * gy;
+      let fill, stroke;
+      if (r <= 1) { fill = '#f0e6d3'; stroke = '#a08060'; }
+      else if (r >= 3) { fill = '#111111'; stroke = '#aaa'; }
+      else if (c === 4) continue; // center empty
+      else if (c % 2 === 0) { fill = '#111111'; stroke = '#aaa'; }
+      else { fill = '#f0e6d3'; stroke = '#a08060'; }
+      svg.appendChild(el('circle', { cx, cy, r: pr, fill, stroke, 'stroke-width': 0.8 }));
+    }
   }
 })();
 </script>

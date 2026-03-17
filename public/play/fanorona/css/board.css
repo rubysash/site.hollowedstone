@@ -1,4 +1,4 @@
-/* Nine Men's Morris — board and game layout styles */
+/* Fanorona — board and game layout styles */
 
 :root {
   --bg: #0d1117;
@@ -10,19 +10,29 @@
   --accent-light: #b388ff;
   --board-bg: #1a1520;
   --board-line: #5a4a6a;
+  --board-diag: #4a3a5a;
   --node-empty: #2a2a44;
-  --node-hover: #3a3a5a;
   --green: #4ade80;
   --red: #f85149;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html {
+  color-scheme: dark;
+}
+
 body {
   background: var(--bg);
   color: var(--text);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   min-height: 100vh;
+}
+
+/* Prevent browser forced-colors / high-contrast from overriding game pieces */
+.board-svg {
+  forced-color-adjust: none;
+  -ms-high-contrast-adjust: none;
 }
 
 /* ─── Layout ─── */
@@ -107,8 +117,9 @@ body {
 /* ─── SVG Board ─── */
 
 .board-svg {
-  width: min(70vmin, 560px);
-  height: min(70vmin, 560px);
+  width: min(85vmin, 700px);
+  height: auto;
+  aspect-ratio: 9 / 5;
   display: block;
   cursor: default;
 }
@@ -116,10 +127,16 @@ body {
 /* Board lines */
 .board-line {
   stroke: var(--board-line);
-  stroke-width: 3;
+  stroke-width: 2;
 }
 
-/* Node circles */
+.board-line-diag {
+  stroke: var(--board-diag);
+  stroke-width: 1.5;
+}
+
+/* ─── Board Nodes ─── */
+
 .board-node {
   transition: fill 0.15s, stroke 0.15s;
   cursor: default;
@@ -170,7 +187,8 @@ body {
   filter: brightness(1.15);
 }
 
-/* Valid target markers */
+/* ─── Valid Target Markers ─── */
+
 .valid-target-marker {
   fill: rgba(0,255,102,0.25);
   stroke: rgba(0,255,102,0.7);
@@ -179,7 +197,32 @@ body {
   pointer-events: all;
 }
 
-/* Pieces */
+/* ─── Selectable / Selected Rings (above pieces) ─── */
+
+.selectable-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(106,13,173,0.8));
+  animation: selectablePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes selectablePulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.selected-ring {
+  fill: none;
+  stroke: #00cc44;
+  stroke-width: 3.5;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(0,204,68,0.6));
+}
+
+/* ─── Pieces ─── */
+
 .piece {
   pointer-events: none;
 }
@@ -279,13 +322,9 @@ body {
   color: var(--text-muted);
 }
 
-.log-entry.log-mill {
+.log-entry.log-capture {
   color: var(--accent-light);
   font-weight: bold;
-}
-
-.log-entry.log-remove {
-  color: var(--red);
 }
 
 .log-entry.log-win,
@@ -327,7 +366,14 @@ body {
   opacity: 0.6;
 }
 
+.build-tag {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  opacity: 0.4;
+}
+
 /* ─── Site Footer ─── */
+
 .site-footer {
   text-align: center;
   font-size: 0.75rem;
@@ -341,12 +387,6 @@ body {
 }
 .site-footer a:hover { text-decoration: underline; }
 .site-footer span { margin: 0 0.4rem; }
-
-.build-tag {
-  color: var(--text-muted);
-  font-size: 0.7rem;
-  opacity: 0.4;
-}
 
 /* ─── Overlays ─── */
 
@@ -413,21 +453,44 @@ body {
   50% { opacity: 1; }
 }
 
-.btn {
-  display: inline-block;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  padding: 0.7rem 1.8rem;
-  font-family: inherit;
-  font-size: 0.95rem;
-  border-radius: 6px;
-  cursor: pointer;
-  text-decoration: none;
-  letter-spacing: 0.05em;
-  transition: background 0.2s;
+/* ─── Capture Choice Overlay ─── */
+
+.capture-choice-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
 }
-.btn:hover { background: #7b1fa2; }
+
+.capture-choice-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  text-align: center;
+  max-width: 400px;
+}
+
+.capture-choice-card h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+.capture-choice-card p {
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.capture-choice-btns {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
 
 /* ─── Help Overlay ─── */
 
@@ -494,6 +557,64 @@ body {
 .help-body ul { padding-left: 1.5rem; }
 .help-body strong { color: var(--text); }
 
+/* ─── Buttons ─── */
+
+.btn {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.8rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: background 0.2s;
+}
+.btn:hover { background: #7b1fa2; }
+
+.btn-secondary {
+  display: inline-block;
+  background: transparent;
+  color: var(--accent-light);
+  border: 1px solid var(--accent);
+  padding: 0.7rem 1.8rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+.btn-secondary:hover {
+  background: rgba(106,13,173,0.15);
+  color: #fff;
+}
+
+/* ─── End Chain Button ─── */
+
+.btn-end-chain {
+  display: inline-block;
+  background: var(--green);
+  color: #0d1117;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: background 0.2s;
+  text-transform: uppercase;
+}
+.btn-end-chain:hover {
+  background: #6ee7a0;
+}
+
 /* ─── Responsive ─── */
 
 @media (max-width: 768px) {
@@ -520,8 +641,8 @@ body {
   .piece-dots { margin-top: 0; }
 
   .board-svg {
-    width: 90vmin;
-    height: 90vmin;
+    width: 95vw;
+    height: auto;
   }
 
   .game-title { font-size: 1.1rem; }

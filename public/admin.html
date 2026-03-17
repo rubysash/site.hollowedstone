@@ -9,7 +9,7 @@
   body {
     background: #0d1117;
     color: #c9d1d9;
-    font-family: 'Segoe UI', Tahoma, sans-serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 15px;
     padding: 1.5rem;
     line-height: 1.5;
@@ -56,8 +56,8 @@
   .phase-free_move { background: #1a2332; color: #67e8f9; }
   .phase-play { background: #132a13; color: #4ade80; }
   .phase-finished { background: #2a1a0e; color: #f59e0b; }
-  .ip { font-family: monospace; font-size: 0.85rem; color: #8b949e; }
-  .code { font-family: monospace; font-weight: bold; letter-spacing: 0.1em; }
+  .ip { font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace; font-size: 0.85rem; color: #8b949e; }
+  .code { font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace; font-weight: bold; letter-spacing: 0.1em; }
   .score { font-weight: bold; font-size: 1.1rem; }
   .winner { color: #f59e0b; }
   .time { color: #7a8599; font-size: 0.8rem; }
@@ -156,7 +156,8 @@ async function loadGames() {
 
     const themeColors = {
       wyrd: '#6a0dad', dominion: '#8b6914', 'inner-work': '#1e8449', neutral: '#555',
-      'nine-mens-morris': '#2e7d32'
+      'nine-mens-morris': '#2e7d32',
+      'fanorona': '#6b4226'
     };
     const themeNames = {
       wyrd: 'Wyrd', dominion: 'Dominion', 'inner-work': 'Inner Work', neutral: 'Neutral'
@@ -184,8 +185,9 @@ async function loadGames() {
       const created = g.created ? new Date(g.created).toLocaleString() : 'n/a';
       const reqPerMove = g.moves > 0 ? (g.requests / g.moves).toFixed(0) : '-';
       const isMorris = g.game === 'nine-mens-morris';
-      const tc = isMorris ? themeColors['nine-mens-morris'] : (themeColors[g.theme] || '#555');
-      const gameLabel = isMorris ? "9 Men's Morris" : `Ouroboros — ${themeNames[g.theme] || g.theme}`;
+      const isFanorona = g.game === 'fanorona';
+      const tc = isFanorona ? themeColors['fanorona'] : isMorris ? themeColors['nine-mens-morris'] : (themeColors[g.theme] || '#555');
+      const gameLabel = isFanorona ? 'Fanorona' : isMorris ? "9 Men's Morris" : `Ouroboros — ${themeNames[g.theme] || g.theme}`;
 
       html += `<tr>
         <td><span class="code">${g.code}</span></td>

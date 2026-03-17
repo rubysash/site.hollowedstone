@@ -9,7 +9,7 @@
 }
 
 body {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .game-header h1 {

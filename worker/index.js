@@ -26,6 +26,7 @@
 
 import { createGame as createOuroGame, chooseSplit, placeStone, makeMove as makeOuroMove, sanitizeForPlayer as sanitizeOuro } from '../public/play/oroboros/js/shared/engine.js';
 import { createGame as createMorrisGame, placePiece, makeMove as makeMorrisMove, removePiece, sanitizeForPlayer as sanitizeMorris } from '../public/play/nine-mens-morris/js/shared/engine.js';
+import { createGame as createFanoronaGame, makeMove as makeFanoronaMove, endChain as endFanoronaChain, sanitizeForPlayer as sanitizeFanorona } from '../public/play/fanorona/js/shared/engine.js';
 
 export default {
   async fetch(request, env) {
@@ -40,6 +41,11 @@ export default {
     // Nine Men's Morris API routes
     if (path.startsWith('/play/nine-mens-morris/api/')) {
       return handleMorrisApi(path, request, env);
+    }
+
+    // Fanorona API routes
+    if (path.startsWith('/play/fanorona/api/')) {
+      return handleFanoronaApi(path, request, env);
     }
 
     // Admin API routes (Zero Trust handles auth before this runs)
@@ -658,6 +664,256 @@ async function handleMorrisReplay(route, env) {
 }
 
 // ═══════════════════════════════════════════════
+// ─── Fanorona API ───
+// ═══════════════════════════════════════════════
+
+async function handleFanoronaApi(path, request, env) {
+  const route = path.replace('/play/fanorona/api', '');
+  const method = request.method;
+
+  try {
+    if (route === '/create' && method === 'POST') return await handleFanoronaCreate(request, env);
+    if (route === '/join' && method === 'POST') return await handleFanoronaJoin(request, env);
+    if (route === '/state' && method === 'GET') return await handleFanoronaState(request, env);
+    if (route === '/move' && method === 'POST') return await handleFanoronaMove(request, env);
+    if (route === '/endchain' && method === 'POST') return await handleFanoronaEndChain(request, env);
+    if (route === '/leave' && method === 'POST') return await handleFanoronaLeave(request, env);
+    if (route === '/stats' && method === 'GET') return await handleFanoronaStats(env);
+    if (route.startsWith('/replay/') && method === 'GET') return await handleFanoronaReplay(route, env);
+
+    return json({ error: 'Not found' }, 404);
+  } catch (e) {
+    return json({ error: 'Internal error', detail: e.message }, 500);
+  }
+}
+
+async function handleFanoronaCreate(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+
+  let accessCode;
+  for (let attempt = 0; attempt < 10; attempt++) {
+    accessCode = generateCode();
+    const existing = await kv.get(`code:${accessCode}`);
+    if (!existing) break;
+  }
+
+  const token = generateToken();
+  const state = createFanoronaGame(accessCode);
+
+  if (body.settings) {
+    if (body.settings.drawByRepetition !== undefined) state.settings.drawByRepetition = !!body.settings.drawByRepetition;
+  }
+
+  state.players.p1.token = token;
+  state.players.p1.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  state.theme = 'neutral';
+
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
+  await kv.put(`code:${accessCode}`, accessCode, { expirationTtl: SEVEN_DAYS });
+
+  return json({ accessCode, player: 'p1', token });
+}
+
+async function handleFanoronaJoin(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const accessCode = (body.accessCode || '').toUpperCase().trim();
+
+  if (!accessCode) return json({ error: 'Access code required' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+
+  if (state.game !== 'fanorona') return json({ error: 'Game not found (wrong game type)' }, 404);
+  if (state.players.p2.token) return json({ error: 'Game already has two players.' }, 400);
+  if (state.phase !== 'waiting') return json({ error: 'Game is not accepting players' }, 400);
+
+  const token = generateToken();
+  state.players.p2.token = token;
+  state.players.p2.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  state.phase = 'playing';
+  state.requests = (state.requests || 0) + 1;
+  state.updatedAt = new Date().toISOString();
+
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
+
+  return json({ accessCode, player: 'p2', token });
+}
+
+async function handleFanoronaState(request, env) {
+  const kv = env.GAME_STATE;
+  const url = new URL(request.url);
+  const accessCode = url.searchParams.get('game');
+  const token = url.searchParams.get('token');
+  const since = parseInt(url.searchParams.get('since') || '0', 10);
+
+  if (!accessCode || !token) return json({ error: 'Missing game or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  state.requests = (state.requests || 0) + 1;
+  if (!state.lastSeen) state.lastSeen = {};
+  state.lastSeen[player] = new Date().toISOString();
+
+  if (state.requests % 25 === 0) {
+    await kv.put(`game:${accessCode}`, JSON.stringify(state));
+  }
+
+  const sanitized = sanitizeFanorona(state, player);
+  sanitized.you = player;
+
+  if (since > 0) {
+    sanitized.log = sanitized.log.filter(e => e.seq > since);
+  }
+
+  return json(sanitized);
+}
+
+async function handleFanoronaMove(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token, from, to, captureType } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  state.requests = (state.requests || 0) + 1;
+
+  const result = makeFanoronaMove(state, player, from, to, captureType || null);
+  if (result.error) return json({ error: result.error }, 400);
+
+  const ttl = state.phase === 'finished' ? THIRTY_DAYS : SEVEN_DAYS;
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: ttl });
+  return json({ ok: true, phase: state.phase, chainActive: result.chainActive || false });
+}
+
+async function handleFanoronaEndChain(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  state.requests = (state.requests || 0) + 1;
+
+  const result = endFanoronaChain(state, player);
+  if (result.error) return json({ error: result.error }, 400);
+
+  const ttl = state.phase === 'finished' ? THIRTY_DAYS : SEVEN_DAYS;
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: ttl });
+  return json({ ok: true, phase: state.phase });
+}
+
+async function handleFanoronaLeave(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  if (state.phase !== 'finished') {
+    state.phase = 'abandoned';
+    state.result = {
+      winner: player === 'p1' ? 'p2' : 'p1',
+      reason: 'abandon',
+      abandonedBy: player,
+      finalScore: [state.players.p1.captured, state.players.p2.captured]
+    };
+    state.updatedAt = new Date().toISOString();
+    await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: THIRTY_DAYS });
+  }
+
+  return json({ ok: true });
+}
+
+async function handleFanoronaStats(env) {
+  const kv = env.GAME_STATE;
+  const now = Date.now();
+  const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
+
+  const stats = { total: 0, thisWeek: 0, byPhase: {} };
+  let cursor = null;
+
+  do {
+    const listOpts = { prefix: 'game:', limit: 1000 };
+    if (cursor) listOpts.cursor = cursor;
+    const list = await kv.list(listOpts);
+
+    for (const key of list.keys) {
+      const raw = await kv.get(key.name);
+      if (!raw) continue;
+      const state = JSON.parse(raw);
+      if (state.game !== 'fanorona') continue;
+
+      stats.total++;
+      const phase = state.phase || 'unknown';
+      stats.byPhase[phase] = (stats.byPhase[phase] || 0) + 1;
+
+      if (state.createdAt && new Date(state.createdAt).getTime() > oneWeekAgo) {
+        stats.thisWeek++;
+      }
+    }
+
+    cursor = list.list_complete ? null : list.cursor;
+  } while (cursor);
+
+  return json(stats);
+}
+
+async function handleFanoronaReplay(route, env) {
+  const kv = env.GAME_STATE;
+  const accessCode = route.replace('/replay/', '');
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  if (state.game !== 'fanorona') return json({ error: 'Not a Fanorona game' }, 404);
+
+  return json({
+    accessCode: state.accessCode,
+    game: state.game,
+    phase: state.phase,
+    result: state.result,
+    settings: state.settings,
+    players: {
+      p1: { title: 'Black', piecesLeft: state.players.p1.piecesLeft, captured: state.players.p1.captured },
+      p2: { title: 'White', piecesLeft: state.players.p2.piecesLeft, captured: state.players.p2.captured }
+    },
+    log: state.log,
+    createdAt: state.createdAt
+  });
+}
+
+// ═══════════════════════════════════════════════
 // ─── Admin API (protected by Cloudflare Access Zero Trust) ───
 // ═══════════════════════════════════════════════
 
@@ -693,14 +949,16 @@ async function handleAdminGames(request, env) {
 
       const state = JSON.parse(raw);
       const isMorris = state.game === 'nine-mens-morris';
+      const isFanorona = state.game === 'fanorona';
       // For Morris, score = captures made = opponent's piecesLost
-      const p1Score = isMorris ? (state.players.p2.piecesLost ?? 0) : (state.players.p1.score ?? 0);
-      const p2Score = isMorris ? (state.players.p1.piecesLost ?? 0) : (state.players.p2.score ?? 0);
+      // For Fanorona, score = captures made directly
+      const p1Score = isFanorona ? (state.players.p1.captured ?? 0) : isMorris ? (state.players.p2.piecesLost ?? 0) : (state.players.p1.score ?? 0);
+      const p2Score = isFanorona ? (state.players.p2.captured ?? 0) : isMorris ? (state.players.p1.piecesLost ?? 0) : (state.players.p2.score ?? 0);
 
       games.push({
         code: state.accessCode,
         game: state.game || 'ouroboros',
-        theme: isMorris ? 'nine-mens-morris' : state.theme,
+        theme: isFanorona ? 'fanorona' : isMorris ? 'nine-mens-morris' : state.theme,
         phase: state.phase,
         created: state.createdAt,
         updated: state.updatedAt,
