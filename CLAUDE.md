@@ -57,7 +57,7 @@ Before every deploy, update `js/version.js` for each changed game:
 - Minor for new features (0.1.13 to 0.2.0)
 - Major for breaking changes (0.2.0 to 1.0.0)
 - Update `BUILD_DATE` to today's date
-- Add a summary entry to `docs/hollowedstone/version-history.md` (newest first)
+- Add a summary entry to `docs/version-history.md` (newest first)
 
 ### Writing Style
 - Do not use em dashes or other obvious AI fingerprints in any writing.
@@ -99,7 +99,7 @@ Before every deploy, update `js/version.js` for each changed game:
 - Add `forced-color-adjust: none` on board SVGs to prevent browser theme overrides.
 
 ### Footer
-Every page must include: `Home | Git Source | Donate` links + version tag.
+Every page must include: `Home | Git | Rulebooks | Donate` links + version tag.
 - Game pages use `.site-footer` class.
 - Lobby/landing pages use `.footer` or `.links` class with the same links.
 
@@ -131,66 +131,6 @@ Every page must include: `Home | Git Source | Donate` links + version tag.
 - Finished TTL: 30 days
 - Request counter persisted every 25 polls (not every request)
 - Free tier limit: 1,000 writes/day. A typical game uses 35-45 writes.
-
----
-
-## Admin Dashboard
-
-The admin page (`/admin`) is protected by Cloudflare Access and shows all games across all game types in a single table. When adding a new game, both the worker and the admin page need updates.
-
-### Data contract
-
-The worker's `handleAdminGames` function reads every `game:*` key from KV and returns a normalized object per game:
-
-```
-{
-  code:     accessCode,
-  game:     'game-slug',              // e.g. 'ouroboros', 'nine-mens-morris', 'fanorona'
-  theme:    'theme-id',               // game slug for single-theme games, theme id for multi-theme
-  phase:    'waiting'|'playing'|...,
-  created:  ISO timestamp,
-  updated:  ISO timestamp,
-  p1:       { name, ip, score, holding },
-  p2:       { name, ip, score, holding },
-  moves:    logSeq count,
-  requests: poll count,
-  result:   null or { winner, reason, finalScore }
-}
-```
-
-### Score extraction
-
-Each game stores scores differently. The admin handler must normalize to `p1.score` and `p2.score` integers:
-
-| Game | Score source | Notes |
-|------|-------------|-------|
-| Ouroboros | `state.players.p1.score` | Direct score field |
-| Nine Men's Morris | `state.players.p2.piecesLost` | P1's score = pieces P1 captured = P2's losses |
-| Fanorona | `state.players.p1.captured` | Direct captured count |
-
-When adding a new game, add a case to the score extraction block in `handleAdminGames`. Follow the existing `isMorris`/`isFanorona` pattern.
-
-### Player name fallback
-
-The admin handler tries multiple fields for player names: `name`, then `title`, then a game-specific default (e.g., 'Dark'/'Light' for Morris). New games should set `name` or `title` on players at create/join time so the admin page shows something readable.
-
-### Admin page updates for a new game
-
-In `public/admin.html`:
-
-1. Add entry to `themeColors` map with a distinct hex color for the game badge
-2. Add entry to `themeNames` if the game has multiple themes (skip for single-theme games)
-3. Update the `gameLabel` construction to recognize the new `game` identifier
-4. Verify the phase filter in the stats section includes any new phase names the game uses
-
-### Worker updates for a new game
-
-In `worker/index.js` `handleAdminGames`:
-
-1. Add a boolean check: `const isNewGame = state.game === 'new-game-slug';`
-2. Add score extraction for the new game in the `p1Score`/`p2Score` lines
-3. Set `theme:` to the game slug for single-theme games
-4. Set the player name fallback default
 
 ---
 
@@ -297,7 +237,7 @@ Modify `worker/index.js`:
 - Verify move log, selection persistence, session recovery
 - Check responsive layout, status bar, browser title, help overlay
 - Verify admin page and home page stats
-- Bump `version.js` (start at `0.1.0`) and add entry to `docs/hollowedstone/version-history.md`
+- Bump `version.js` (start at `0.1.0`) and add entry to `docs/version-history.md`
 - Run through the Pre-Ship Checklist below
 
 ---
@@ -335,7 +275,7 @@ Run through this list before considering any work done. It covers recurring mist
 ### HTML Pages
 - [ ] `<meta name="color-scheme" content="dark">` on all game pages
 - [ ] `forced-color-adjust: none` on `.board-svg` in CSS
-- [ ] Footer on every page: Home | Git Source | Donate + version tag
+- [ ] Footer on every page: Home | Git | Rulebooks | Donate + version tag
 - [ ] Lobby page disables button and shows loading text during create/join
 - [ ] Lobby page supports Enter key on code input
 - [ ] Game page has Help button, Leave button, poll status indicator
@@ -361,7 +301,7 @@ Run through this list before considering any work done. It covers recurring mist
 ### Versioning
 - [ ] `js/version.js` bumped (patch for fixes, minor for features, major for breaking changes)
 - [ ] `BUILD_DATE` updated to today
-- [ ] Entry added to `docs/hollowedstone/version-history.md` (newest first)
+- [ ] Entry added to `docs/version-history.md` (newest first)
 
 ### Platform Integration
 - [ ] Game card added to `public/index.html` with SVG thumbnail and stats fetch
