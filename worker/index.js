@@ -17,6 +17,7 @@
 //   POST /play/nine-mens-morris/api/remove  — remove opponent piece after mill
 //   POST /play/nine-mens-morris/api/leave   — abandon game
 //   GET  /play/nine-mens-morris/api/stats   — public game metrics
+//   GET  /play/nine-mens-morris/api/replay/:id — full move log
 //
 // Admin API routes (protected by Cloudflare Access Zero Trust):
 //   GET  /admin/api/games             — list all games with player IPs
@@ -375,6 +376,7 @@ async function handleMorrisApi(path, request, env) {
     if (route === '/remove' && method === 'POST') return await handleMorrisRemove(request, env);
     if (route === '/leave' && method === 'POST') return await handleMorrisLeave(request, env);
     if (route === '/stats' && method === 'GET') return await handleMorrisStats(env);
+    if (route.startsWith('/replay/') && method === 'GET') return await handleMorrisReplay(route, env);
 
     return json({ error: 'Not found' }, 404);
   } catch (e) {
@@ -401,6 +403,13 @@ async function handleMorrisCreate(request, env) {
   if (body.settings) {
     if (body.settings.flying !== undefined) state.settings.flying = !!body.settings.flying;
   }
+
+  // Store player names for admin/replay
+  state.players.p1.name = 'Dark';
+  state.players.p1.title = 'Dark';
+  state.players.p2.name = 'Light';
+  state.players.p2.title = 'Light';
+  state.theme = 'neutral';
 
   state.players.p1.token = token;
   state.players.p1.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
@@ -622,6 +631,32 @@ async function handleMorrisStats(env) {
   return json(stats);
 }
 
+// GET /replay/:code
+async function handleMorrisReplay(route, env) {
+  const kv = env.GAME_STATE;
+  const accessCode = route.replace('/replay/', '');
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  if (state.game !== 'nine-mens-morris') return json({ error: 'Not a Morris game' }, 404);
+
+  return json({
+    accessCode: state.accessCode,
+    game: state.game,
+    phase: state.phase,
+    result: state.result,
+    settings: state.settings,
+    players: {
+      p1: { title: 'Dark', piecesLost: state.players.p1.piecesLost, piecesOnBoard: state.players.p1.piecesOnBoard },
+      p2: { title: 'Light', piecesLost: state.players.p2.piecesLost, piecesOnBoard: state.players.p2.piecesOnBoard }
+    },
+    log: state.log,
+    createdAt: state.createdAt
+  });
+}
+
 // ═══════════════════════════════════════════════
 // ─── Admin API (protected by Cloudflare Access Zero Trust) ───
 // ═══════════════════════════════════════════════
@@ -657,23 +692,28 @@ async function handleAdminGames(request, env) {
       if (!raw) continue;
 
       const state = JSON.parse(raw);
+      const isMorris = state.game === 'nine-mens-morris';
+      // For Morris, score = captures made = opponent's piecesLost
+      const p1Score = isMorris ? (state.players.p2.piecesLost ?? 0) : (state.players.p1.score ?? 0);
+      const p2Score = isMorris ? (state.players.p1.piecesLost ?? 0) : (state.players.p2.score ?? 0);
+
       games.push({
         code: state.accessCode,
         game: state.game || 'ouroboros',
-        theme: state.theme,
+        theme: isMorris ? 'nine-mens-morris' : state.theme,
         phase: state.phase,
         created: state.createdAt,
         updated: state.updatedAt,
         p1: {
-          name: state.players.p1.name || state.players.p1.title || 'P1',
+          name: state.players.p1.name || state.players.p1.title || (isMorris ? 'Dark' : 'P1'),
           ip: state.players.p1.ip || 'n/a',
-          score: state.players.p1.score ?? state.players.p1.piecesLost ?? 0,
+          score: p1Score,
           holding: state.players.p1.holding?.length || 0
         },
         p2: {
-          name: state.players.p2.name || state.players.p2.title || 'P2',
+          name: state.players.p2.name || state.players.p2.title || (isMorris ? 'Light' : 'P2'),
           ip: state.players.p2.ip || 'n/a',
-          score: state.players.p2.score ?? state.players.p2.piecesLost ?? 0,
+          score: p2Score,
           holding: state.players.p2.holding?.length || 0
         },
         moves: state.logSeq || 0,

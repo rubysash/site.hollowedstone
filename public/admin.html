@@ -155,7 +155,8 @@ async function loadGames() {
     }
 
     const themeColors = {
-      wyrd: '#6a0dad', dominion: '#8b6914', 'inner-work': '#1e8449', neutral: '#555'
+      wyrd: '#6a0dad', dominion: '#8b6914', 'inner-work': '#1e8449', neutral: '#555',
+      'nine-mens-morris': '#2e7d32'
     };
     const themeNames = {
       wyrd: 'Wyrd', dominion: 'Dominion', 'inner-work': 'Inner Work', neutral: 'Neutral'
@@ -182,12 +183,13 @@ async function loadGames() {
       const p2Won = g.result?.winner === 'p2';
       const created = g.created ? new Date(g.created).toLocaleString() : 'n/a';
       const reqPerMove = g.moves > 0 ? (g.requests / g.moves).toFixed(0) : '-';
-      const tc = themeColors[g.theme] || '#555';
-      const tn = themeNames[g.theme] || g.theme;
+      const isMorris = g.game === 'nine-mens-morris';
+      const tc = isMorris ? themeColors['nine-mens-morris'] : (themeColors[g.theme] || '#555');
+      const gameLabel = isMorris ? "9 Men's Morris" : `Ouroboros — ${themeNames[g.theme] || g.theme}`;
 
       html += `<tr>
         <td><span class="code">${g.code}</span></td>
-        <td><span style="display:inline-block;padding:0.15rem 0.5rem;border-radius:3px;background:${tc};color:#fff;font-size:0.8rem;font-weight:bold;">Ouroboros — ${tn}</span></td>
+        <td><span style="display:inline-block;padding:0.15rem 0.5rem;border-radius:3px;background:${tc};color:#fff;font-size:0.8rem;font-weight:bold;">${gameLabel}</span></td>
         <td><span class="phase phase-${g.phase}">${g.phase}</span></td>
         <td>${g.p1.name}${p1Won ? ' <span class="winner">W</span>' : ''}</td>
         <td><span class="ip">${g.p1.ip}</span></td>
