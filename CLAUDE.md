@@ -1,150 +1,67 @@
-# Ouroboros
+# Hollowed Stone
 
-A strategic 2-player board game played on a 5x5 Agon hex board (61 hexes). The game has multiple thematic skins (Wyrd/Norse, Dominion/Christian, The Inner Work/Psychology) but identical core mechanics. We are building a JavaScript version for remote 2-player play.
+A platform for hosting strategic 2-player abstract board games at hollowedstone.com. Built on Cloudflare Workers with static assets and KV for game state.
 
-## Core Mechanics
+## Current Games
 
-### Components
-- 61-hex Agon board (5 concentric rings + 1 center hex)
-- Each player has 5 stones: 3 of one role and 2 of another (or any agreed 3+2 split)
-- 4 roles forming a displacement cycle: Role 1 > Role 2 > Role 3 > Role 4 > Role 1
-- Player 1 controls Roles 1 & 3 (non-adjacent in cycle). Player 2 controls Roles 2 & 4.
+| Game | Slug | Board | Rules |
+|------|------|-------|-------|
+| Ouroboros | `oroboros` | 61-hex Agon board | `docs/rulebooks/oroboros/` |
+| Nine Men's Morris | `nine-mens-morris` | 3 concentric squares, 24 nodes | `docs/rulebooks/nine-mens-morris/` |
+| Fanorona | `fanorona` | 5x9 grid, 45 intersections | `docs/rulebooks/fanorona/` |
 
-### Displacement Cycle (varies by theme)
-| Theme | Role 1 | Role 2 | Role 3 | Role 4 |
-|-------|--------|--------|--------|--------|
-| Wyrd | Ice (Blue) | Fire (Red) | Wood (Yellow) | Wind (White) |
-| Dominion | Teacher (Blue) | Herald (Red) | Shepherd (Yellow) | Servant (White) |
-| Inner Work | Planning (Blue) | Courage (Red) | Compassion (Green) | Discipline (Gold) |
-| Neutral | Red | Blue | Green | Gold |
+Game rules live in the rulebooks, not in this file.
 
-### Setup
-- Each player places 5 stones across their 5-hex starting edge in any order
-- Player 2 gets one free move before Player 1's first turn (balances going second)
+## Architecture
 
-### Turns
-- Players alternate turns. Each turn = **2 moves** (one stone, one step to adjacent empty hex)
-- Holding the center hex = **3 moves** per turn (center stone is locked, moves apply to other stones)
-- No legal moves = must pass
+- **Static frontend:** Vanilla JS, ES modules, SVG rendering. No frameworks, no build step.
+- **API:** Single Cloudflare Worker (`worker/index.js`) routes `/play/{game-slug}/api/*` to game-specific handlers. Everything else serves static files from `public/`.
+- **Persistence:** Cloudflare KV stores game state as JSON. Key format: `game:{accessCode}`.
+- **Auth:** Access code to join, random token per player (passed as query param, stored in localStorage). No accounts.
+- **Sync:** Adaptive polling with exponential backoff. No WebSockets.
+- **Engine:** Each game has a shared `engine.js` imported by both the worker (validation) and the client (UI hints). The engine is the single source of truth for rules.
 
-### Partnership Rule
-- A stone may only advance toward center if it **starts adjacent to at least one friendly stone**
-- Isolated stones may only move sideways or away from center
-- **Suspended entirely** when opponent holds center (see Restoration Turn)
+## Project Layout
 
-### Displacement (Capture)
-- Move onto a hex occupied by an enemy stone your role beats in the cycle
-- Displaced stone goes to opponent's holding area
-- **Restoration:** Spend 1 of your moves to return any held stone to any empty hex on your starting edge
-- Nothing is permanently lost
+```
+public/play/{game-slug}/          Each game is self-contained here
+    index.html                    Lobby (create/join)
+    game.html                     Game board
+    css/board.css                 Layout and component styles
+    css/themes/{theme}.css        Theme color overrides
+    themes/{theme}.json           Theme data (names, colors, objectives)
+    js/shared/engine.js           Rules engine (client + server)
+    js/shared/board-data.js       Board geometry and adjacency
+    js/shared/constants.js        Phases, actions, limits
+    js/board.js                   SVG board rendering
+    js/game.js                    Game controller
+    js/net.js                     API calls, polling, session
+    js/ui.js                      Status, panels, overlays
+    js/help.js                    Rules overlay
+    js/version.js                 Build version and date
 
-### Ko Rule
-- A stone may not return to a hex it occupied 2 or fewer moves ago
-
-### Center Hex (Yggdrasil / Public Stance / The Inner Work)
-Three game states:
-
-| State | Moves | Partnership | Displacement |
-|-------|-------|-------------|--------------|
-| **Normal** (center empty) | 2 | Required | Cycle applies |
-| **Holding** (you hold center) | 3 (center stone locked) | Required for all 3 | Any role displaces any role at center |
-| **Restoration** (opponent holds center) | 2, partnership suspended | Suspended | 1 displacement max across both moves |
-
-- Center stone can displace any adjacent enemy regardless of cycle
-- Any adjacent enemy can displace the center stone regardless of cycle
-- Center stone cannot leave voluntarily
-
-### Winning
-- First to **5 displacement points** wins (each displacement = 1 point)
-- Tiebreaker: higher total displacement count > later scorer > Player 2
-
-## Project Goal
-
-Build a JavaScript web application for remote 2-player play with these requirements:
-
-### Multiplayer via Access Code
-- One player creates a game and receives an access code
-- Second player joins by entering the access code
-- Both players see the board and take turns in real time
-
-### Persistent Move Storage
-- Every move is automatically saved as it happens
-- Games can be paused and resumed across sessions
-- Full move history is preserved for extended play sessions
-
-### Reference Assets (in `docs/rulebooks/`)
-- `hexobard5.html` — SVG board layout (61 hexes with ring structure and coordinates)
-- `mechanics.html` — Theme-neutral rules reference
-- `dominion.html` — Christian theme rulebook
-- `inner-work.html` — Psychology theme rulebook
-- `wyrd.v1.html` — Norse theme rulebook
-- `style.css` — Shared styles for rulebook pages
-
-These are design references only — the game does not load them at runtime.
-
----
-
-# Nine Men's Morris
-
-A classic 2-player strategy game played on a board of 3 concentric squares with 24 intersections. Single theme (neutral). We are building a JavaScript version for remote 2-player play using the same framework as Ouroboros.
-
-## Core Mechanics
-
-### Components
-- Board: 3 concentric squares connected at midpoints (24 intersections)
-- Each player has 9 pieces (men) of their color
-- Player 1 = Dark, Player 2 = Light
-
-### Game Phases
-1. **Placement** — Players alternate placing 1 piece per turn onto any empty intersection (18 turns total)
-2. **Movement** — Players alternate sliding 1 piece along a line to an adjacent empty intersection
-3. **Flying** (optional, enabled by default) — When reduced to 3 pieces, a player may move to any empty intersection
-
-### Mills
-- A mill = 3 of your pieces in a row along a drawn line (16 possible mills)
-- Forming a mill → immediately remove 1 opponent piece from the board
-- Cannot remove a piece in an opponent's mill unless all their pieces are in mills
-- Removed pieces are permanently out of the game
-- A mill may be opened and closed repeatedly for repeated captures
-
-### Winning
-- Opponent reduced to **fewer than 3 pieces**
-- Opponent has **no legal moves**
-
-### Draws
-- Mutual agreement
-- 50 moves with no capture (optional, default on)
-- Threefold repetition (optional, default on)
-
-## Reference Assets
-- `docs/rulebooks/boards/nine-mens-morris.html` — SVG board layout (24 nodes with labels)
-- `docs/rulebooks/nine-mens-morris/mechanics.html` — Complete rules reference
-
-These are design references only — the game does not load them at runtime.
-
-## Build Rules (shared)
-
-All games on this platform share the same multiplayer infrastructure (access codes, persistent move storage, Cloudflare Workers backend).
+worker/index.js                   API router, all game handlers
+docs/rulebooks/{game-slug}/       Design reference (not deployed)
+docs/rulebooks/boards/            SVG board layout references
+```
 
 ## Build Rules
 
 ### Web Research
-- Wikipedia blocks Claude from fetching pages — do not use WebFetch on wikipedia.org URLs
-- Other sites are generally fine for research
+- Wikipedia blocks Claude from fetching pages. Do not use WebFetch on wikipedia.org URLs.
+- Other sites are generally fine for research.
 
 ### Version Bumping
-Before every deploy, update the build version in each game's `js/version.js`:
-- Increment the patch number for bug fixes and small changes (0.1.12 → 0.1.13)
-- Increment the minor number for new features (0.1.13 → 0.2.0)
-- Increment the major number for breaking changes or major milestones (0.2.0 → 1.0.0)
-- Update the `BUILD_DATE` to today's date
-- These files are the single source of truth — all pages read from them
+Before every deploy, update `js/version.js` for each changed game:
+- Patch for bug fixes (0.1.12 to 0.1.13)
+- Minor for new features (0.1.13 to 0.2.0)
+- Major for breaking changes (0.2.0 to 1.0.0)
+- Update `BUILD_DATE` to today's date
+- Add a summary entry to `docs/hollowedstone/version-history.md` (newest first)
 
-### Version History
-After updating the version, add a summary entry to `version-history.md` in the project root:
-- Each entry should include the version number, date, and a brief list of changes
-- Keep entries in reverse chronological order (newest first)
-- This file serves as a human-readable changelog for the project
+### Writing Style
+- Do not use em dashes or other obvious AI fingerprints in any writing.
+- Keep prose direct and concise.
 
 ---
 
@@ -156,8 +73,8 @@ After updating the version, add a summary entry to `version-history.md` in the p
 - **Panel border:** `#30363d` (subtle grey)
 - **Primary text:** `#c9d1d9` (light grey)
 - **Muted text:** `#7a8599` (dim grey)
-- **Accent:** `#6a0dad` (purple) — buttons, links, active states
-- **Accent light:** `#b388ff` (light purple) — hover, highlights
+- **Accent:** `#6a0dad` (purple) for buttons, links, active states
+- **Accent light:** `#b388ff` (light purple) for hover, highlights
 - **Success/your-turn:** `#4ade80` (green)
 - **Error/remove:** `#f85149` (red)
 - **Board background:** `#1a1520` (dark purple-black)
@@ -167,292 +84,286 @@ After updating the version, add a summary entry to `version-history.md` in the p
 ### Typography
 - **Body/UI font:** `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`
 - **Monospace (codes, stats):** `ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace`
-- **Headings:** Same sans-serif stack with `letter-spacing` and `text-transform: uppercase` for style
-- **Do NOT use:** Georgia, Times New Roman, Crimson Text, Cinzel, or other serif fonts in game UI — they are hard to read at small sizes on screens
+- **Headings:** Same sans-serif stack with `letter-spacing` and `text-transform: uppercase`
+- **Do NOT use:** Georgia, Times New Roman, Crimson Text, Cinzel, or other serif fonts in game UI. They are hard to read at small sizes on screens.
 - **Minimum font size:** `0.75rem` for tertiary info (build tags, poll status). Body text should be `0.85rem` or larger.
-- Docs/rulebooks (`docs/`) may use decorative fonts since they are reference-only and not part of the game UI
+- Docs/rulebooks may use decorative fonts since they are reference-only.
 
 ### Layout
-- Dark theme only — no light mode
-- Responsive: desktop uses side panels flanking the board; mobile stacks vertically
-- Breakpoint: `768px` for mobile layout switch
-- Board SVG uses `vmin` units to stay square and responsive
-- Game pages use flexbox centering with `min-height: 100vh`
+- Dark theme only. No light mode.
+- Responsive: desktop uses side panels flanking the board; mobile stacks vertically.
+- Breakpoint: `768px` for mobile layout switch.
+- Board SVG uses `vmin` units to stay square and responsive.
+- Game pages use flexbox centering with `min-height: 100vh`.
+- Add `<meta name="color-scheme" content="dark">` to all game pages.
+- Add `forced-color-adjust: none` on board SVGs to prevent browser theme overrides.
 
 ### Footer
-Every page must include: `Home | Git Source | Donate` links + version tag
-- Game pages use `.site-footer` class
-- Lobby/landing pages use `.footer` or `.links` class with same links
+Every page must include: `Home | Git Source | Donate` links + version tag.
+- Game pages use `.site-footer` class.
+- Lobby/landing pages use `.footer` or `.links` class with the same links.
 
 ### SVG Board Rendering
-- Layers in order (bottom to top): background → lines → nodes (clickable) → pieces → markers (interactive, on top)
-- Pieces have `pointer-events: none`; clicks pass through to the node layer
-- Interactive markers (valid targets) go on TOP layer with their own click handlers
-- Selected piece: green highlight (`#00cc44`)
+- Layers in order (bottom to top): background, lines, nodes (clickable), pieces, rings (selectable/selected indicators), markers (valid targets)
+- Pieces have `pointer-events: none`; clicks pass through to the node layer.
+- Interactive markers (valid targets) go on the top layer with their own click handlers.
+- Selectable/selected rings go above pieces so highlights are visible regardless of piece color.
+- Selected piece: green ring (`#00cc44`)
 - Valid targets: green markers (`rgba(0,255,102,...)`)
 - Removable pieces: red pulse animation
+- Use inline `style.fill`/`style.stroke` for piece colors to prevent browser theme overrides.
 
 ### Interactive State Persistence
-- Active selections (e.g., selected piece during movement phase) MUST survive poll updates
-- Phase handlers should check for valid active selection before resetting highlights
-- Never do `clearHighlights(); _selectedNode = null;` unconditionally in a poll handler
+- Active selections (e.g., selected piece during movement phase) MUST survive poll updates.
+- Phase handlers should check for valid active selection before resetting highlights.
+- Never do `clearHighlights(); _selectedNode = null;` unconditionally in a poll handler.
+
+### Player Panel Highlighting
+- When it is your turn, your panel gets the `you-active` class (green border).
+- The `setTurnIndicator` function must manage `you-active` on panels, not just the status bar.
+
+---
+
+## KV Storage Conventions
+
+- Key: `game:{accessCode}` for full state JSON
+- Active TTL: 7 days (refreshed on moves)
+- Finished TTL: 30 days
+- Request counter persisted every 25 polls (not every request)
+- Free tier limit: 1,000 writes/day. A typical game uses 35-45 writes.
+
+---
+
+## Admin Dashboard
+
+The admin page (`/admin`) is protected by Cloudflare Access and shows all games across all game types in a single table. When adding a new game, both the worker and the admin page need updates.
+
+### Data contract
+
+The worker's `handleAdminGames` function reads every `game:*` key from KV and returns a normalized object per game:
+
+```
+{
+  code:     accessCode,
+  game:     'game-slug',              // e.g. 'ouroboros', 'nine-mens-morris', 'fanorona'
+  theme:    'theme-id',               // game slug for single-theme games, theme id for multi-theme
+  phase:    'waiting'|'playing'|...,
+  created:  ISO timestamp,
+  updated:  ISO timestamp,
+  p1:       { name, ip, score, holding },
+  p2:       { name, ip, score, holding },
+  moves:    logSeq count,
+  requests: poll count,
+  result:   null or { winner, reason, finalScore }
+}
+```
+
+### Score extraction
+
+Each game stores scores differently. The admin handler must normalize to `p1.score` and `p2.score` integers:
+
+| Game | Score source | Notes |
+|------|-------------|-------|
+| Ouroboros | `state.players.p1.score` | Direct score field |
+| Nine Men's Morris | `state.players.p2.piecesLost` | P1's score = pieces P1 captured = P2's losses |
+| Fanorona | `state.players.p1.captured` | Direct captured count |
+
+When adding a new game, add a case to the score extraction block in `handleAdminGames`. Follow the existing `isMorris`/`isFanorona` pattern.
+
+### Player name fallback
+
+The admin handler tries multiple fields for player names: `name`, then `title`, then a game-specific default (e.g., 'Dark'/'Light' for Morris). New games should set `name` or `title` on players at create/join time so the admin page shows something readable.
+
+### Admin page updates for a new game
+
+In `public/admin.html`:
+
+1. Add entry to `themeColors` map with a distinct hex color for the game badge
+2. Add entry to `themeNames` if the game has multiple themes (skip for single-theme games)
+3. Update the `gameLabel` construction to recognize the new `game` identifier
+4. Verify the phase filter in the stats section includes any new phase names the game uses
+
+### Worker updates for a new game
+
+In `worker/index.js` `handleAdminGames`:
+
+1. Add a boolean check: `const isNewGame = state.game === 'new-game-slug';`
+2. Add score extraction for the new game in the `p1Score`/`p2Score` lines
+3. Set `theme:` to the game slug for single-theme games
+4. Set the player name fallback default
 
 ---
 
 ## New Game Build Process
 
-Follow these steps in order when building a new game for the platform. Each step should be completed and verified before moving to the next. Use existing games (Oroboros, 9 Men's Morris) as reference implementations.
+Follow these steps in order when building a new game. Each step should be completed and verified before moving to the next. Use existing games as reference implementations.
 
-### Step 1 — Rulebook & Board Reference
+### Step 1: Rulebook and Board Reference
 
-Create the design reference documents. These are not loaded at runtime but define the game's rules and board geometry authoritatively.
+Create design reference documents in `docs/`. These are not loaded at runtime.
 
-**Create:**
-- `docs/rulebooks/{game-slug}/mechanics.html` — Complete rules reference
+- `docs/rulebooks/{game-slug}/mechanics.html` -- Complete rules reference
   - Uses shared stylesheet: `../../css/style.css`
   - Defines `:root` color variables for the game
   - Covers: components, board layout, setup, movement, capture/scoring, winning, draws
   - Includes implementation notes (settings, game state shape)
-- `docs/rulebooks/boards/{game-slug}.html` — SVG board layout
+- `docs/rulebooks/boards/{game-slug}.html` -- SVG board layout
   - Shows all intersections/cells with labels
   - Shows initial piece placement
   - Includes legend for piece colors and line types
-  - Print-optimized
 
-**Conventions:**
-- Follow the HTML structure pattern: `title-block` → `role-grid` → sections with `h2`/`h3` → `callout` boxes → tables
-- Use the same CSS classes as existing rulebooks (`.role-grid`, `.callout`, `.callout.warning`, `.move-table`, etc.)
+Follow the HTML structure pattern from existing rulebooks: `title-block`, `role-grid`, sections with `h2`/`h3`, `callout` boxes, tables.
 
-### Step 2 — Architecture & Data Model
+### Step 2: Architecture and Data Model
 
 Plan the game's technical architecture before writing code. Define:
 
-**Game state shape** — the full JSON object stored in KV:
+**Game state shape** (the JSON object stored in KV):
 ```
 {
   accessCode, game: '{game-slug}',
-  phase,                    // from PHASE constants
+  phase,
   createdAt, updatedAt,
   players: {
     p1: { token, ip, name, title, ...game-specific },
     p2: { token, ip, name, title, ...game-specific }
   },
-  board: { ... },           // game-specific board representation
-  turn: { player, action }, // current turn info
-  settings: { ... },        // configurable options
-  log: [],                  // move history with seq numbers
+  board: { ... },
+  turn: { player, action },
+  settings: { ... },
+  log: [],
   logSeq: 0,
-  result: null,             // { winner, reason, finalScore } when finished
+  result: null,
   requests: 0
 }
 ```
 
-**Board data model** — how the board is represented:
-- Node/cell naming convention (e.g., algebraic like `a1`, coordinate like `3,4`)
-- Adjacency map
-- Which nodes connect to which (diagonals, special connections)
-- Node positions in SVG coordinate space
+**Board data model:** Node naming convention, adjacency map, SVG positions.
 
-**Game phases** — the state machine:
-- `waiting` → (player 2 joins) → `placing`/`playing` → `finished`
-- What actions are valid in each phase
-- Turn structure (single move? multi-step? chain captures?)
+**Game phases:** State machine from `waiting` through `playing` to `finished`. What actions are valid in each phase. Turn structure.
 
-**API endpoints** — what actions the game needs:
-- Always: `create`, `join`, `state`, `leave`, `stats`, `replay`
-- Game-specific: `place`, `move`, `remove`, `capture`, etc.
+**API endpoints:** Always need `create`, `join`, `state`, `leave`, `stats`, `replay`. Plus game-specific actions (`place`, `move`, `remove`, `capture`, etc.).
 
-### Step 3 — Shared Engine & Board Data
+### Step 3: Shared Engine and Board Data
 
-Build the authoritative game logic that runs on both server and client.
+Create files under `public/play/{game-slug}/js/shared/`:
 
-**Create files under `public/play/{game-slug}/js/shared/`:**
+1. `constants.js` -- PHASE enum, ACTION enum, numeric constants
+2. `board-data.js` -- ALL_NODES, ADJACENCY, NODE_POSITIONS, helper functions
+3. `engine.js` -- createGame(), action functions, sanitizeForPlayer(), addLog()
 
-1. **`constants.js`** — Game constants
-   - `PHASE` enum (WAITING, PLACING, PLAYING, FINISHED, etc.)
-   - `ACTION` enum (PLACE, MOVE, REMOVE, etc.)
-   - Numeric constants (pieces per player, board size, win threshold, draw limits)
+Key principles:
+- Engine is the single source of truth for rules.
+- Every action returns `{ ok: true }` or `{ error: 'message' }`.
+- Engine mutates state in place; worker saves to KV after.
+- Client imports engine for UI hints (legal move highlighting) but server validates.
 
-2. **`board-data.js`** — Static board geometry
-   - `ALL_NODES` — array of all intersection/cell IDs
-   - `ADJACENCY` — map of node → adjacent nodes
-   - `NODE_POSITIONS` — map of node → `{x, y}` for SVG rendering
-   - Helper functions: `isAdjacent()`, game-specific queries (mills, lines, etc.)
+### Step 4: Frontend (Board, UI, Networking)
 
-3. **`engine.js`** — Authoritative rules engine
-   - `createGame(accessCode)` — initialize full game state
-   - Action functions (e.g., `placePiece`, `makeMove`, `removePiece`) — validate and execute
-   - `sanitizeForPlayer(state, player)` — strip tokens, IPs, hidden info
-   - Helper functions for validation (legal moves, win detection, draw detection)
-   - Internal `addLog(state, entry)` — appends to log with `seq` and `ts`
+Create files under `public/play/{game-slug}/`:
 
-**Key principles:**
-- Engine is the single source of truth for rules
-- Every action returns `{ ok: true }` or `{ error: 'message' }`
-- Engine mutates state in place; worker saves to KV after
-- Client imports engine for UI hints (legal move highlighting) but server validates
+- `js/board.js` -- SVG board renderer with initBoard, updateBoard, highlight functions
+- `js/ui.js` -- Status display, panels, overlays, move log
+- `js/net.js` -- API calls + adaptive polling (copy polling pattern from existing games)
+- `js/game.js` -- Game controller tying everything together
+- `js/help.js` -- Rules overlay
+- `js/version.js` -- Build version
+- `css/board.css` -- Layout and component styles
+- `css/themes/{theme}.css` -- Theme color overrides
+- `themes/{theme}.json` -- Theme data
+- `index.html` -- Lobby page (create/join)
+- `game.html` -- Game page
 
-### Step 4 — Frontend (Board, UI, Networking)
+### Step 5: Worker API Integration
 
-Build the client-side game experience.
+Modify `worker/index.js`:
 
-**Create files under `public/play/{game-slug}/`:**
+1. Import engine functions at top of file.
+2. Add route in the main fetch handler for `/play/{game-slug}/api/`.
+3. Implement API handlers following the exact pattern from existing games: handleCreate, handleJoin, handleState, game-specific action handlers, handleLeave, handleStats, handleReplay.
+4. Update route comments at top of worker/index.js.
 
-1. **`js/board.js`** — SVG board renderer
-   - `initBoard(svgElement, onNodeClick)` — draw board lines, nodes, layers
-   - `updateBoard(boardState, theme, lastMove)` — redraw pieces from state
-   - `highlightSelectable(nodes)`, `highlightSelected(node)`, `showValidTargets(nodes)` — interaction feedback
-   - `clearHighlights()` — reset all visual states
-   - Layers: background → lines → nodes (clickable) → pieces → markers (on top)
+### Step 6: Platform Integration
 
-2. **`js/ui.js`** — Status display, panels, overlays
-   - `setTurnIndicator(isMyTurn)` — status bar color + browser title
-   - `setStatus(msg)` — turn info text
-   - `updatePlayerPanels(state, myPlayer, theme)` — scores, piece counts
-   - `addLogEntries(entries, theme)` — move log (filter by `seq` to prevent duplicates)
-   - `showWaiting(accessCode)`, `showGameOver(result, theme)`, `showAbandoned(result, theme)` — overlays
+- Add game card + SVG thumbnail + stats fetch to `public/index.html`
+- Add game to `themeColors` map and `gameLabel` logic in `public/admin.html`
+- Verify `handleAdminGames` in the worker extracts scores correctly for the new game
+- Consistent footer on all new pages
 
-3. **`js/net.js`** — API calls + adaptive polling
-   - Copy the polling pattern from 9 Men's Morris (burst/waiting/my-turn/backoff/idle)
-   - `createGame(settings)`, `joinGame(code)` — lobby API calls
-   - Game-specific action senders (e.g., `sendPlace`, `sendMove`, `sendRemove`)
-   - `pollState(callback)` with `since` parameter for incremental log
-   - `saveSession`/`loadSession` — localStorage persistence
-   - Idle tracking + visibility change handling
+### Step 7: Testing and Polish
 
-4. **`js/game.js`** — Game controller (ties everything together)
-   - `startGame()` — session recovery → theme load → init board → start polling
-   - `onStateUpdate(state)` — the main update loop:
-     - Update board, panels, log
-     - Preserve active selection across polls (don't reset `_selectedNode`)
-     - Handle phase transitions (waiting → playing → finished)
-   - `onNodeClick(node)` — dispatch clicks based on phase and turn
-   - `leaveGame()` — confirm + send leave + redirect
+- Create, join, and play through a complete game
+- Test all game-specific mechanics, edge cases, draw conditions
+- Verify move log, selection persistence, session recovery
+- Check responsive layout, status bar, browser title, help overlay
+- Verify admin page and home page stats
+- Bump `version.js` (start at `0.1.0`) and add entry to `docs/hollowedstone/version-history.md`
+- Run through the Pre-Ship Checklist below
 
-5. **`js/help.js`** — Rules overlay
-   - `initHelp()`, `toggleHelp()` — keyboard shortcut (?) + button
-   - Renders game-specific rules HTML in a modal
+---
 
-6. **`js/version.js`** — Build version
-   - `export const BUILD = '0.1.0';`
-   - `export const BUILD_DATE = 'YYYY-MM-DD';`
+## Pre-Ship Checklist
 
-**Create CSS/theme files:**
+Run through this list before considering any work done. It covers recurring mistakes from past builds.
 
-7. **`css/board.css`** — Layout and component styles
-   - CSS variables (`:root`) for colors
-   - Layout: `.game-layout`, `.board-container`, `.player-panel`, `.status-bar`
-   - Board: `.board-svg`, `.board-node`, `.board-line`, `.piece`, `.valid-target-marker`
-   - Interactive states: `.selectable`, `.selected`, `.removable`, `.last-move`
-   - Overlays, help panel, footer, responsive breakpoints
-   - `.site-footer` with Home | Git Source | Donate links
+### Security
+- [ ] All game actions validated server-side in `worker/index.js` (never trust client)
+- [ ] `sanitizeForPlayer()` strips tokens and IPs before sending state to clients
+- [ ] New API handlers require a valid player token (call `identifyPlayer`, return 403 if null)
+- [ ] Access code input validated against `/^[A-Z2-9]{6}$/` before KV lookup
+- [ ] Error catch blocks do not include `detail: e.message` in responses
+- [ ] No new endpoints added without auth checks (except `stats` and `replay`)
+- [ ] POST handlers do not accept unbounded input (check Content-Length if accepting new fields)
 
-8. **`css/themes/{theme}.css`** — Theme color overrides (at least one)
+### SVG Board
+- [ ] Layers in correct order: background, lines, nodes, pieces, rings, markers
+- [ ] Pieces use `pointer-events: none` so clicks pass through to nodes
+- [ ] Selectable indicators use the ring layer (above pieces), not the node layer (below pieces)
+- [ ] Piece colors set via inline `style.fill`/`style.stroke`, not SVG attributes, to resist browser theme overrides
+- [ ] `updateBoard()` removes stale CSS classes but does not remove `empty` from nodes that gain pieces (CSS specificity handles it)
+- [ ] Node radius < piece radius < ring radius < marker radius (each layer visible around the one below)
 
-9. **`themes/{theme}.json`** — Theme data
-   - Player names, titles, colors (pieceColor, strokeColor)
-   - Objective text strings for each phase
-   - Game-specific terminology
+### UI
+- [ ] `setTurnIndicator()` manages `you-active` class on player panels (green border when it is your turn)
+- [ ] `updatePlayerPanels()` sets both `active` (whose turn) and `you` (which panel is mine) classes
+- [ ] Player name shows "(You)" suffix on your panel
+- [ ] Active selections survive poll updates (do not unconditionally clear `_selectedNode` in poll handler)
+- [ ] Status bar shows distinct messages for your turn vs opponent's turn
+- [ ] Browser title changes on turn change (e.g., ">> YOUR TURN <<")
+- [ ] Overlays (waiting, game over, abandoned) are dismissed on phase change
 
-**Create HTML pages:**
+### HTML Pages
+- [ ] `<meta name="color-scheme" content="dark">` on all game pages
+- [ ] `forced-color-adjust: none` on `.board-svg` in CSS
+- [ ] Footer on every page: Home | Git Source | Donate + version tag
+- [ ] Lobby page disables button and shows loading text during create/join
+- [ ] Lobby page supports Enter key on code input
+- [ ] Game page has Help button, Leave button, poll status indicator
 
-10. **`index.html`** — Lobby page
-    - Create Game card (with settings if applicable)
-    - Join Game card (code input)
-    - Footer: Home | Git Source | Donate + version tag
-    - Button disable + loading text on create/join
-    - Enter key on code input
+### Networking
+- [ ] `net.js` polling uses `since` parameter to avoid re-fetching full log
+- [ ] `addLogEntries()` in `ui.js` filters by `seq` to prevent duplicate log entries
+- [ ] `saveSession`/`loadSession` uses localStorage keyed by game slug + access code
+- [ ] Idle tracking resets backoff on click, keydown, touchstart, and visibility change
+- [ ] Poll rate slows when it is your turn (you are thinking) and speeds up on opponent's turn
 
-11. **`game.html`** — Game page
-    - Player panels (left/right or top/bottom on mobile)
-    - SVG board container
-    - Status bar with turn info
-    - Game footer: Help + Leave buttons + poll status
-    - Site footer: Home | Git Source | Donate + version tag
-    - Move log container
+### Worker API
+- [ ] `handleCreate` generates token with `crypto.getRandomValues`, not `Math.random`
+- [ ] `handleJoin` checks `phase === 'waiting'` and rejects if game already has two players
+- [ ] `handleState` sets `sanitized.you = player` so the client knows which side it is
+- [ ] `handleState` filters log by `since` param before returning
+- [ ] `handleLeave` sets winner to opponent and marks game as abandoned/finished
+- [ ] `handleStats` filters by `state.game === '{game-slug}'` when counting
+- [ ] `handleReplay` strips tokens and IPs from returned data
+- [ ] KV TTL set to `SEVEN_DAYS` for active games, `THIRTY_DAYS` for finished
+- [ ] Request counter incremented in state but only written to KV every 25 polls
 
-### Step 5 — Worker API Integration
+### Versioning
+- [ ] `js/version.js` bumped (patch for fixes, minor for features, major for breaking changes)
+- [ ] `BUILD_DATE` updated to today
+- [ ] Entry added to `docs/hollowedstone/version-history.md` (newest first)
 
-Wire the game into the Cloudflare Workers backend.
-
-**Modify `worker/index.js`:**
-
-1. **Import** engine functions at top of file:
-   ```
-   import { createGame, ...actions, sanitizeForPlayer } from '../public/play/{game-slug}/js/shared/engine.js';
-   ```
-
-2. **Add route** in the main fetch handler:
-   ```
-   if (path.startsWith('/play/{game-slug}/api/')) {
-     return handle{GameName}Api(path, request, env);
-   }
-   ```
-
-3. **Implement API handlers** — follow the exact pattern from existing games:
-   - `handleCreate` — generate code + token, create state, store player name/title/theme, save to KV
-   - `handleJoin` — validate code, check phase=waiting, assign p2 token, advance phase
-   - `handleState` — identify player by token, increment requests, sanitize, filter log by `since`
-   - Game-specific action handlers — validate token, increment requests, call engine, save to KV
-   - `handleLeave` — mark abandoned, set winner to opponent
-   - `handleStats` — iterate KV with cursor, filter by `state.game`, count by phase/date
-   - `handleReplay` — return full log + player info (no tokens/IPs)
-
-4. **Update route comments** at top of worker/index.js
-
-**KV storage conventions:**
-- Key: `game:{accessCode}` — full state JSON
-- Active TTL: 7 days (`SEVEN_DAYS`)
-- Finished TTL: 30 days (`THIRTY_DAYS`)
-- Request counter persisted every 25 polls
-
-### Step 6 — Platform Integration
-
-Connect the new game to the rest of the site.
-
-**Modify `public/index.html` (home page):**
-- Add a game card with link to `/play/{game-slug}/`
-- Add an SVG thumbnail (procedurally generated, showing the board with sample pieces)
-- Add stats fetch from `/play/{game-slug}/api/stats`
-
-**Modify `public/admin.html`:**
-- Add game to `themeColors` map (choose a distinct color)
-- Update the `gameLabel` logic to recognize the new `game` identifier
-- Verify score display makes sense for the new game type
-
-**Modify `worker/index.js` admin handler:**
-- Ensure `handleAdminGames` correctly extracts scores/names for the new game type
-
-**Ensure consistent footer** on all new pages: `Home | Git Source | Donate` + version tag
-
-### Step 7 — Testing & Polish
-
-Verify everything works end-to-end.
-
-**Functional testing:**
-- Create a game → get access code
-- Join from second tab → game starts
-- Play through a complete game to victory
-- Test all game-specific mechanics (captures, special moves, chain moves, etc.)
-- Test edge cases (no legal moves, draw conditions, abandoned games)
-- Verify move log displays correctly with no duplicates
-- Verify selection/highlighting persists across poll updates
-
-**Integration testing:**
-- Admin page shows the new game with correct labels and scores
-- Home page stats load and display
-- Replay endpoint returns valid data
-- Leave game works (abandoned state, opponent wins)
-- Session recovery works (refresh page mid-game)
-
-**UI/UX testing:**
-- Responsive layout (desktop + mobile)
-- Status bar updates correctly (your turn vs opponent's turn)
-- Browser title flashes on turn change
-- Help overlay renders game-specific rules
-- Pieces are visually distinct on the board (contrast check)
-- Polling adapts correctly (burst after moves, backoff on idle)
-
-**Update versions:**
-- Bump `version.js` for the new game (start at `0.1.0`)
-- Add entry to `version-history.md`
+### Platform Integration
+- [ ] Game card added to `public/index.html` with SVG thumbnail and stats fetch
+- [ ] Game added to `public/admin.html` (themeColors, gameLabel, score extraction)
+- [ ] Worker route comment updated at top of `worker/index.js`
