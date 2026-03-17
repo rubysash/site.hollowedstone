@@ -1,0 +1,27 @@
+{
+  "id": "neutral",
+  "name": "9 Men's Morris",
+  "subtitle": "A classic strategy game for two",
+  "cssFile": "css/themes/neutral.css",
+
+  "players": {
+    "p1": { "name": "Player 1", "title": "Dark", "color": "#0a0a0a", "pieceColor": "#111111", "strokeColor": "#aaaaaa" },
+    "p2": { "name": "Player 2", "title": "Light", "color": "#f0e6d3", "pieceColor": "#f0e6d3", "strokeColor": "#a08060" }
+  },
+
+  "terms": {
+    "mill": "mill",
+    "remove": "remove",
+    "flying": "flying"
+  },
+
+  "objectives": {
+    "placing": "Place a piece on any empty point",
+    "placing_wait": "Opponent is placing...",
+    "playing": "Slide a piece to an adjacent point",
+    "playing_fly": "Move a piece to any empty point (flying!)",
+    "playing_wait": "Opponent's turn...",
+    "remove": "Remove one of your opponent's pieces!",
+    "finished": "Game over."
+  }
+}

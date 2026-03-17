@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nine Men's Morris — Game Rules</title>
+<link rel="stylesheet" href="../../css/style.css">
+<style>
+:root {
+  --color-1: #1a1a1a;
+  --color-2: #fefefe;
+  --accent:  #4a3728;
+  --warn:    #c0392b;
+  --restore: #1e8449;
+}
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Nine Men&rsquo;s Morris</h1>
+  <div class="game-sub">Classic strategy game &mdash; 3 concentric squares &mdash; 24 intersections &mdash; 2 players</div>
+</div>
+
+<h2>Components</h2>
+<p>One Nine Men's Morris board (3 concentric squares connected at midpoints, forming 24 intersections). Each player has <strong>9 pieces</strong> (men) of their color.</p>
+
+<div class="role-grid">
+  <div class="role-row"><span class="dot" style="background:#1a1a1a;border-color:#000"></span><div class="role-inner"><span class="role-name">Player 1 (Dark)</span><span class="role-desc">9 dark pieces</span></div></div>
+  <div class="role-row"><span class="dot" style="background:#fefefe;border-color:#555"></span><div class="role-inner"><span class="role-name">Player 2 (Light)</span><span class="role-desc">9 light pieces</span></div></div>
+</div>
+
+<h2>Board Layout</h2>
+<p>The board consists of three concentric squares connected by lines at the midpoints of each side. This creates <strong>24 intersections</strong> (nodes) where pieces may be placed. Each node connects to 2, 3, or 4 adjacent nodes along the drawn lines.</p>
+<ul>
+  <li><strong>Outer square:</strong> 8 nodes (4 corners + 4 midpoints)</li>
+  <li><strong>Middle square:</strong> 8 nodes (4 corners + 4 midpoints)</li>
+  <li><strong>Inner square:</strong> 8 nodes (4 corners + 4 midpoints)</li>
+</ul>
+<p>The connecting lines at midpoints bridge adjacent rings, so the 4 midpoint positions on each side are connected across all three squares.</p>
+
+<h2>Game Phases</h2>
+<p>The game has three distinct phases:</p>
+
+<h3>Phase 1 &mdash; Placement</h3>
+<ul>
+  <li>Players alternate turns, starting with Player 1 (Dark).</li>
+  <li>On each turn, place <strong>one piece</strong> from your hand onto any empty intersection.</li>
+  <li>This phase ends when both players have placed all 9 pieces (18 turns total).</li>
+  <li>If a mill is formed during placement, the player immediately removes one opponent piece (see <em>Mills</em> below).</li>
+</ul>
+
+<h3>Phase 2 &mdash; Movement</h3>
+<ul>
+  <li>Players alternate turns.</li>
+  <li>On each turn, slide <strong>one of your pieces</strong> along a line to an <strong>adjacent empty intersection</strong>.</li>
+  <li>Pieces may only move to directly connected nodes &mdash; no jumping.</li>
+  <li>If a mill is formed by the move, the player immediately removes one opponent piece (see <em>Mills</em> below).</li>
+</ul>
+
+<h3>Phase 3 &mdash; Flying (optional variant)</h3>
+<ul>
+  <li>When a player is reduced to exactly <strong>3 pieces</strong>, that player may &ldquo;fly&rdquo; &mdash; move a piece to <strong>any empty intersection</strong> on the board, not just adjacent ones.</li>
+  <li>The opponent (if they have more than 3 pieces) continues sliding normally.</li>
+  <li>This phase is a widely-played variant. It should be <strong>enabled by default</strong> with an option to disable.</li>
+</ul>
+
+<h2>Mills</h2>
+<p>A <strong>mill</strong> is a line of <strong>3 of your pieces</strong> along one of the board&rsquo;s drawn lines (a full side of any square, or a full connecting line across rings).</p>
+
+<h3>The 16 possible mills</h3>
+<table>
+  <thead>
+    <tr><th>Type</th><th>Mills</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Outer square (4)</td>
+      <td>a1-b1-c1 &bull; c1-d1-e1 &bull; e1-f1-g1 &bull; g1-h1-a1</td>
+    </tr>
+    <tr>
+      <td>Middle square (4)</td>
+      <td>a2-b2-c2 &bull; c2-d2-e2 &bull; e2-f2-g2 &bull; g2-h2-a2</td>
+    </tr>
+    <tr>
+      <td>Inner square (4)</td>
+      <td>a3-b3-c3 &bull; c3-d3-e3 &bull; e3-f3-g3 &bull; g3-h3-a3</td>
+    </tr>
+    <tr>
+      <td>Cross-ring (4)</td>
+      <td>b1-b2-b3 &bull; d1-d2-d3 &bull; f1-f2-f3 &bull; h1-h2-h3</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Removing a piece</h3>
+<ul>
+  <li>When you form a mill, you <strong>must</strong> remove one of your opponent&rsquo;s pieces from the board.</li>
+  <li>You <strong>may not</strong> remove a piece that is part of an opponent&rsquo;s mill, <strong>unless</strong> all of the opponent&rsquo;s pieces are in mills.</li>
+  <li>Removed pieces are <strong>permanently out of the game</strong> (unlike Ouroboros, there is no restoration).</li>
+</ul>
+
+<h3>Repeated mills</h3>
+<p>A player may &ldquo;open&rdquo; and &ldquo;close&rdquo; the same mill on successive turns. Each time the mill is re-formed (by moving a piece out and back, or sliding a different piece in), the player removes an opponent piece.</p>
+
+<h2>Winning</h2>
+<p>A player wins when the opponent is reduced to one of the following conditions:</p>
+<ul>
+  <li><strong>Fewer than 3 pieces</strong> remaining (cannot form a mill).</li>
+  <li><strong>No legal moves</strong> on their turn (all pieces are blocked).</li>
+</ul>
+
+<h2>Draws</h2>
+<ul>
+  <li>The game is a <strong>draw</strong> if both players agree.</li>
+  <li>Optional: the game is a draw if <strong>no mill has been formed and no piece removed</strong> in the last 50 moves (25 per player). This prevents infinite loops.</li>
+  <li>Optional: the game is a draw by <strong>threefold repetition</strong> &mdash; if the same board position occurs 3 times with the same player to move.</li>
+</ul>
+
+<h2>Adjacency Reference</h2>
+<p>Each node and its connections:</p>
+
+<table>
+  <thead>
+    <tr><th>Node</th><th>Adjacent to</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>a1</td><td>b1, h1</td></tr>
+    <tr><td>b1</td><td>a1, c1, b2</td></tr>
+    <tr><td>c1</td><td>b1, d1</td></tr>
+    <tr><td>d1</td><td>c1, e1, d2</td></tr>
+    <tr><td>e1</td><td>d1, f1</td></tr>
+    <tr><td>f1</td><td>e1, g1, f2</td></tr>
+    <tr><td>g1</td><td>f1, h1</td></tr>
+    <tr><td>h1</td><td>g1, a1, h2</td></tr>
+    <tr><td>a2</td><td>b2, h2</td></tr>
+    <tr><td>b2</td><td>a2, c2, b1, b3</td></tr>
+    <tr><td>c2</td><td>b2, d2</td></tr>
+    <tr><td>d2</td><td>c2, e2, d1, d3</td></tr>
+    <tr><td>e2</td><td>d2, f2</td></tr>
+    <tr><td>f2</td><td>e2, g2, f1, f3</td></tr>
+    <tr><td>g2</td><td>f2, h2</td></tr>
+    <tr><td>h2</td><td>g2, a2, h1, h3</td></tr>
+    <tr><td>a3</td><td>b3, h3</td></tr>
+    <tr><td>b3</td><td>a3, c3, b2</td></tr>
+    <tr><td>c3</td><td>b3, d3</td></tr>
+    <tr><td>d3</td><td>c3, e3, d2</td></tr>
+    <tr><td>e3</td><td>d3, f3</td></tr>
+    <tr><td>f3</td><td>e3, g3, f2</td></tr>
+    <tr><td>g3</td><td>f3, h3</td></tr>
+    <tr><td>h3</td><td>g3, a3, h2</td></tr>
+  </tbody>
+</table>
+
+<h2>Implementation Notes</h2>
+
+<h3>Multiplayer via Access Code</h3>
+<p>Same pattern as Ouroboros: one player creates a game and receives an access code. The second player joins by entering it. Both see the board in real time.</p>
+
+<h3>Persistent Move Storage</h3>
+<p>Every placement, move, and removal is saved as it happens. Games can be paused and resumed across sessions.</p>
+
+<h3>Game Settings (configurable at game creation)</h3>
+<ul>
+  <li><strong>Flying:</strong> Enabled / Disabled (default: Enabled)</li>
+  <li><strong>Draw by repetition:</strong> Enabled / Disabled (default: Enabled)</li>
+  <li><strong>Move limit for draw:</strong> 50 moves with no capture (default: Enabled)</li>
+</ul>
+
+<h3>Game State</h3>
+<p>At any point the game state consists of:</p>
+<ul>
+  <li>Board position (which pieces occupy which of the 24 nodes)</li>
+  <li>Pieces in hand for each player (during Phase 1)</li>
+  <li>Pieces captured from each player</li>
+  <li>Current phase (placement / movement / flying per player)</li>
+  <li>Whose turn it is</li>
+  <li>Whether a mill was just formed (awaiting removal selection)</li>
+</ul>
+
+</body>
+</html>

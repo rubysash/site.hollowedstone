@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nine Men's Morris — Board Reference</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: Georgia, serif;
+  }
+
+  h1 {
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+    color: #222;
+  }
+
+  .subtitle {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: #555;
+    margin-bottom: 0.4rem;
+    font-style: italic;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.1rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    color: #333;
+    margin-bottom: 0.4rem;
+    justify-content: center;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 0.28rem; }
+
+  .sw {
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    border: 1.5px solid #666;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  svg.board {
+    width: 80vmin;
+    height: 80vmin;
+    display: block;
+  }
+
+  @page {
+    size: 8.5in 11in portrait;
+    margin: 0.35in 0.45in;
+  }
+
+  @media print {
+    body {
+      min-height: unset;
+      justify-content: flex-start;
+      padding-top: 0.05in;
+    }
+    svg.board {
+      width: 7in;
+      height: 7in;
+    }
+    h1   { font-size: 0.78rem; }
+    .subtitle { font-size: 0.6rem; }
+    .legend   { font-size: 0.58rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Nine Men&rsquo;s Morris</h1>
+<div class="subtitle">3 concentric squares &mdash; 24 intersections &mdash; 2 players</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="sw" style="background:#1a1a1a;border-color:#000"></span>Player 1 (Dark)</div>
+  <div class="legend-item"><span class="sw" style="background:#fefefe;border-color:#555"></span>Player 2 (Light)</div>
+  <div class="legend-item"><span class="sw" style="background:#d4a574;border-color:#a0764a"></span>Intersection (empty)</div>
+</div>
+
+<!--
+  Nine Men's Morris Board Layout
+
+  The board has 3 concentric squares connected by lines at midpoints.
+  24 intersections total, labeled by ring (outer=1, middle=2, inner=3)
+  and position (a-h clockwise from top-left).
+
+  Coordinate system (SVG): 700x700 viewBox
+  Outer square: 50,50 to 650,650  (corners + midpoints)
+  Middle square: 150,150 to 550,550
+  Inner square: 250,250 to 450,450
+
+  Node positions:
+  Outer (ring 1):
+    a1=50,50   b1=350,50   c1=650,50
+    d1=650,350             e1=650,650
+    f1=350,650  g1=50,650  h1=50,350
+
+  Middle (ring 2):
+    a2=150,150  b2=350,150  c2=550,150
+    d2=550,350              e2=550,550
+    f2=350,550  g2=150,550  h2=150,350
+
+  Inner (ring 3):
+    a3=250,250  b3=350,250  c3=450,250
+    d3=450,350              e3=450,450
+    f3=350,450  g3=250,450  h3=250,350
+-->
+
+<svg class="board" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Background -->
+  <rect width="700" height="700" fill="#f5edd6"/>
+
+  <!-- ═══ BOARD LINES ═══ -->
+
+  <!-- Outer square -->
+  <rect x="50" y="50" width="600" height="600"
+    fill="none" stroke="#1a1a1a" stroke-width="3"/>
+
+  <!-- Middle square -->
+  <rect x="150" y="150" width="400" height="400"
+    fill="none" stroke="#1a1a1a" stroke-width="3"/>
+
+  <!-- Inner square -->
+  <rect x="250" y="250" width="200" height="200"
+    fill="none" stroke="#1a1a1a" stroke-width="3"/>
+
+  <!-- Connecting lines (midpoints of each side) -->
+  <!-- Top -->
+  <line x1="350" y1="50" x2="350" y2="250"
+    stroke="#1a1a1a" stroke-width="3"/>
+  <!-- Right -->
+  <line x1="650" y1="350" x2="450" y2="350"
+    stroke="#1a1a1a" stroke-width="3"/>
+  <!-- Bottom -->
+  <line x1="350" y1="650" x2="350" y2="450"
+    stroke="#1a1a1a" stroke-width="3"/>
+  <!-- Left -->
+  <line x1="50" y1="350" x2="250" y2="350"
+    stroke="#1a1a1a" stroke-width="3"/>
+
+  <!-- ═══ INTERSECTION POINTS ═══ -->
+
+  <!-- Outer ring (ring 1) -->
+  <!-- a1: top-left -->
+  <circle cx="50"  cy="50"  r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- b1: top-center -->
+  <circle cx="350" cy="50"  r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- c1: top-right -->
+  <circle cx="650" cy="50"  r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- d1: right-center -->
+  <circle cx="650" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- e1: bottom-right -->
+  <circle cx="650" cy="650" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- f1: bottom-center -->
+  <circle cx="350" cy="650" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- g1: bottom-left -->
+  <circle cx="50"  cy="650" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- h1: left-center -->
+  <circle cx="50"  cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+
+  <!-- Middle ring (ring 2) -->
+  <!-- a2: top-left -->
+  <circle cx="150" cy="150" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- b2: top-center -->
+  <circle cx="350" cy="150" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- c2: top-right -->
+  <circle cx="550" cy="150" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- d2: right-center -->
+  <circle cx="550" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- e2: bottom-right -->
+  <circle cx="550" cy="550" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- f2: bottom-center -->
+  <circle cx="350" cy="550" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- g2: bottom-left -->
+  <circle cx="150" cy="550" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- h2: left-center -->
+  <circle cx="150" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+
+  <!-- Inner ring (ring 3) -->
+  <!-- a3: top-left -->
+  <circle cx="250" cy="250" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- b3: top-center -->
+  <circle cx="350" cy="250" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- c3: top-right -->
+  <circle cx="450" cy="250" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- d3: right-center -->
+  <circle cx="450" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- e3: bottom-right -->
+  <circle cx="450" cy="450" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- f3: bottom-center -->
+  <circle cx="350" cy="450" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- g3: bottom-left -->
+  <circle cx="250" cy="450" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- h3: left-center -->
+  <circle cx="250" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="2"/>
+
+  <!-- ═══ NODE LABELS ═══ -->
+  <style>
+    .label { font-size: 11px; fill: #666; font-family: Georgia, serif;
+             letter-spacing: 0.04em; }
+  </style>
+
+  <!-- Outer labels -->
+  <text class="label" x="50"  y="32"  text-anchor="middle">a1</text>
+  <text class="label" x="350" y="32"  text-anchor="middle">b1</text>
+  <text class="label" x="650" y="32"  text-anchor="middle">c1</text>
+  <text class="label" x="678" y="354" text-anchor="start">d1</text>
+  <text class="label" x="650" y="680" text-anchor="middle">e1</text>
+  <text class="label" x="350" y="680" text-anchor="middle">f1</text>
+  <text class="label" x="50"  y="680" text-anchor="middle">g1</text>
+  <text class="label" x="22"  y="354" text-anchor="end">h1</text>
+
+  <!-- Middle labels -->
+  <text class="label" x="150" y="136" text-anchor="middle">a2</text>
+  <text class="label" x="350" y="136" text-anchor="middle">b2</text>
+  <text class="label" x="550" y="136" text-anchor="middle">c2</text>
+  <text class="label" x="578" y="354" text-anchor="start">d2</text>
+  <text class="label" x="550" y="578" text-anchor="middle">e2</text>
+  <text class="label" x="350" y="578" text-anchor="middle">f2</text>
+  <text class="label" x="150" y="578" text-anchor="middle">g2</text>
+  <text class="label" x="122" y="354" text-anchor="end">h2</text>
+
+  <!-- Inner labels -->
+  <text class="label" x="250" y="236" text-anchor="middle">a3</text>
+  <text class="label" x="350" y="236" text-anchor="middle">b3</text>
+  <text class="label" x="450" y="236" text-anchor="middle">c3</text>
+  <text class="label" x="478" y="354" text-anchor="start">d3</text>
+  <text class="label" x="450" y="478" text-anchor="middle">e3</text>
+  <text class="label" x="350" y="478" text-anchor="middle">f3</text>
+  <text class="label" x="250" y="478" text-anchor="middle">g3</text>
+  <text class="label" x="222" y="354" text-anchor="end">h3</text>
+
+</svg>
+
+</body>
+</html>

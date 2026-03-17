@@ -106,18 +106,28 @@
     <span class="play-tag">Play Now</span>
   </a>
 
-  <!-- Future games go here -->
+  <a href="/play/nine-mens-morris/" class="game-card">
+    <h2>9 Men's Morris</h2>
+    <svg class="game-thumb" id="morris-thumb" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"></svg>
+    <p>Three squares, sixteen mills. Place, slide, and fly your way to victory in this timeless classic.</p>
+    <div class="game-stats" id="morris-stats"></div>
+    <span class="play-tag">Play Now</span>
+  </a>
 </div>
 
 <div class="footer">
-  More games coming soon.
-  <div style="margin-top:0.8rem;">
-    <a href="https://github.com/rubysash/site.hollowedstone" target="_blank" rel="noopener" style="color:#6a0dad;text-decoration:none;">GitHub</a>
-    <span style="margin:0 0.5rem;">|</span>
-    <a href="https://www.paypal.com/donate/?hosted_button_id=8F2JVZ6PWZ63J" target="_blank" rel="noopener" style="color:#6a0dad;text-decoration:none;">Donate</a>
-  </div>
+  <a href="/" style="color:#6a0dad;text-decoration:none;">Home</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="https://github.com/rubysash/site.hollowedstone" target="_blank" rel="noopener" style="color:#6a0dad;text-decoration:none;">Git Source</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="https://www.paypal.com/donate/?hosted_button_id=8F2JVZ6PWZ63J" target="_blank" rel="noopener" style="color:#6a0dad;text-decoration:none;">Donate</a>
+  <div class="build-tag" style="margin-top:0.5rem;font-size:0.7rem;color:#484f58;opacity:0.6;" id="build-tag"></div>
 </div>
 
+<script type="module">
+import { BUILD } from '/play/oroboros/js/version.js';
+document.getElementById('build-tag').textContent = `v${BUILD}`;
+</script>
 <script>
 // Fetch game stats for the landing page
 (async function() {
@@ -209,6 +219,86 @@
     circle.setAttribute('stroke', s.stroke);
     circle.setAttribute('stroke-width', '0.1');
     svg.appendChild(circle);
+  }
+})();
+
+// Morris stats
+(async function() {
+  try {
+    const resp = await fetch('/play/nine-mens-morris/api/stats');
+    if (!resp.ok) return;
+    const stats = await resp.json();
+    const el = document.getElementById('morris-stats');
+    if (el && stats.total > 0) {
+      el.innerHTML = `<span>${stats.thisWeek}</span> games this week | <span>${stats.total}</span> total`;
+    }
+  } catch (e) { /* silent */ }
+})();
+
+// Morris thumbnail — accurate 3-square board with pieces on valid nodes
+(function() {
+  const svg = document.getElementById('morris-thumb');
+  if (!svg) return;
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs) => {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    return e;
+  };
+
+  // Background
+  svg.appendChild(el('rect', { width: 200, height: 200, fill: '#1a1520', rx: 6 }));
+
+  // 3 concentric squares (outer, middle, inner)
+  const rings = [
+    { x: 15, y: 15, w: 170, h: 170 },
+    { x: 50, y: 50, w: 100, h: 100 },
+    { x: 85, y: 85, w: 30,  h: 30 }
+  ];
+  for (const r of rings) {
+    svg.appendChild(el('rect', { x:r.x, y:r.y, width:r.w, height:r.h, fill:'none', stroke:'#5a4a6a', 'stroke-width':1.5 }));
+  }
+
+  // Midpoint connecting lines (top, right, bottom, left)
+  [[100,15,100,85],[185,100,115,100],[100,185,100,115],[15,100,85,100]].forEach(([x1,y1,x2,y2]) => {
+    svg.appendChild(el('line', { x1,y1,x2,y2, stroke:'#5a4a6a', 'stroke-width':1.5 }));
+  });
+
+  // Node positions matching the actual board layout
+  // Ring 1 (outer): corners at 15,15 to 185,185, midpoints at 100
+  // Ring 2 (middle): corners at 50,50 to 150,150, midpoints at 100
+  // Ring 3 (inner): corners at 85,85 to 115,115, midpoints at 100
+  const nodes = {
+    a1:{x:15,y:15},   b1:{x:100,y:15},  c1:{x:185,y:15},
+    d1:{x:185,y:100},  e1:{x:185,y:185}, f1:{x:100,y:185},
+    g1:{x:15,y:185},  h1:{x:15,y:100},
+    a2:{x:50,y:50},   b2:{x:100,y:50},  c2:{x:150,y:50},
+    d2:{x:150,y:100},  e2:{x:150,y:150}, f2:{x:100,y:150},
+    g2:{x:50,y:150},  h2:{x:50,y:100},
+    a3:{x:85,y:85},   b3:{x:100,y:85},  c3:{x:115,y:85},
+    d3:{x:115,y:100},  e3:{x:115,y:115}, f3:{x:100,y:115},
+    g3:{x:85,y:115},  h3:{x:85,y:100}
+  };
+
+  // Draw empty node dots
+  for (const n of Object.values(nodes)) {
+    svg.appendChild(el('circle', { cx:n.x, cy:n.y, r:3.5, fill:'#2a2a44', stroke:'#5a4a6a', 'stroke-width':0.8 }));
+  }
+
+  // Place pieces on valid intersections showing a mid-game state
+  // Dark pieces (p1) — a mill on top of outer ring + extras
+  const darkPieces = ['a1','b1','c1','h2','b3'];
+  // Light pieces (p2) — scattered
+  const lightPieces = ['e1','f1','d2','f2','g2'];
+
+  for (const id of darkPieces) {
+    const n = nodes[id];
+    svg.appendChild(el('circle', { cx:n.x, cy:n.y, r:6, fill:'#111111', stroke:'#aaa', 'stroke-width':1 }));
+  }
+  for (const id of lightPieces) {
+    const n = nodes[id];
+    svg.appendChild(el('circle', { cx:n.x, cy:n.y, r:6, fill:'#f0e6d3', stroke:'#a08060', 'stroke-width':1 }));
   }
 })();
 </script>

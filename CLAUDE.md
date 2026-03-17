@@ -82,6 +82,50 @@ Build a JavaScript web application for remote 2-player play with these requireme
 
 These are design references only — the game does not load them at runtime.
 
+---
+
+# Nine Men's Morris
+
+A classic 2-player strategy game played on a board of 3 concentric squares with 24 intersections. Single theme (neutral). We are building a JavaScript version for remote 2-player play using the same framework as Ouroboros.
+
+## Core Mechanics
+
+### Components
+- Board: 3 concentric squares connected at midpoints (24 intersections)
+- Each player has 9 pieces (men) of their color
+- Player 1 = Dark, Player 2 = Light
+
+### Game Phases
+1. **Placement** — Players alternate placing 1 piece per turn onto any empty intersection (18 turns total)
+2. **Movement** — Players alternate sliding 1 piece along a line to an adjacent empty intersection
+3. **Flying** (optional, enabled by default) — When reduced to 3 pieces, a player may move to any empty intersection
+
+### Mills
+- A mill = 3 of your pieces in a row along a drawn line (16 possible mills)
+- Forming a mill → immediately remove 1 opponent piece from the board
+- Cannot remove a piece in an opponent's mill unless all their pieces are in mills
+- Removed pieces are permanently out of the game
+- A mill may be opened and closed repeatedly for repeated captures
+
+### Winning
+- Opponent reduced to **fewer than 3 pieces**
+- Opponent has **no legal moves**
+
+### Draws
+- Mutual agreement
+- 50 moves with no capture (optional, default on)
+- Threefold repetition (optional, default on)
+
+## Reference Assets
+- `docs/rulebooks/boards/nine-mens-morris.html` — SVG board layout (24 nodes with labels)
+- `docs/rulebooks/nine-mens-morris/mechanics.html` — Complete rules reference
+
+These are design references only — the game does not load them at runtime.
+
+## Build Rules (shared)
+
+All games on this platform share the same multiplayer infrastructure (access codes, persistent move storage, Cloudflare Workers backend).
+
 ## Build Rules
 
 ### Version Bumping
