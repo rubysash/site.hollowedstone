@@ -8,51 +8,6 @@ Games under consideration for the platform. All are 2-player abstract strategy w
 <tr>
 <td width="300" align="center">
 
-![Hnefatafl / Tablut](placeholder)
-
-</td>
-<td>
-
-### Hnefatafl / Tablut
-**Strategy: High**
-
-Asymmetric Viking board game. One side has a king and defenders trying to escape to the edges; the other side has a larger attacking force trying to capture the king. Tablut (9x9) is the best-documented variant with the cleanest ruleset. Custodian capture (sandwich to remove). The asymmetry is a mechanic I don't have on the platform yet, and the Norse theme fits naturally with the Wyrd skin. Historically well-sourced through Linnaeus's 1732 notes.
-
-</td>
-</tr>
-<tr>
-<td width="300" align="center">
-
-![Abalone](placeholder)
-
-</td>
-<td>
-
-### Abalone
-**Strategy: High**
-
-Hex-based marble game where you push opponent pieces off the edge of the board. The core mechanic ("sumito") lets a column of 2-3 pieces push a smaller group of opponent pieces. Completely different from capture, displacement, or milling. Played on a hexagonal board with 61 spaces (same count as the Agon board). Visually striking and tactile even in digital form. Tournament scene exists.
-
-</td>
-</tr>
-<tr>
-<td width="300" align="center">
-
-![Lines of Action](placeholder)
-
-</td>
-<td>
-
-### Lines of Action
-**Strategy: High**
-
-Played on an 8x8 board. The goal is to connect all your pieces into a single contiguous group. Pieces move exactly as many spaces as there are pieces (friendly and enemy) along the line of movement. Captures by displacement. The win condition (connection, not elimination) is unlike anything else I have. Simple rules but deep positional play. Invented by Claude Soucie, popularized by Sid Sackson.
-
-</td>
-</tr>
-<tr>
-<td width="300" align="center">
-
 ![Surakarta](placeholder)
 
 </td>
@@ -233,7 +188,7 @@ Maori game from New Zealand. Star-shaped board with 8 points around a center (ke
 <tr>
 <td width="300" align="center">
 
-![Agon](placeholder)
+![Agon](../rulebooks/boards/hex-5x5.svg)
 
 </td>
 <td>
@@ -325,10 +280,11 @@ Five-in-a-row on a hex grid with custodian capture (place stones to sandwich and
 ---
 
 **Notes to self:**
-- Prioritize games with mechanics I don't already have (asymmetry, pushing, connection, stacking, territory)
-- Current mechanic coverage: displacement cycle (Ouroboros), milling (Morris), approach/withdrawal capture (Fanorona)
-- Biggest gaps: asymmetric play, pushing/shoving, connection win conditions, territory/area control
-- Watch for overlap: Seega vs Hasami Shogi vs Mak Yek are all custodian-capture — probably only need one
+- Prioritize games with mechanics I don't already have (stacking, territory, enclosure, loop formation)
+- Current mechanic coverage: displacement cycle (Ouroboros), milling (Morris), approach/withdrawal capture (Fanorona), connection (Lines of Action), pushing (Abalone), asymmetric regicide/race (Tablut)
+- Biggest gaps: territory/area control, stacking, enclosure, loop formation
+- Watch for overlap: Seega vs Hasami Shogi vs Mak Yek are all custodian-capture (Tablut already covers this mechanic)
 - Konane might be too close to Fanorona (mandatory jumps, chain captures)
-- Shogi intentionally left off — too many piece types and promotion rules for clean SVG UI
-- Reversi left off — heavily served by existing apps, wouldn't stand out
+- Shogi intentionally left off - too many piece types and promotion rules for clean SVG UI
+- Reversi left off - heavily served by existing apps, wouldn't stand out
+- Tablut, Abalone, and Lines of Action have been built and moved off this list
