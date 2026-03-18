@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tablut — Board Reference</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: Georgia, serif;
+  }
+
+  h1 {
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+    color: #222;
+  }
+
+  .subtitle {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: #555;
+    margin-bottom: 0.4rem;
+    font-style: italic;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.1rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    color: #333;
+    margin-bottom: 0.4rem;
+    justify-content: center;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 0.28rem; }
+
+  .sw {
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    border: 1.5px solid #666;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .sq {
+    width: 13px; height: 13px;
+    border: 1.5px solid #666;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  svg.board {
+    width: 80vmin;
+    height: 80vmin;
+    display: block;
+  }
+
+  @page {
+    size: 8.5in 11in portrait;
+    margin: 0.35in 0.45in;
+  }
+
+  @media print {
+    body {
+      min-height: unset;
+      justify-content: flex-start;
+      padding-top: 0.05in;
+    }
+    svg.board {
+      width: 7in;
+      height: 7in;
+    }
+    h1   { font-size: 0.78rem; }
+    .subtitle { font-size: 0.6rem; }
+    .legend   { font-size: 0.58rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Tablut</h1>
+<div class="subtitle">9&times;9 grid &mdash; 25 pieces &mdash; asymmetric &mdash; 2 players</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="sw" style="background:#1a1a1a;border-color:#000"></span>Attacker (Muscovite) &times;16</div>
+  <div class="legend-item"><span class="sw" style="background:#fefefe;border-color:#555"></span>Defender (Swede) &times;8</div>
+  <div class="legend-item"><span class="sw" style="background:#d4aa00;border-color:#8a6e00"></span>King &times;1</div>
+  <div class="legend-item"><span class="sq" style="background:#c8a96e;border-color:#8a6e00"></span>Throne (center)</div>
+  <div class="legend-item"><span class="sq" style="background:#7a9b6d;border-color:#4a6a3d"></span>Corner (escape)</div>
+</div>
+
+<!--
+  Tablut Board Layout - 9x9 Grid
+
+  Coordinate system: columns a-i (left to right), rows 1-9 (bottom to top)
+  SVG viewBox: 0 0 700 700
+  Grid spacing: 75px
+  First cell center: 50,50 (top-left = a9)
+  Last cell center: 650,650 (bottom-right = i1)
+
+  Column positions (x): a=50, b=125, c=200, d=275, e=350, f=425, g=500, h=575, i=650
+  Row positions (y):     9=50, 8=125, 7=200, 6=275, 5=350, 4=425, 3=500, 2=575, 1=650
+
+  Special squares:
+    Throne: e5 (350,350)
+    Corners: a9 (50,50), i9 (650,50), a1 (50,650), i1 (650,650)
+
+  Starting positions:
+    King: e5
+    Defenders: e7, e6, e4, e3, c5, d5, f5, g5
+    Attackers:
+      Top: d9, e9, f9, e8
+      Bottom: d1, e1, f1, e2
+      Left: a4, a5, a6, b5
+      Right: i4, i5, i6, h5
+-->
+
+<svg class="board" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Background -->
+  <rect width="700" height="700" fill="#f5edd6"/>
+
+  <!-- Grid lines -->
+  <!-- Vertical lines -->
+  <line x1="50"  y1="50" x2="50"  y2="650" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="125" y1="50" x2="125" y2="650" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="200" y1="50" x2="200" y2="650" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="275" y1="50" x2="275" y2="650" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="350" y1="50" x2="350" y2="650" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="425" y1="50" x2="425" y2="650" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="500" y1="50" x2="500" y2="650" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="575" y1="50" x2="575" y2="650" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="650" y1="50" x2="650" y2="650" stroke="#1a1a1a" stroke-width="1.5"/>
+  <!-- Horizontal lines -->
+  <line x1="50" y1="50"  x2="650" y2="50"  stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="50" y1="125" x2="650" y2="125" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="50" y1="200" x2="650" y2="200" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="50" y1="275" x2="650" y2="275" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="50" y1="350" x2="650" y2="350" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="50" y1="425" x2="650" y2="425" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="50" y1="500" x2="650" y2="500" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="50" y1="575" x2="650" y2="575" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="50" y1="650" x2="650" y2="650" stroke="#1a1a1a" stroke-width="1.5"/>
+
+  <!-- Board border -->
+  <rect x="50" y="50" width="600" height="600" fill="none" stroke="#1a1a1a" stroke-width="3"/>
+
+  <!-- Special squares -->
+  <!-- Throne (center) -->
+  <rect x="315" y="315" width="70" height="70" fill="#c8a96e" stroke="#8a6e00" stroke-width="2" rx="3"/>
+  <!-- Corner squares (escape targets) -->
+  <rect x="15"  y="15"  width="70" height="70" fill="#7a9b6d" stroke="#4a6a3d" stroke-width="2" rx="3"/>
+  <rect x="615" y="15"  width="70" height="70" fill="#7a9b6d" stroke="#4a6a3d" stroke-width="2" rx="3"/>
+  <rect x="15"  y="615" width="70" height="70" fill="#7a9b6d" stroke="#4a6a3d" stroke-width="2" rx="3"/>
+  <rect x="615" y="615" width="70" height="70" fill="#7a9b6d" stroke="#4a6a3d" stroke-width="2" rx="3"/>
+
+  <!-- PIECES: Starting positions -->
+
+  <!-- King on throne (e5) -->
+  <circle cx="350" cy="350" r="18" fill="#d4aa00" stroke="#8a6e00" stroke-width="2.5"/>
+  <text x="350" y="355" text-anchor="middle" font-size="16" font-weight="bold" fill="#4a3000" font-family="Georgia, serif">K</text>
+
+  <!-- Defenders (white) -->
+  <!-- Vertical arm: e7, e6, e4, e3 -->
+  <circle cx="350" cy="200" r="15" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <circle cx="350" cy="275" r="15" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <circle cx="350" cy="425" r="15" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <circle cx="350" cy="500" r="15" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- Horizontal arm: c5, d5, f5, g5 -->
+  <circle cx="200" cy="350" r="15" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <circle cx="275" cy="350" r="15" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <circle cx="425" cy="350" r="15" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <circle cx="500" cy="350" r="15" fill="#fefefe" stroke="#555" stroke-width="2"/>
+
+  <!-- Attackers (dark) -->
+  <!-- Top group: d9, e9, f9, e8 -->
+  <circle cx="275" cy="50"  r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="350" cy="50"  r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="425" cy="50"  r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="350" cy="125" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- Bottom group: d1, e1, f1, e2 -->
+  <circle cx="275" cy="650" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="350" cy="650" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="425" cy="650" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="350" cy="575" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- Left group: a4, a5, a6, b5 -->
+  <circle cx="50"  cy="275" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="50"  cy="350" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="50"  cy="425" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="125" cy="350" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- Right group: i4, i5, i6, h5 -->
+  <circle cx="650" cy="275" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="650" cy="350" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="650" cy="425" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="575" cy="350" r="15" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+
+  <!-- NODE LABELS -->
+  <style>
+    .label { font-size: 9px; fill: #999; font-family: Georgia, serif; letter-spacing: 0.04em; }
+  </style>
+
+  <!-- Column labels (top) -->
+  <text class="label" x="50"  y="38" text-anchor="middle">a</text>
+  <text class="label" x="125" y="38" text-anchor="middle">b</text>
+  <text class="label" x="200" y="38" text-anchor="middle">c</text>
+  <text class="label" x="275" y="38" text-anchor="middle">d</text>
+  <text class="label" x="350" y="38" text-anchor="middle">e</text>
+  <text class="label" x="425" y="38" text-anchor="middle">f</text>
+  <text class="label" x="500" y="38" text-anchor="middle">g</text>
+  <text class="label" x="575" y="38" text-anchor="middle">h</text>
+  <text class="label" x="650" y="38" text-anchor="middle">i</text>
+
+  <!-- Row labels (left) -->
+  <text class="label" x="36" y="54"  text-anchor="end">9</text>
+  <text class="label" x="36" y="129" text-anchor="end">8</text>
+  <text class="label" x="36" y="204" text-anchor="end">7</text>
+  <text class="label" x="36" y="279" text-anchor="end">6</text>
+  <text class="label" x="36" y="354" text-anchor="end">5</text>
+  <text class="label" x="36" y="429" text-anchor="end">4</text>
+  <text class="label" x="36" y="504" text-anchor="end">3</text>
+  <text class="label" x="36" y="579" text-anchor="end">2</text>
+  <text class="label" x="36" y="654" text-anchor="end">1</text>
+
+</svg>
+
+</body>
+</html>

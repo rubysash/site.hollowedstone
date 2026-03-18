@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Abalone — Board Reference</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: Georgia, serif;
+  }
+
+  h1 {
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+    color: #222;
+  }
+
+  .subtitle {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: #555;
+    margin-bottom: 0.4rem;
+    font-style: italic;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.1rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    color: #333;
+    margin-bottom: 0.4rem;
+    justify-content: center;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 0.28rem; }
+
+  .sw {
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    border: 1.5px solid #666;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  svg.board {
+    width: 80vmin;
+    height: 80vmin;
+    display: block;
+  }
+
+  @page {
+    size: 8.5in 11in portrait;
+    margin: 0.35in 0.45in;
+  }
+
+  @media print {
+    body {
+      min-height: unset;
+      justify-content: flex-start;
+      padding-top: 0.05in;
+    }
+    svg.board {
+      width: 7in;
+      height: 7in;
+    }
+    h1   { font-size: 0.78rem; }
+    .subtitle { font-size: 0.6rem; }
+    .legend   { font-size: 0.58rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Abalone</h1>
+<div class="subtitle">61-hex board &mdash; 14 marbles per player &mdash; push mechanics &mdash; 2 players</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="sw" style="background:#1a1a1a;border-color:#000"></span>Black (Player 1) &times;14</div>
+  <div class="legend-item"><span class="sw" style="background:#fefefe;border-color:#555"></span>White (Player 2) &times;14</div>
+  <div class="legend-item"><span class="sw" style="background:#d4a574;border-color:#a0764a"></span>Empty space</div>
+</div>
+
+<!--
+  Abalone Board Layout - 61-hex hexagonal grid (5 per side)
+
+  Coordinate system: rows A-I (top to bottom), columns numbered 1-N per row
+  Row sizes: A=5, B=6, C=7, D=8, E=9, F=8, G=7, H=6, I=5
+
+  SVG viewBox: 700x700, center at (350,350)
+  Horizontal spacing: 64px between hex centers
+  Vertical spacing: 56px between rows
+
+  X positions per row (centered):
+    5 hexes (A,I): 222, 286, 350, 414, 478
+    6 hexes (B,H): 190, 254, 318, 382, 446, 510
+    7 hexes (C,G): 158, 222, 286, 350, 414, 478, 542
+    8 hexes (D,F): 126, 190, 254, 318, 382, 446, 510, 574
+    9 hexes (E):   94, 158, 222, 286, 350, 414, 478, 542, 606
+
+  Y positions: A=126, B=182, C=238, D=294, E=350, F=406, G=462, H=518, I=574
+
+  Classic starting position:
+    Black (P1): A1-A5, B1-B6, C3-C5 (14 pieces)
+    White (P2): I1-I5, H1-H6, G3-G5 (14 pieces)
+-->
+
+<svg class="board" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Background -->
+  <rect width="700" height="700" fill="#f5edd6"/>
+
+  <!-- Board outline (hexagonal border) -->
+  <polygon points="350,80 630,215 630,485 350,620 70,485 70,215"
+    fill="#e8dfc8" stroke="#1a1a1a" stroke-width="3"/>
+
+  <!-- Row A (y=126): 5 hexes -->
+  <!-- A1 --> <circle cx="222" cy="126" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- A2 --> <circle cx="286" cy="126" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- A3 --> <circle cx="350" cy="126" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- A4 --> <circle cx="414" cy="126" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- A5 --> <circle cx="478" cy="126" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+
+  <!-- Row B (y=182): 6 hexes -->
+  <!-- B1 --> <circle cx="190" cy="182" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- B2 --> <circle cx="254" cy="182" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- B3 --> <circle cx="318" cy="182" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- B4 --> <circle cx="382" cy="182" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- B5 --> <circle cx="446" cy="182" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- B6 --> <circle cx="510" cy="182" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+
+  <!-- Row C (y=238): 7 hexes -->
+  <!-- C1 --> <circle cx="158" cy="238" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- C2 --> <circle cx="222" cy="238" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- C3 --> <circle cx="286" cy="238" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- C4 --> <circle cx="350" cy="238" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- C5 --> <circle cx="414" cy="238" r="22" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- C6 --> <circle cx="478" cy="238" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- C7 --> <circle cx="542" cy="238" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+
+  <!-- Row D (y=294): 8 hexes -->
+  <!-- D1 --> <circle cx="126" cy="294" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- D2 --> <circle cx="190" cy="294" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- D3 --> <circle cx="254" cy="294" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- D4 --> <circle cx="318" cy="294" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- D5 --> <circle cx="382" cy="294" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- D6 --> <circle cx="446" cy="294" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- D7 --> <circle cx="510" cy="294" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- D8 --> <circle cx="574" cy="294" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+
+  <!-- Row E (y=350): 9 hexes (center row) -->
+  <!-- E1 --> <circle cx="94"  cy="350" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- E2 --> <circle cx="158" cy="350" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- E3 --> <circle cx="222" cy="350" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- E4 --> <circle cx="286" cy="350" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- E5 --> <circle cx="350" cy="350" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- E6 --> <circle cx="414" cy="350" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- E7 --> <circle cx="478" cy="350" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- E8 --> <circle cx="542" cy="350" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- E9 --> <circle cx="606" cy="350" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+
+  <!-- Row F (y=406): 8 hexes -->
+  <!-- F1 --> <circle cx="126" cy="406" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- F2 --> <circle cx="190" cy="406" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- F3 --> <circle cx="254" cy="406" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- F4 --> <circle cx="318" cy="406" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- F5 --> <circle cx="382" cy="406" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- F6 --> <circle cx="446" cy="406" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- F7 --> <circle cx="510" cy="406" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- F8 --> <circle cx="574" cy="406" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+
+  <!-- Row G (y=462): 7 hexes -->
+  <!-- G1 --> <circle cx="158" cy="462" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- G2 --> <circle cx="222" cy="462" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- G3 --> <circle cx="286" cy="462" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- G4 --> <circle cx="350" cy="462" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- G5 --> <circle cx="414" cy="462" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- G6 --> <circle cx="478" cy="462" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+  <!-- G7 --> <circle cx="542" cy="462" r="14" fill="#d4a574" stroke="#a0764a" stroke-width="2"/>
+
+  <!-- Row H (y=518): 6 hexes -->
+  <!-- H1 --> <circle cx="190" cy="518" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- H2 --> <circle cx="254" cy="518" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- H3 --> <circle cx="318" cy="518" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- H4 --> <circle cx="382" cy="518" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- H5 --> <circle cx="446" cy="518" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- H6 --> <circle cx="510" cy="518" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+
+  <!-- Row I (y=574): 5 hexes -->
+  <!-- I1 --> <circle cx="222" cy="574" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- I2 --> <circle cx="286" cy="574" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- I3 --> <circle cx="350" cy="574" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- I4 --> <circle cx="414" cy="574" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+  <!-- I5 --> <circle cx="478" cy="574" r="22" fill="#fefefe" stroke="#555" stroke-width="2"/>
+
+  <!-- NODE LABELS -->
+  <style>
+    .label { font-size: 9px; fill: #999; font-family: Georgia, serif; letter-spacing: 0.04em; }
+    .rlabel { font-size: 11px; fill: #888; font-family: Georgia, serif; font-weight: bold; }
+  </style>
+
+  <!-- Row labels (left side) -->
+  <text class="rlabel" x="200" y="130" text-anchor="end">A</text>
+  <text class="rlabel" x="168" y="186" text-anchor="end">B</text>
+  <text class="rlabel" x="136" y="242" text-anchor="end">C</text>
+  <text class="rlabel" x="104" y="298" text-anchor="end">D</text>
+  <text class="rlabel" x="72"  y="354" text-anchor="end">E</text>
+  <text class="rlabel" x="104" y="410" text-anchor="end">F</text>
+  <text class="rlabel" x="136" y="466" text-anchor="end">G</text>
+  <text class="rlabel" x="168" y="522" text-anchor="end">H</text>
+  <text class="rlabel" x="200" y="578" text-anchor="end">I</text>
+
+  <!-- Column numbers (bottom of each row, below pieces) -->
+  <!-- Row I column numbers as reference -->
+  <text class="label" x="222" y="600" text-anchor="middle">1</text>
+  <text class="label" x="286" y="600" text-anchor="middle">2</text>
+  <text class="label" x="350" y="600" text-anchor="middle">3</text>
+  <text class="label" x="414" y="600" text-anchor="middle">4</text>
+  <text class="label" x="478" y="600" text-anchor="middle">5</text>
+
+  <!-- Row E column numbers (widest row, for reference) -->
+  <text class="label" x="94"  y="376" text-anchor="middle">1</text>
+  <text class="label" x="158" y="376" text-anchor="middle">2</text>
+  <text class="label" x="222" y="376" text-anchor="middle">3</text>
+  <text class="label" x="286" y="376" text-anchor="middle">4</text>
+  <text class="label" x="350" y="376" text-anchor="middle">5</text>
+  <text class="label" x="414" y="376" text-anchor="middle">6</text>
+  <text class="label" x="478" y="376" text-anchor="middle">7</text>
+  <text class="label" x="542" y="376" text-anchor="middle">8</text>
+  <text class="label" x="606" y="376" text-anchor="middle">9</text>
+
+</svg>
+
+</body>
+</html>

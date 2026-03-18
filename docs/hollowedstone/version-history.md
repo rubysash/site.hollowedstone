@@ -3,6 +3,10 @@
 ## Platform (Hollowed Stone)
 
 ### 2026-03-17
+- Added Tablut rulebook and SVG board reference (`docs/rulebooks/tablut/`)
+- Added Abalone rulebook and SVG board reference (`docs/rulebooks/abalone/`)
+- Updated footer on all pages: `Home | Git | Rulebooks | Donate`
+- Moved project docs into `docs/hollowedstone/` subfolder
 - Restructured project docs: all .md files moved to `docs/` (except README.md and CLAUDE.md)
 - Rewrote CLAUDE.md as platform-level project guide (was Ouroboros-specific)
 - Added pre-ship checklist to CLAUDE.md covering security, UI, SVG, networking, and versioning

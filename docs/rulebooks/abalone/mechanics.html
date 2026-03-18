@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Abalone — Game Rules</title>
+<link rel="stylesheet" href="../../css/style.css">
+<style>
+:root {
+  --color-1: #1a1a1a;
+  --color-2: #fefefe;
+  --accent:  #4a3728;
+  --warn:    #c0392b;
+  --restore: #1e8449;
+}
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Abalone</h1>
+  <div class="game-sub">Marble-pushing strategy game &mdash; 61-hex board &mdash; 2 players</div>
+</div>
+
+<h2>Overview</h2>
+<p>Abalone is a two-player strategy game where each player controls 14 marbles on a hexagonal board. The goal is to push 6 of your opponent's marbles off the edge of the board. Pushing is only possible with numerical superiority in a line, making formation and positioning critical.</p>
+
+<h2>Components</h2>
+<p>One hexagonal board with 61 spaces (5 per side) and 28 marbles total.</p>
+
+<div class="role-grid">
+  <div class="role-row"><span class="dot" style="background:#1a1a1a;border-color:#000"></span><div class="role-inner"><span class="role-name">Black</span><span class="role-desc">14 marbles &mdash; moves first</span></div></div>
+  <div class="role-row"><span class="dot" style="background:#fefefe;border-color:#555"></span><div class="role-inner"><span class="role-name">White</span><span class="role-desc">14 marbles</span></div></div>
+</div>
+
+<h2>Board Layout</h2>
+<p>The board is a regular hexagon with 61 spaces arranged in 9 rows:</p>
+
+<table>
+  <thead>
+    <tr><th>Row</th><th>Spaces</th><th>Labels</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>A (top)</td><td>5</td><td>A1 &ndash; A5</td></tr>
+    <tr><td>B</td><td>6</td><td>B1 &ndash; B6</td></tr>
+    <tr><td>C</td><td>7</td><td>C1 &ndash; C7</td></tr>
+    <tr><td>D</td><td>8</td><td>D1 &ndash; D8</td></tr>
+    <tr><td>E (center)</td><td>9</td><td>E1 &ndash; E9</td></tr>
+    <tr><td>F</td><td>8</td><td>F1 &ndash; F8</td></tr>
+    <tr><td>G</td><td>7</td><td>G1 &ndash; G7</td></tr>
+    <tr><td>H</td><td>6</td><td>H1 &ndash; H6</td></tr>
+    <tr><td>I (bottom)</td><td>5</td><td>I1 &ndash; I5</td></tr>
+  </tbody>
+</table>
+
+<p>Each space has up to 6 neighbors (the 6 hexagonal directions). Spaces on the board edge have fewer neighbors; marbles pushed beyond the edge are eliminated.</p>
+
+<h2>Setup</h2>
+
+<h3>Classic starting position (default)</h3>
+<p>Each player fills their two back rows and places 3 marbles in the center of the third row:</p>
+
+<table>
+  <thead>
+    <tr><th>Side</th><th>Positions (14 marbles)</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Black</td>
+      <td>A1&ndash;A5 (5) &bull; B1&ndash;B6 (6) &bull; C3, C4, C5 (3)</td>
+    </tr>
+    <tr>
+      <td>White</td>
+      <td>I1&ndash;I5 (5) &bull; H1&ndash;H6 (6) &bull; G3, G4, G5 (3)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Belgian Daisy (tournament variant)</h3>
+<p>Each player places two flower-shaped clusters of 7 marbles on opposite sides of the board. This setup leads to more aggressive openings and was designed to reduce drawn-out defensive play. Used in official AbaCup tournaments.</p>
+
+<h2>Movement</h2>
+<p>On each turn, a player moves <strong>1, 2, or 3 of their marbles</strong>. The marbles being moved must form a connected line on the board. There are two types of moves:</p>
+
+<h3>In-line move</h3>
+<p>Move a line of 1, 2, or 3 marbles in the direction of the line (forward or backward along the axis they are aligned on). The lead marble moves into an empty space, and the others follow.</p>
+<ul>
+  <li>A single marble moves to any adjacent empty space.</li>
+  <li>A group of 2 or 3 marbles moves along its own axis (the line connecting them).</li>
+  <li>The destination space for the lead marble must be empty, unless pushing (see Sumito below).</li>
+</ul>
+
+<h3>Broadside move (side-step)</h3>
+<p>Move a line of 2 or 3 marbles sideways (perpendicular to the axis they are aligned on). All marbles in the group shift one space in the same direction.</p>
+<ul>
+  <li>Every destination space must be empty.</li>
+  <li><strong>Broadside moves cannot push opponent marbles.</strong> Pushing only happens with in-line moves.</li>
+</ul>
+
+<h2>Pushing (Sumito)</h2>
+<p>When making an in-line move, your group can push opponent marbles if you have <strong>numerical superiority</strong>. The pushed marbles must be directly ahead of your group along the same line.</p>
+
+<h3>Valid pushes</h3>
+
+<table>
+  <thead>
+    <tr><th>Your group</th><th>Opponent marbles</th><th>Result</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>2 marbles</td><td>1 marble</td><td>Push (2 vs 1)</td></tr>
+    <tr><td>3 marbles</td><td>1 marble</td><td>Push (3 vs 1)</td></tr>
+    <tr><td>3 marbles</td><td>2 marbles</td><td>Push (3 vs 2)</td></tr>
+  </tbody>
+</table>
+
+<h3>Invalid pushes</h3>
+
+<table>
+  <thead>
+    <tr><th>Situation</th><th>Why</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1 vs 1</td><td>No numerical superiority</td></tr>
+    <tr><td>2 vs 2</td><td>Equal groups cannot push</td></tr>
+    <tr><td>3 vs 3</td><td>Equal groups cannot push</td></tr>
+    <tr><td>Any vs 3</td><td>A group of 3 is the maximum; nothing can push it</td></tr>
+    <tr><td>Opponent backed by friendly marble</td><td>Cannot push through your own marbles</td></tr>
+    <tr><td>Opponent backed by another opponent marble beyond the valid push count</td><td>Cannot push more marbles than you have superiority for</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <strong>Pushing is always optional.</strong> Even when a push is available, you may choose a different move instead.
+</div>
+
+<div class="callout">
+  <strong>Safe to move into:</strong> Moving your marble into a gap between opponent marbles does not cause anything to happen. Only the active player's in-line moves with numerical superiority result in pushes.
+</div>
+
+<h3>Pushing off the board</h3>
+<p>If a pushed marble has no space behind it (it is on the board edge and being pushed outward), it is <strong>permanently eliminated</strong>. Eliminated marbles do not return to the game.</p>
+
+<h2>Winning</h2>
+
+<table>
+  <thead>
+    <tr><th>Condition</th><th>Result</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Push 6 opponent marbles off the board</td>
+      <td>You win</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The game ends immediately when a player's 6th marble is pushed off.</p>
+
+<h2>Draws</h2>
+<p>Abalone has no built-in draw mechanism, which is a known weakness. Defensive formations (particularly the "turtle" or wedge) can stall games indefinitely. For the digital implementation, the following draw rules are recommended:</p>
+<ul>
+  <li><strong>Move limit:</strong> If no marble is pushed off within 200 moves, the game is a draw. (Configurable.)</li>
+  <li><strong>Repetition:</strong> If the same position occurs 3 times with the same player to move, the game is a draw.</li>
+  <li><strong>Agreement:</strong> Both players may agree to a draw at any time.</li>
+</ul>
+
+<div class="callout warning">
+  <strong>Draw prevention:</strong> The Belgian Daisy starting position was designed specifically to reduce stalemate situations. Consider making it the default or offering it as an option.
+</div>
+
+<hr>
+
+<h2>Implementation Notes</h2>
+
+<h3>Settings</h3>
+<table>
+  <thead>
+    <tr><th>Setting</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Starting position</td><td>Classic</td><td>Classic or Belgian Daisy</td></tr>
+    <tr><td>Move limit</td><td>200</td><td>Moves with no elimination before draw (0 = off)</td></tr>
+    <tr><td>Threefold repetition</td><td>On</td><td>Draw if same position repeats 3 times</td></tr>
+  </tbody>
+</table>
+
+<h3>Game state shape</h3>
+<pre>
+{
+  accessCode, game: 'abalone',
+  phase: 'waiting' | 'playing' | 'finished',
+  players: {
+    p1: { token, ip, name, title, eliminated: 0 },  // Black
+    p2: { token, ip, name, title, eliminated: 0 }   // White
+  },
+  board: { 'A1': 'p1', 'I5': 'p2', 'E5': null, ... },
+  turn: { player: 'p1' },
+  settings: { layout: 'classic', moveLimit: 200, drawByRepetition: true },
+  movesSinceElimination: 0,
+  positionHistory: {},
+  log: [], logSeq: 0,
+  result: null,
+  requests: 0
+}
+</pre>
+
+<h3>Board data model</h3>
+<ul>
+  <li><strong>Node naming:</strong> Row letter + column number. A1 through I5. 61 valid positions total.</li>
+  <li><strong>Adjacency:</strong> 6 hex directions per space. Edge spaces have 2&ndash;5 neighbors; pushing beyond a missing neighbor = off the board.</li>
+  <li><strong>Edge detection:</strong> A space is on the edge if it has fewer than 6 neighbors. Critical for push-off detection.</li>
+  <li><strong>Line detection:</strong> For move validation, need to identify lines of 2&ndash;3 aligned marbles along any of the 3 hex axes, and what lies beyond each end of the line.</li>
+</ul>
+
+<h3>Move representation</h3>
+<p>A move consists of:</p>
+<ul>
+  <li><strong>Marbles:</strong> 1, 2, or 3 marble positions (must be aligned)</li>
+  <li><strong>Direction:</strong> One of 6 hex directions</li>
+  <li><strong>Type:</strong> inline or broadside (derived from marble positions vs direction)</li>
+</ul>
+<p>The engine must determine whether the move is a simple slide, a broadside, or a push (and if so, what gets pushed and whether anything falls off the edge).</p>
+
+<h3>Phase machine</h3>
+<ul>
+  <li><code>waiting</code> &rarr; player 2 joins &rarr; <code>playing</code></li>
+  <li><code>playing</code> &rarr; 6th marble eliminated &rarr; <code>finished</code></li>
+  <li><code>playing</code> &rarr; move limit or repetition &rarr; <code>finished</code> (draw)</li>
+</ul>
+
+<h3>API endpoints</h3>
+<ul>
+  <li><code>create</code>, <code>join</code>, <code>state</code>, <code>leave</code>, <code>stats</code>, <code>replay</code> (standard)</li>
+  <li><code>move</code> (marbles[], direction) &mdash; single game-specific action</li>
+</ul>
+
+<h3>UI considerations</h3>
+<ul>
+  <li>Selecting multiple marbles: click first marble, then click second (auto-selects line between them), then click direction to move. Or click marble then click destination.</li>
+  <li>Show eliminated marble count prominently (it is the score).</li>
+  <li>Highlight pushable opponent marbles when a valid sumito is available.</li>
+  <li>Animate pushes (marbles sliding in sequence) for clarity.</li>
+  <li>Edge gutter/trough visual to show where marbles fall off.</li>
+</ul>
+
+</body>
+</html>
