@@ -9,6 +9,9 @@ A platform for hosting strategic 2-player abstract board games at hollowedstone.
 | Ouroboros | `oroboros` | 61-hex Agon board | `docs/rulebooks/oroboros/` |
 | Nine Men's Morris | `nine-mens-morris` | 3 concentric squares, 24 nodes | `docs/rulebooks/nine-mens-morris/` |
 | Fanorona | `fanorona` | 5x9 grid, 45 intersections | `docs/rulebooks/fanorona/` |
+| Lines of Action | `lines-of-action` | 8x8 checkerboard, 64 squares | `docs/rulebooks/lines-of-action/` |
+| Abalone | `abalone` | 61-hex hexagonal board (5 per side) | `docs/rulebooks/abalone/` |
+| Tablut | `tablut` | 9x9 grid, asymmetric | `docs/rulebooks/tablut/` |
 
 Game rules live in the rulebooks, not in this file.
 

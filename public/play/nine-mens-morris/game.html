@@ -11,7 +11,8 @@
 
 <div class="game-layout">
 
-  <!-- Left panel — Player 2 (Light) -->
+  <!-- Left column — Player 2 (Light) + Move Log -->
+  <div class="left-column">
   <div class="player-panel" data-player="p2">
     <div class="player-name">Light</div>
     <div class="player-stats">
@@ -20,6 +21,13 @@
       <div class="stat"><span class="stat-label">Lost:</span> <span class="pieces-lost">0</span></div>
     </div>
     <div class="piece-dots"></div>
+  </div>
+
+  <!-- Move log -->
+  <div class="log-container">
+    <h3 class="log-title">Move Log</h3>
+    <div class="move-log"></div>
+  </div>
   </div>
 
   <!-- Center — Board -->
@@ -55,7 +63,7 @@
   </div>
 
   <!-- Right panel — Player 1 (Dark) -->
-  <div class="player-panel" data-player="p1">
+  <div class="player-panel right-panel" data-player="p1">
     <div class="player-name">Dark</div>
     <div class="player-stats">
       <div class="stat"><span class="stat-label">In Hand:</span> <span class="pieces-in-hand">9</span></div>
@@ -65,11 +73,6 @@
     <div class="piece-dots"></div>
   </div>
 
-  <!-- Move log (below board on mobile) -->
-  <div class="log-container">
-    <h3 class="log-title">Move Log</h3>
-    <div class="move-log"></div>
-  </div>
 
 </div>
 

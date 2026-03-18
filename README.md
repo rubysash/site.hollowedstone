@@ -121,7 +121,10 @@ site.hollowedstone/
 |   |   |-- boards/                          SVG board layout references
 |   |   |-- oroboros/                         Ouroboros rules (by theme)
 |   |   |-- nine-mens-morris/                Nine Men's Morris rules
-|   |   +-- fanorona/                        Fanorona rules
+|   |   |-- fanorona/                        Fanorona rules
+|   |   |-- lines-of-action/                 Lines of Action rules
+|   |   |-- abalone/                         Abalone rules
+|   |   +-- tablut/                          Tablut rules
 |   +-- css/
 |       +-- style.css                        Shared rulebook stylesheet
 |
@@ -164,6 +167,9 @@ See [CLAUDE.md](CLAUDE.md) for the full new-game build process with detailed ste
 | [Ouroboros](/public/play/oroboros/) | 61-hex Agon board | Accumulate (first to 5 displacement points) |
 | [Nine Men's Morris](/public/play/nine-mens-morris/) | 3 concentric squares, 24 intersections | Capture (mill to remove, reduce below 3) |
 | [Fanorona](/public/play/fanorona/) | 5x9 grid, 45 intersections | Capture (approach/withdrawal elimination) |
+| [Lines of Action](/public/play/lines-of-action/) | 8x8 checkerboard, 64 squares | Connection (unite all pieces into one group) |
+| [Abalone](/public/play/abalone/) | 61-hex hexagonal board | Capture (push 6 opponent marbles off the edge) |
+| [Tablut](/public/play/tablut/) | 9x9 grid, asymmetric | Regicide / Race (capture king or escape to corner) |
 
 Rules for each game are in `docs/rulebooks/{game-slug}/`.
 

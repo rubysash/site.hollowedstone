@@ -1,121 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Fanorona — Board Reference</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    font-family: Georgia, serif;
-  }
-
-  h1 {
-    font-size: 1rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    margin-bottom: 0.3rem;
-    color: #222;
-  }
-
-  .subtitle {
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    color: #555;
-    margin-bottom: 0.4rem;
-    font-style: italic;
-  }
-
-  .legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem 1.1rem;
-    font-size: 0.68rem;
-    letter-spacing: 0.07em;
-    color: #333;
-    margin-bottom: 0.4rem;
-    justify-content: center;
-  }
-
-  .legend-item { display: flex; align-items: center; gap: 0.28rem; }
-
-  .sw {
-    width: 13px; height: 13px;
-    border-radius: 50%;
-    border: 1.5px solid #666;
-    display: inline-block;
-    flex-shrink: 0;
-  }
-
-  svg.board {
-    width: 90vmin;
-    height: 52vmin;
-    display: block;
-  }
-
-  @page {
-    size: 11in 8.5in landscape;
-    margin: 0.35in 0.45in;
-  }
-
-  @media print {
-    body {
-      min-height: unset;
-      justify-content: flex-start;
-      padding-top: 0.05in;
-    }
-    svg.board {
-      width: 9in;
-      height: 5.2in;
-    }
-    h1   { font-size: 0.78rem; }
-    .subtitle { font-size: 0.6rem; }
-    .legend   { font-size: 0.58rem; }
-  }
-</style>
-</head>
-<body>
-
-<h1>Fanorona</h1>
-<div class="subtitle">5 rows &times; 9 columns &mdash; 45 intersections &mdash; 22 pieces each &mdash; 2 players</div>
-
-<div class="legend">
-  <div class="legend-item"><span class="sw" style="background:#1a1a1a;border-color:#000"></span>Player 1 (Black)</div>
-  <div class="legend-item"><span class="sw" style="background:#fefefe;border-color:#555"></span>Player 2 (White)</div>
-  <div class="legend-item"><span class="sw" style="background:#d4a574;border-color:#a0764a"></span>Intersection (empty)</div>
-  <div class="legend-item"><span style="display:inline-block;width:18px;height:2px;background:#1a1a1a"></span>Orthogonal line</div>
-  <div class="legend-item"><span style="display:inline-block;width:18px;height:2px;background:#999;transform:rotate(45deg)"></span>Diagonal line</div>
-</div>
-
-<!--
-  Fanorona Board Layout
-
-  5 rows x 9 columns = 45 intersections
-  All intersections connect horizontally and vertically.
-  Diagonals exist in a checkerboard pattern:
-    Intersections where (row + col) is even have diagonal connections.
-
-  Coordinate system: columns A-I (left to right), rows 1-5 (bottom to top)
-  SVG viewBox: 900 x 500, with 100px spacing
-  Node at col c, row r -> x = 50 + (c * 100), y = 450 - (r * 100)
-  So row 1 is at y=450, row 5 is at y=50
-  Col A=0 at x=50, Col I=8 at x=850
-
-  Initial setup:
-    Rows 1-2: all Black (22 pieces minus shared middle)
-    Rows 4-5: all White (22 pieces minus shared middle)
-    Row 3 (middle): alternating, center empty
-      A3=Black, B3=White, C3=Black, D3=White, E3=empty,
-      F3=Black, G3=White, H3=Black, I3=White
--->
-
-<svg class="board" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
 
   <!-- Background -->
   <rect width="900" height="500" fill="#f5edd6"/>
@@ -141,9 +24,6 @@
   <line x1="850" y1="50" x2="850" y2="450" stroke="#1a1a1a" stroke-width="2"/>
 
   <!-- Diagonal lines (only where row+col is even) -->
-  <!-- Diagonals go between adjacent intersections where both endpoints have even row+col sum -->
-  <!-- Pattern: from each "even" node, draw diagonal to the right-down and right-up if those nodes are also "even" -->
-
   <!-- Row 5-4 diagonals (y=50 to y=150) -->
   <line x1="50"  y1="50"  x2="150" y2="150" stroke="#999" stroke-width="1.5"/>
   <line x1="250" y1="50"  x2="350" y2="150" stroke="#999" stroke-width="1.5"/>
@@ -209,7 +89,6 @@
   <circle cx="850" cy="150" r="14" fill="#fefefe" stroke="#555" stroke-width="2"/>
 
   <!-- Row 3 (y=250): alternating, center empty -->
-  <!-- A3=Black, B3=White, C3=Black, D3=White, E3=empty, F3=Black, G3=White, H3=Black, I3=White -->
   <circle cx="50"  cy="250" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
   <circle cx="150" cy="250" r="14" fill="#fefefe" stroke="#555" stroke-width="2"/>
   <circle cx="250" cy="250" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
@@ -267,6 +146,3 @@
   <text class="label" x="28" y="454" text-anchor="end">1</text>
 
 </svg>
-
-</body>
-</html>

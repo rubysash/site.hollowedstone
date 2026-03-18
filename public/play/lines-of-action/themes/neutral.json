@@ -1,0 +1,17 @@
+{
+  "id": "neutral",
+  "name": "Lines of Action",
+  "subtitle": "A connection strategy game for two",
+  "cssFile": "css/themes/neutral.css",
+
+  "players": {
+    "p1": { "name": "Player 1", "title": "Black", "color": "#222222", "pieceColor": "#222222", "strokeColor": "#aaaaaa" },
+    "p2": { "name": "Player 2", "title": "White", "color": "#f0e6d3", "pieceColor": "#f0e6d3", "strokeColor": "#a08060" }
+  },
+
+  "objectives": {
+    "playing": "Connect all your pieces into one group",
+    "playing_wait": "Opponent's turn...",
+    "finished": "Game over."
+  }
+}

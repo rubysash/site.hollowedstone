@@ -117,7 +117,7 @@ body {
 /* ─── SVG Board ─── */
 
 .board-svg {
-  width: min(85vmin, 700px);
+  width: min(68vmin, 560px);
   height: auto;
   aspect-ratio: 9 / 5;
   display: block;
@@ -229,14 +229,25 @@ body {
 
 /* ─── Player Panels ─── */
 
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 4rem;
+  width: 200px;
+}
+
 .player-panel {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 10px;
   padding: 1.2rem 1rem;
-  width: 180px;
-  margin-top: 4rem;
+  width: 200px;
   transition: border-color 0.3s;
+}
+
+.player-panel.right-panel {
+  margin-top: 4rem;
 }
 
 .player-panel.active {
@@ -290,13 +301,11 @@ body {
 /* ─── Move Log ─── */
 
 .log-container {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
   background: var(--panel-bg);
-  border-top: 1px solid var(--panel-border);
-  max-height: 140px;
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 300px;
   display: flex;
   flex-direction: column;
 }
@@ -623,7 +632,22 @@ body {
     align-items: center;
     padding: 0.5rem;
     gap: 0.5rem;
-    padding-bottom: 150px;
+  }
+
+  .left-column {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 0;
+    order: 1;
+  }
+
+  .board-container { order: 2; }
+
+  .player-panel.right-panel {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 0;
+    order: 0;
   }
 
   .player-panel {
@@ -639,6 +663,8 @@ body {
   .player-name { margin-bottom: 0; font-size: 0.95rem; }
   .player-stats { font-size: 0.8rem; flex: 1; }
   .piece-dots { margin-top: 0; }
+
+  .log-container { max-height: 120px; }
 
   .board-svg {
     width: 95vw;

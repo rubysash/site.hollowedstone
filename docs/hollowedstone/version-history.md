@@ -2,6 +2,32 @@
 
 ## Platform (Hollowed Stone)
 
+### 2026-03-18
+- All games: consistent layout update
+  - Board shrunk to `min(68vmin, 560px)` so controls and footer fit on screen
+  - Move log moved from fixed bottom bar to left column under player panel
+  - Left-column wrapper groups p2 panel + log; right-panel class on p1
+  - Tablut board cell size reduced from 75px to 65px to fit 9x9 grid in viewBox
+  - Abalone hex outline corrected from pointy-top to flat-top orientation
+- Rulebooks converted from HTML to Markdown for GitHub readability
+- Board diagrams extracted as standalone SVG files viewable on GitHub
+- Tablut v0.1.0: full game implementation
+  - Engine: 9x9 grid, rook movement, custodian capture, hostile squares (throne/corners), king capture (4-side/3-side/2-side), raichi/tuichi detection
+  - Frontend: 9x9 SVG board with throne/corner markers, king piece with crown, selectable/selected rings
+  - Worker API: create, join, state, move, leave, stats, replay
+  - Admin and home page integration
+- Abalone v0.1.0: full game implementation
+  - Engine: cube coordinate hex geometry, inline/broadside moves, sumito push logic, elimination scoring
+  - Frontend: 61-hex SVG board, multi-marble selection, direction arrows for move input
+  - Worker API: create, join, state, move, leave, stats, replay
+  - Admin and home page integration
+- Lines of Action v0.1.0: full game implementation
+  - Engine: line-count movement, enemy blocking, connection win detection (flood-fill)
+  - Frontend: 8x8 checkerboard SVG, selectable/selected rings, valid target markers
+  - Worker API: create, join, state, move, leave, stats, replay
+  - Admin and home page integration
+- Added Lines of Action rulebook and SVG board reference (`docs/rulebooks/lines-of-action/`)
+
 ### 2026-03-17
 - Added Tablut rulebook and SVG board reference (`docs/rulebooks/tablut/`)
 - Added Abalone rulebook and SVG board reference (`docs/rulebooks/abalone/`)

@@ -4,83 +4,63 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
-<title>Fanorona</title>
+<title>Tablut</title>
 <link rel="stylesheet" href="css/board.css">
 <link rel="stylesheet" href="css/themes/neutral.css" id="theme-css">
 </head>
 <body>
-
 <div class="game-layout">
 
-  <!-- Left column — Player 2 (White) + Move Log -->
+  <!-- Left column: Player 2 (Defenders) + Move Log -->
   <div class="left-column">
-  <div class="player-panel" data-player="p2">
-    <div class="player-name">White</div>
-    <div class="player-stats">
-      <div class="stat"><span class="stat-label">Pieces:</span> <span class="pieces-left">22</span></div>
-      <div class="stat"><span class="stat-label">Captured:</span> <span class="pieces-captured">0</span></div>
-    </div>
-  </div>
-
-  <!-- Move log -->
-  <div class="log-container">
-    <h3 class="log-title">Move Log</h3>
-    <div class="move-log"></div>
-  </div>
-  </div>
-
-  <!-- Center — Board -->
-  <div class="board-container">
-    <div class="game-header">
-      <h1 class="game-title">Fanorona</h1>
-      <div class="access-code-row">
-        Code: <span class="access-code" title="Click to copy"></span>
+    <div class="player-panel" data-player="p2">
+      <div class="player-name">Defenders</div>
+      <div class="player-stats">
+        <div class="stat"><span class="stat-label">Captured:</span> <span class="pieces-captured">0</span></div>
       </div>
     </div>
-
-    <div class="status-bar">
-      <span class="turn-info">Loading...</span>
+    <div class="log-container">
+      <h3 class="log-title">Move Log</h3>
+      <div class="move-log"></div>
     </div>
+  </div>
 
+  <div class="board-container">
+    <div class="game-header">
+      <h1 class="game-title">Tablut</h1>
+      <div class="access-code-row">Code: <span class="access-code" title="Click to copy"></span></div>
+    </div>
+    <div class="status-bar"><span class="turn-info">Loading...</span></div>
     <svg class="board-svg" xmlns="http://www.w3.org/2000/svg"></svg>
-
     <div class="game-footer">
       <button class="btn-small btn-help" onclick="import('./js/help.js').then(m=>m.toggleHelp())">? Help</button>
-      <button class="btn-small btn-end-chain" id="btn-end-chain" style="display:none">End Chain</button>
       <button class="btn-small btn-leave" id="btn-leave">Leave</button>
       <span class="poll-status"></span>
     </div>
     <div class="site-footer">
-      <a href="/">Home</a>
-      <span>|</span>
-      <a href="https://github.com/rubysash/site.hollowedstone" target="_blank" rel="noopener">Git</a>
-      <span>|</span>
-      <a href="https://github.com/rubysash/site.hollowedstone/tree/main/docs/rulebooks" target="_blank" rel="noopener">Rulebooks</a>
-      <span>|</span>
+      <a href="/">Home</a> <span>|</span>
+      <a href="https://github.com/rubysash/site.hollowedstone" target="_blank" rel="noopener">Git</a> <span>|</span>
+      <a href="https://github.com/rubysash/site.hollowedstone/tree/main/docs/rulebooks" target="_blank" rel="noopener">Rulebooks</a> <span>|</span>
       <a href="https://www.paypal.com/donate/?hosted_button_id=8F2JVZ6PWZ63J" target="_blank" rel="noopener">Donate</a>
       <span class="build-tag"></span>
     </div>
   </div>
 
-  <!-- Right panel — Player 1 (Black) -->
+  <!-- Right panel: Player 1 (Attackers) -->
   <div class="player-panel right-panel" data-player="p1">
-    <div class="player-name">Black</div>
+    <div class="player-name">Attackers</div>
     <div class="player-stats">
-      <div class="stat"><span class="stat-label">Pieces:</span> <span class="pieces-left">22</span></div>
       <div class="stat"><span class="stat-label">Captured:</span> <span class="pieces-captured">0</span></div>
     </div>
   </div>
-
 
 </div>
 
 <script type="module">
 import { startGame, leaveGame } from './js/game.js';
 import { BUILD } from './js/version.js';
-
 document.querySelector('.build-tag').textContent = `v${BUILD}`;
 document.getElementById('btn-leave').addEventListener('click', leaveGame);
-
 startGame();
 </script>
 </body>
