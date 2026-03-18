@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Seega</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+  }
+  h1 { font-size: 2.4rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.3rem; }
+  .tagline { color: #7a8599; font-style: italic; font-size: 1rem; margin-bottom: 2.5rem; }
+  .lobby { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; max-width: 700px; }
+  .lobby-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 1.8rem 2rem;
+    width: 280px;
+    text-align: center;
+  }
+  .lobby-card h2 { font-size: 1.2rem; margin-bottom: 1rem; letter-spacing: 0.08em; }
+  .btn {
+    display: inline-block;
+    background: #6a0dad;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.8rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+  }
+  .btn:hover { background: #7b1fa2; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary { background: transparent; border: 1px solid #6a0dad; color: #b388ff; }
+  .btn-secondary:hover { background: rgba(106,13,173,0.15); }
+  input[type="text"] {
+    width: 100%;
+    padding: 0.7rem;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+    font-size: 1.3rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: #c9d1d9;
+    margin-bottom: 1rem;
+  }
+  input[type="text"]:focus { outline: none; border-color: #6a0dad; }
+  .error { color: #f85149; font-size: 0.85rem; margin-top: 0.6rem; min-height: 1.2em; }
+  .footer { margin-top: 3rem; font-size: 0.8rem; color: #484f58; }
+  .footer a { color: #6a0dad; text-decoration: none; }
+  .build-tag { margin-top: 0.5rem; font-size: 0.7rem; color: #484f58; opacity: 0.6; }
+</style>
+</head>
+<body>
+
+<h1>Seega</h1>
+<div class="tagline">Egyptian custodian-capture strategy game for two</div>
+
+<div class="lobby">
+  <div class="lobby-card">
+    <h2>Create New Game</h2>
+    <button class="btn" id="btn-create">Create Game</button>
+    <div class="error" id="create-error"></div>
+  </div>
+
+  <div class="lobby-card">
+    <h2>Join Game</h2>
+    <input type="text" id="join-code" maxlength="6" placeholder="CODE">
+    <button class="btn btn-secondary" id="btn-join">Join</button>
+    <div class="error" id="join-error"></div>
+  </div>
+</div>
+
+<div class="footer">
+  <a href="/">Home</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="https://github.com/rubysash/site.hollowedstone" target="_blank" rel="noopener">Git</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="https://github.com/rubysash/site.hollowedstone/tree/main/docs/rulebooks" target="_blank" rel="noopener">Rulebooks</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="https://www.paypal.com/donate/?hosted_button_id=8F2JVZ6PWZ63J" target="_blank" rel="noopener">Donate</a>
+  <div class="build-tag" id="build-tag"></div>
+</div>
+
+<script type="module">
+import { createGame, joinGame, saveSession } from './js/net.js';
+import { BUILD } from './js/version.js';
+document.getElementById('build-tag').textContent = `v${BUILD}`;
+
+document.getElementById('btn-create').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-create');
+  const errEl = document.getElementById('create-error');
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Creating...';
+  try {
+    const data = await createGame({});
+    if (data.error) {
+      errEl.textContent = data.error;
+      btn.disabled = false;
+      btn.textContent = 'Create Game';
+      return;
+    }
+    saveSession(data.accessCode, data.player, data.token);
+    window.location.href = `/play/seega/game?code=${data.accessCode}&player=${data.player}&token=${data.token}`;
+  } catch (e) {
+    errEl.textContent = 'Failed to create game';
+    btn.disabled = false;
+    btn.textContent = 'Create Game';
+  }
+});
+
+document.getElementById('btn-join').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-join');
+  const errEl = document.getElementById('join-error');
+  errEl.textContent = '';
+  const code = document.getElementById('join-code').value.trim().toUpperCase();
+  if (!code) { errEl.textContent = 'Enter a game code'; return; }
+  btn.disabled = true;
+  btn.textContent = 'Joining...';
+  try {
+    const data = await joinGame(code);
+    if (data.error) {
+      errEl.textContent = data.error;
+      btn.disabled = false;
+      btn.textContent = 'Join';
+      return;
+    }
+    saveSession(data.accessCode, data.player, data.token);
+    window.location.href = `/play/seega/game?code=${data.accessCode}&player=${data.player}&token=${data.token}`;
+  } catch (e) {
+    errEl.textContent = 'Failed to join game';
+    btn.disabled = false;
+    btn.textContent = 'Join';
+  }
+});
+
+document.getElementById('join-code').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-join').click();
+});
+</script>
+</body>
+</html>

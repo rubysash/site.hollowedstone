@@ -8,36 +8,6 @@ Games under consideration for the platform. All are 2-player abstract strategy w
 <tr>
 <td width="300" align="center">
 
-![Surakarta](placeholder)
-
-</td>
-<td>
-
-### Surakarta
-**Strategy: Medium-High**
-
-Indonesian game on a 6x6 grid with curved loop tracks at each corner. Pieces move one step orthogonally, but capture by traveling along the curved loops — a piece must enter a loop, travel around it, and land on an opponent. The capture mechanic is completely unique. The board with its corner loops would look great in SVG. Last player with pieces wins. Easy to learn, hard to master the loop vision.
-
-</td>
-</tr>
-<tr>
-<td width="300" align="center">
-
-![Seega](placeholder)
-
-</td>
-<td>
-
-### Seega
-**Strategy: Medium-High**
-
-Egyptian game with two phases: placement (fill the board except center) then movement. Capture by custodian (sandwich an opponent between two of yours). The center square is a safe refuge. Has the two-phase structure like Morris but with sandwiching instead of milling. Fast games, lots of tactical exchanges. Plays on a 5x5 or 7x7 grid. Historically rooted in ancient Egypt and the Sahel region.
-
-</td>
-</tr>
-<tr>
-<td width="300" align="center">
-
 ![Tak](placeholder)
 
 </td>
@@ -287,4 +257,4 @@ Five-in-a-row on a hex grid with custodian capture (place stones to sandwich and
 - Konane might be too close to Fanorona (mandatory jumps, chain captures)
 - Shogi intentionally left off - too many piece types and promotion rules for clean SVG UI
 - Reversi left off - heavily served by existing apps, wouldn't stand out
-- Tablut, Abalone, and Lines of Action have been built and moved off this list
+- Tablut, Abalone, Lines of Action, Surakarta, and Seega have been built and moved off this list

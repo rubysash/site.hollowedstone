@@ -1,0 +1,117 @@
+<svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Background -->
+  <rect width="800" height="800" fill="#f5edd6"/>
+
+  <!-- Title -->
+  <text x="400" y="40" text-anchor="middle" font-size="18" font-family="Georgia, serif" fill="#222" letter-spacing="0.15em" font-weight="bold">SURAKARTA</text>
+  <text x="400" y="60" text-anchor="middle" font-size="11" font-family="Georgia, serif" fill="#555" font-style="italic">6x6 grid - 8 corner loops - 12 pieces per player</text>
+
+  <!-- Corner loop arcs (outer, larger) -->
+  <path d="M 350,150 A 200,200 0 1,0 150,350" fill="none" stroke="#c0392b" stroke-width="2.5" opacity="0.6"/>
+  <path d="M 450,150 A 200,200 0 1,1 650,350" fill="none" stroke="#c0392b" stroke-width="2.5" opacity="0.6"/>
+  <path d="M 150,450 A 200,200 0 1,0 350,650" fill="none" stroke="#c0392b" stroke-width="2.5" opacity="0.6"/>
+  <path d="M 650,450 A 200,200 0 1,1 450,650" fill="none" stroke="#c0392b" stroke-width="2.5" opacity="0.6"/>
+
+  <!-- Corner loop arcs (inner, smaller) -->
+  <path d="M 250,150 A 100,100 0 1,0 150,250" fill="none" stroke="#2471a3" stroke-width="2.5" opacity="0.6"/>
+  <path d="M 550,150 A 100,100 0 1,1 650,250" fill="none" stroke="#2471a3" stroke-width="2.5" opacity="0.6"/>
+  <path d="M 150,550 A 100,100 0 1,0 250,650" fill="none" stroke="#2471a3" stroke-width="2.5" opacity="0.6"/>
+  <path d="M 650,550 A 100,100 0 1,1 550,650" fill="none" stroke="#2471a3" stroke-width="2.5" opacity="0.6"/>
+
+  <!-- Grid lines (horizontal) -->
+  <line x1="150" y1="150" x2="650" y2="150" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="150" y1="250" x2="650" y2="250" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="150" y1="350" x2="650" y2="350" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="150" y1="450" x2="650" y2="450" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="150" y1="550" x2="650" y2="550" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="150" y1="650" x2="650" y2="650" stroke="#1a1a1a" stroke-width="2"/>
+
+  <!-- Grid lines (vertical) -->
+  <line x1="150" y1="150" x2="150" y2="650" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="250" y1="150" x2="250" y2="650" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="350" y1="150" x2="350" y2="650" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="450" y1="150" x2="450" y2="650" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="550" y1="150" x2="550" y2="650" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="650" y1="150" x2="650" y2="650" stroke="#1a1a1a" stroke-width="2"/>
+
+  <!-- Pieces: Player 1 (Dark) - rows 1-2 (top) -->
+  <!-- Row 1 -->
+  <circle cx="150" cy="150" r="18" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="250" cy="150" r="18" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="350" cy="150" r="18" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="450" cy="150" r="18" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="550" cy="150" r="18" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="650" cy="150" r="18" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- Row 2 -->
+  <circle cx="150" cy="250" r="18" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="250" cy="250" r="18" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="350" cy="250" r="18" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="450" cy="250" r="18" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="550" cy="250" r="18" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="650" cy="250" r="18" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+
+  <!-- Pieces: Player 2 (Light) - rows 5-6 (bottom) -->
+  <!-- Row 5 -->
+  <circle cx="150" cy="550" r="18" fill="#f0e6d3" stroke="#a08060" stroke-width="2"/>
+  <circle cx="250" cy="550" r="18" fill="#f0e6d3" stroke="#a08060" stroke-width="2"/>
+  <circle cx="350" cy="550" r="18" fill="#f0e6d3" stroke="#a08060" stroke-width="2"/>
+  <circle cx="450" cy="550" r="18" fill="#f0e6d3" stroke="#a08060" stroke-width="2"/>
+  <circle cx="550" cy="550" r="18" fill="#f0e6d3" stroke="#a08060" stroke-width="2"/>
+  <circle cx="650" cy="550" r="18" fill="#f0e6d3" stroke="#a08060" stroke-width="2"/>
+  <!-- Row 6 -->
+  <circle cx="150" cy="650" r="18" fill="#f0e6d3" stroke="#a08060" stroke-width="2"/>
+  <circle cx="250" cy="650" r="18" fill="#f0e6d3" stroke="#a08060" stroke-width="2"/>
+  <circle cx="350" cy="650" r="18" fill="#f0e6d3" stroke="#a08060" stroke-width="2"/>
+  <circle cx="450" cy="650" r="18" fill="#f0e6d3" stroke="#a08060" stroke-width="2"/>
+  <circle cx="550" cy="650" r="18" fill="#f0e6d3" stroke="#a08060" stroke-width="2"/>
+  <circle cx="650" cy="650" r="18" fill="#f0e6d3" stroke="#a08060" stroke-width="2"/>
+
+  <!-- Empty intersections (rows 3-4) -->
+  <circle cx="150" cy="350" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="250" cy="350" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="350" cy="350" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="450" cy="350" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="550" cy="350" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="650" cy="350" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="150" cy="450" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="250" cy="450" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="350" cy="450" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="450" cy="450" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="550" cy="450" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="650" cy="450" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+
+  <!-- Labels -->
+  <style>
+    .label { font-size: 13px; fill: #666; font-family: Georgia, serif; letter-spacing: 0.04em; }
+  </style>
+
+  <!-- Column labels (top) -->
+  <text class="label" x="150" y="120" text-anchor="middle">a</text>
+  <text class="label" x="250" y="120" text-anchor="middle">b</text>
+  <text class="label" x="350" y="120" text-anchor="middle">c</text>
+  <text class="label" x="450" y="120" text-anchor="middle">d</text>
+  <text class="label" x="550" y="120" text-anchor="middle">e</text>
+  <text class="label" x="650" y="120" text-anchor="middle">f</text>
+
+  <!-- Row labels (left) -->
+  <text class="label" x="120" y="155" text-anchor="end">1</text>
+  <text class="label" x="120" y="255" text-anchor="end">2</text>
+  <text class="label" x="120" y="355" text-anchor="end">3</text>
+  <text class="label" x="120" y="455" text-anchor="end">4</text>
+  <text class="label" x="120" y="555" text-anchor="end">5</text>
+  <text class="label" x="120" y="655" text-anchor="end">6</text>
+
+  <!-- Legend -->
+  <circle cx="180" cy="740" r="10" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
+  <text x="198" y="745" font-size="12" fill="#333" font-family="Georgia, serif">Player 1 (Dark) x12</text>
+  <circle cx="420" cy="740" r="10" fill="#f0e6d3" stroke="#a08060" stroke-width="1.5"/>
+  <text x="438" y="745" font-size="12" fill="#333" font-family="Georgia, serif">Player 2 (Light) x12</text>
+
+  <!-- Loop legend -->
+  <line x1="170" y1="770" x2="210" y2="770" stroke="#2471a3" stroke-width="2.5" opacity="0.6"/>
+  <text x="218" y="774" font-size="11" fill="#333" font-family="Georgia, serif">Inner loop</text>
+  <line x1="370" y1="770" x2="410" y2="770" stroke="#c0392b" stroke-width="2.5" opacity="0.6"/>
+  <text x="418" y="774" font-size="11" fill="#333" font-family="Georgia, serif">Outer loop</text>
+
+</svg>

@@ -12,6 +12,8 @@ A platform for hosting strategic 2-player abstract board games at hollowedstone.
 | Lines of Action | `lines-of-action` | 8x8 checkerboard, 64 squares | `docs/rulebooks/lines-of-action/` |
 | Abalone | `abalone` | 61-hex hexagonal board (5 per side) | `docs/rulebooks/abalone/` |
 | Tablut | `tablut` | 9x9 grid, asymmetric | `docs/rulebooks/tablut/` |
+| Surakarta | `surakarta` | 6x6 grid, corner loops | `docs/rulebooks/surakarta/` |
+| Seega | `seega` | 5x5 grid, center safe zone | `docs/rulebooks/seega/` |
 
 Game rules live in the rulebooks, not in this file.
 
@@ -96,12 +98,54 @@ Before every deploy, update `js/version.js` for each changed game:
 
 ### Layout
 - Dark theme only. No light mode.
-- Responsive: desktop uses side panels flanking the board; mobile stacks vertically.
-- Breakpoint: `768px` for mobile layout switch.
-- Board SVG uses `vmin` units to stay square and responsive.
-- Game pages use flexbox centering with `min-height: 100vh`.
 - Add `<meta name="color-scheme" content="dark">` to all game pages.
-- Add `forced-color-adjust: none` on board SVGs to prevent browser theme overrides.
+- Add `forced-color-adjust: none` on `.board-svg` in CSS.
+- Breakpoint: `768px` for mobile layout switch.
+
+### Game Page Structure (desktop)
+
+All games use the same three-column layout:
+
+```
+.game-layout (flex row, centered, gap 1.5rem)
+  |
+  |-- .left-column (flex column, gap 0.8rem, width 200px, margin-top 4rem)
+  |     |-- .player-panel[data-player="p2"]   (opponent or second player)
+  |     +-- .log-container                     (move log, max-height 300px, scrollable)
+  |
+  |-- .board-container (flex column, centered)
+  |     |-- .game-header (title + access code)
+  |     |-- .status-bar (turn info)
+  |     |-- .board-svg (the game board)
+  |     |-- .game-footer (Help, Leave buttons, poll status)
+  |     +-- .site-footer (Home | Git | Rulebooks | Donate + version)
+  |
+  +-- .player-panel.right-panel[data-player="p1"]  (margin-top 4rem, width 200px)
+```
+
+### Board Sizing
+- `.board-svg { width: min(68vmin, 560px); height: auto; aspect-ratio: 1; }` for square boards.
+- Fanorona uses `aspect-ratio: 9 / 5` instead of 1 (rectangular board).
+- Board must fit on screen with header, status bar, controls, and footer all visible without scrolling.
+- ViewBox is typically `0 0 700 700` for square boards.
+
+### Move Log
+- The move log sits in the left column below the p2 player panel, not at the bottom of the screen.
+- `.log-container` uses panel styling: `background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 10px; overflow: hidden; max-height: 300px`.
+- `.move-log` inside is scrollable with `overflow-y: auto`.
+
+### Player Panels
+- Width: `200px` on desktop.
+- Left panel (p2) is inside `.left-column` (no separate margin-top).
+- Right panel (p1) has `.right-panel` class with `margin-top: 4rem`.
+- Both panels use `data-player="p1"` or `data-player="p2"` attributes.
+
+### Mobile (below 768px)
+- `.game-layout` switches to `flex-direction: column; align-items: center`.
+- `.left-column` gets `order: 1`, `.board-container` gets `order: 2`, `.right-panel` gets `order: 0` (shows first).
+- Panels and left-column go full width (`max-width: 400px`).
+- `.log-container` shrinks to `max-height: 120px`.
+- `.board-svg` goes to `width: 95vw`.
 
 ### Footer
 Every page must include: `Home | Git | Rulebooks | Donate` links + version tag.
@@ -216,11 +260,13 @@ Create files under `public/play/{game-slug}/`:
 - `js/game.js` -- Game controller tying everything together
 - `js/help.js` -- Rules overlay
 - `js/version.js` -- Build version
-- `css/board.css` -- Layout and component styles
+- `css/board.css` -- Layout and component styles (follow the Layout section above exactly)
 - `css/themes/{theme}.css` -- Theme color overrides
 - `themes/{theme}.json` -- Theme data
 - `index.html` -- Lobby page (create/join)
-- `game.html` -- Game page
+- `game.html` -- Game page (must follow the three-column layout pattern: `.left-column` with p2 panel + log, `.board-container` center, `.right-panel` p1)
+
+Copy `css/board.css` from Lines of Action as a starting template. It has the standard layout, sizing, panel widths, log position, and mobile responsive rules. Only change game-specific styles (board rendering, piece shapes).
 
 ### Step 5: Worker API Integration
 
@@ -280,13 +326,19 @@ Run through this list before considering any work done. It covers recurring mist
 - [ ] Browser title changes on turn change (e.g., ">> YOUR TURN <<")
 - [ ] Overlays (waiting, game over, abandoned) are dismissed on phase change
 
-### HTML Pages
+### HTML Pages and Layout
 - [ ] `<meta name="color-scheme" content="dark">` on all game pages
 - [ ] `forced-color-adjust: none` on `.board-svg` in CSS
 - [ ] Footer on every page: Home | Git | Rulebooks | Donate + version tag
 - [ ] Lobby page disables button and shows loading text during create/join
 - [ ] Lobby page supports Enter key on code input
 - [ ] Game page has Help button, Leave button, poll status indicator
+- [ ] Game page uses three-column layout: `.left-column` (p2 panel + log), `.board-container` (center), `.right-panel` (p1 panel)
+- [ ] Board SVG sized with `width: min(68vmin, 560px)` (fits on screen with controls visible)
+- [ ] Move log is in `.left-column` under the p2 panel (not fixed to bottom of screen)
+- [ ] `.log-container` styled as a panel (border, border-radius, max-height 300px), not a fixed bar
+- [ ] Player panels are 200px wide with `data-player` attributes
+- [ ] Mobile responsive: panels stack vertically, right-panel first (order 0), left-column second (order 1), board third (order 2)
 
 ### Networking
 - [ ] `net.js` polling uses `since` parameter to avoid re-fetching full log

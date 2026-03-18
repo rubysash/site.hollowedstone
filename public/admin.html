@@ -160,7 +160,9 @@ async function loadGames() {
       'fanorona': '#6b4226',
       'lines-of-action': '#4a3728',
       'abalone': '#2a6478',
-      'tablut': '#6a4a00'
+      'tablut': '#6a4a00',
+      'surakarta': '#8b4513',
+      'seega': '#1e8449'
     };
     const themeNames = {
       wyrd: 'Wyrd', dominion: 'Dominion', 'inner-work': 'Inner Work', neutral: 'Neutral'
@@ -192,8 +194,10 @@ async function loadGames() {
       const isLOA = g.game === 'lines-of-action';
       const isAbalone = g.game === 'abalone';
       const isTablut = g.game === 'tablut';
-      const tc = isTablut ? themeColors['tablut'] : isAbalone ? themeColors['abalone'] : isLOA ? themeColors['lines-of-action'] : isFanorona ? themeColors['fanorona'] : isMorris ? themeColors['nine-mens-morris'] : (themeColors[g.theme] || '#555');
-      const gameLabel = isTablut ? 'Tablut' : isAbalone ? 'Abalone' : isLOA ? 'Lines of Action' : isFanorona ? 'Fanorona' : isMorris ? "9 Men's Morris" : `Ouroboros - ${themeNames[g.theme] || g.theme}`;
+      const isSurakarta = g.game === 'surakarta';
+      const isSeega = g.game === 'seega';
+      const tc = isSeega ? themeColors['seega'] : isSurakarta ? themeColors['surakarta'] : isTablut ? themeColors['tablut'] : isAbalone ? themeColors['abalone'] : isLOA ? themeColors['lines-of-action'] : isFanorona ? themeColors['fanorona'] : isMorris ? themeColors['nine-mens-morris'] : (themeColors[g.theme] || '#555');
+      const gameLabel = isSeega ? 'Seega' : isSurakarta ? 'Surakarta' : isTablut ? 'Tablut' : isAbalone ? 'Abalone' : isLOA ? 'Lines of Action' : isFanorona ? 'Fanorona' : isMorris ? "9 Men's Morris" : `Ouroboros - ${themeNames[g.theme] || g.theme}`;
 
       html += `<tr>
         <td><span class="code">${g.code}</span></td>

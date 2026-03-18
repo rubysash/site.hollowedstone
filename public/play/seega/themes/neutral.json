@@ -1,0 +1,20 @@
+{
+  "id": "neutral",
+  "name": "Seega",
+  "subtitle": "Egyptian custodian-capture strategy game for two",
+  "cssFile": "css/themes/neutral.css",
+
+  "players": {
+    "p1": { "name": "Player 1", "title": "Dark", "color": "#1a1a1a", "pieceColor": "#1a1a1a", "strokeColor": "#666666" },
+    "p2": { "name": "Player 2", "title": "Light", "color": "#f0e6d3", "pieceColor": "#f0e6d3", "strokeColor": "#a08060" }
+  },
+
+  "objectives": {
+    "placing": "Place 2 pieces on empty squares (not center)",
+    "placing_wait": "Opponent is placing pieces...",
+    "playing": "Move a piece to an adjacent empty square",
+    "playing_wait": "Opponent's turn...",
+    "playing_first_move": "First move must be to the center square",
+    "finished": "Game over."
+  }
+}

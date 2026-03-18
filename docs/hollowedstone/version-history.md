@@ -11,6 +11,17 @@
   - Abalone hex outline corrected from pointy-top to flat-top orientation
 - Rulebooks converted from HTML to Markdown for GitHub readability
 - Board diagrams extracted as standalone SVG files viewable on GitHub
+- Seega v0.1.0: full game implementation
+  - Engine: 5x5 grid, placement phase (2 per turn), custodian capture, center safe square, first-move-to-center rule
+  - Frontend: 5x5 checkerboard SVG with center marker, placement and movement phases, standard three-column layout
+  - Worker API: create, join, state, place, move, leave, stats, replay
+  - Admin and home page integration
+- Surakarta v0.1.0: full game implementation
+  - Engine: 6x6 grid, 8 corner loop arcs, loop-based capture path tracing, regular 8-direction movement
+  - Frontend: SVG board with colored loop arcs (blue inner, red outer), standard three-column layout
+  - Worker API: create, join, state, move, leave, stats, replay
+  - Admin and home page integration
+- Added Surakarta rulebook and SVG board reference (`docs/rulebooks/surakarta/`)
 - Deleted HTML versions of mechanics and board files (replaced by .md and .svg)
   - Only Ouroboros themed rulebooks (wyrd, dominion, inner-work) remain as HTML
 - Tablut v0.1.0: full game implementation

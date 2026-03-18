@@ -124,7 +124,9 @@ site.hollowedstone/
 |   |   |-- fanorona/                        Fanorona rules
 |   |   |-- lines-of-action/                 Lines of Action rules
 |   |   |-- abalone/                         Abalone rules
-|   |   +-- tablut/                          Tablut rules
+|   |   |-- tablut/                          Tablut rules
+|   |   |-- surakarta/                       Surakarta rules
+|   |   +-- seega/                           Seega rules
 |   +-- css/
 |       +-- style.css                        Shared rulebook stylesheet
 |
@@ -170,6 +172,8 @@ See [CLAUDE.md](CLAUDE.md) for the full new-game build process with detailed ste
 | [Lines of Action](/public/play/lines-of-action/) | 8x8 checkerboard, 64 squares | Connection (unite all pieces into one group) |
 | [Abalone](/public/play/abalone/) | 61-hex hexagonal board | Capture (push 6 opponent marbles off the edge) |
 | [Tablut](/public/play/tablut/) | 9x9 grid, asymmetric | Regicide / Race (capture king or escape to corner) |
+| [Surakarta](/public/play/surakarta/) | 6x6 grid, corner loops | Capture (loop-based elimination) |
+| [Seega](/public/play/seega/) | 5x5 grid, center safe zone | Capture (custodian sandwich) |
 
 Rules for each game are in `docs/rulebooks/{game-slug}/`.
 

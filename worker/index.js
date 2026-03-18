@@ -28,6 +28,16 @@
 //   GET  /play/lines-of-action/api/stats   — public game metrics
 //   GET  /play/lines-of-action/api/replay/:id — full move log
 //
+// Seega API routes:
+//   POST /play/seega/api/create  — create a new game
+//   POST /play/seega/api/join    — join with access code
+//   GET  /play/seega/api/state   — poll game state
+//   POST /play/seega/api/place   — place a piece (placement phase)
+//   POST /play/seega/api/move    — move a piece (movement phase)
+//   POST /play/seega/api/leave   — abandon game
+//   GET  /play/seega/api/stats   — public game metrics
+//   GET  /play/seega/api/replay/:id — full move log
+//
 // Admin API routes (protected by Cloudflare Access Zero Trust):
 //   GET  /admin/api/games             — list all games with player IPs
 //
@@ -39,6 +49,8 @@ import { createGame as createFanoronaGame, makeMove as makeFanoronaMove, endChai
 import { createGame as createLOAGame, makeMove as makeLOAMove, sanitizeForPlayer as sanitizeLOA } from '../public/play/lines-of-action/js/shared/engine.js';
 import { createGame as createAbaloneGame, makeMove as makeAbaloneMove, sanitizeForPlayer as sanitizeAbalone } from '../public/play/abalone/js/shared/engine.js';
 import { createGame as createTablutGame, makeMove as makeTablutMove, sanitizeForPlayer as sanitizeTablut } from '../public/play/tablut/js/shared/engine.js';
+import { createGame as createSurakartaGame, makeMove as makeSurakartaMove, sanitizeForPlayer as sanitizeSurakarta } from '../public/play/surakarta/js/shared/engine.js';
+import { createGame as createSeegaGame, placePiece as placeSeegaPiece, makeMove as makeSeegaMove, sanitizeForPlayer as sanitizeSeega } from '../public/play/seega/js/shared/engine.js';
 
 export default {
   async fetch(request, env) {
@@ -73,6 +85,16 @@ export default {
     // Tablut API routes
     if (path.startsWith('/play/tablut/api/')) {
       return handleTablutApi(path, request, env);
+    }
+
+    // Surakarta API routes
+    if (path.startsWith('/play/surakarta/api/')) {
+      return handleSurakartaApi(path, request, env);
+    }
+
+    // Seega API routes
+    if (path.startsWith('/play/seega/api/')) {
+      return handleSeegaApi(path, request, env);
     }
 
     // Admin API routes (Zero Trust handles auth before this runs)
@@ -1520,6 +1542,387 @@ async function handleTablutReplay(route, env) {
 }
 
 // ═══════════════════════════════════════════════
+// ─── Surakarta API ───
+// ═══════════════════════════════════════════════
+
+async function handleSurakartaApi(path, request, env) {
+  const route = path.replace('/play/surakarta/api', '');
+  const method = request.method;
+  try {
+    if (route === '/create' && method === 'POST') return await handleSurakartaCreate(request, env);
+    if (route === '/join' && method === 'POST') return await handleSurakartaJoin(request, env);
+    if (route === '/state' && method === 'GET') return await handleSurakartaState(request, env);
+    if (route === '/move' && method === 'POST') return await handleSurakartaMove(request, env);
+    if (route === '/leave' && method === 'POST') return await handleSurakartaLeave(request, env);
+    if (route === '/stats' && method === 'GET') return await handleSurakartaStats(env);
+    if (route.startsWith('/replay/') && method === 'GET') return await handleSurakartaReplay(route, env);
+    return json({ error: 'Not found' }, 404);
+  } catch (e) { return json({ error: 'Internal error' }, 500); }
+}
+
+async function handleSurakartaCreate(request, env) {
+  const kv = env.GAME_STATE; const body = await request.json();
+  let accessCode;
+  for (let attempt = 0; attempt < 10; attempt++) { accessCode = generateCode(); const existing = await kv.get(`code:${accessCode}`); if (!existing) break; }
+  const token = generateToken();
+  const state = createSurakartaGame(accessCode);
+  if (body.settings) {
+    if (body.settings.drawByRepetition !== undefined) state.settings.drawByRepetition = !!body.settings.drawByRepetition;
+    if (body.settings.moveLimit !== undefined) { const ml = parseInt(body.settings.moveLimit, 10); if (ml >= 0 && ml <= 1000) state.settings.moveLimit = ml; }
+  }
+  state.players.p1.token = token;
+  state.players.p1.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  state.theme = 'neutral';
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
+  await kv.put(`code:${accessCode}`, accessCode, { expirationTtl: SEVEN_DAYS });
+  return json({ accessCode, player: 'p1', token });
+}
+
+async function handleSurakartaJoin(request, env) {
+  const kv = env.GAME_STATE; const body = await request.json();
+  const accessCode = (body.accessCode || '').toUpperCase().trim();
+  if (!accessCode) return json({ error: 'Access code required' }, 400);
+  const raw = await kv.get(`game:${accessCode}`); if (!raw) return json({ error: 'Game not found' }, 404);
+  const state = JSON.parse(raw);
+  if (state.game !== 'surakarta') return json({ error: 'Game not found (wrong game type)' }, 404);
+  if (state.players.p2.token) return json({ error: 'Game already has two players.' }, 400);
+  if (state.phase !== 'waiting') return json({ error: 'Game is not accepting players' }, 400);
+  const token = generateToken();
+  state.players.p2.token = token;
+  state.players.p2.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  state.phase = 'playing';
+  state.requests = (state.requests || 0) + 1;
+  state.updatedAt = new Date().toISOString();
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
+  return json({ accessCode, player: 'p2', token });
+}
+
+async function handleSurakartaState(request, env) {
+  const kv = env.GAME_STATE; const url = new URL(request.url);
+  const accessCode = url.searchParams.get('game'); const token = url.searchParams.get('token');
+  const since = parseInt(url.searchParams.get('since') || '0', 10);
+  if (!accessCode || !token) return json({ error: 'Missing game or token' }, 400);
+  const raw = await kv.get(`game:${accessCode}`); if (!raw) return json({ error: 'Game not found' }, 404);
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token); if (!player) return json({ error: 'Invalid token' }, 403);
+  state.requests = (state.requests || 0) + 1;
+  if (!state.lastSeen) state.lastSeen = {};
+  state.lastSeen[player] = new Date().toISOString();
+  if (state.requests % 25 === 0) await kv.put(`game:${accessCode}`, JSON.stringify(state));
+  const sanitized = sanitizeSurakarta(state, player);
+  sanitized.you = player;
+  if (since > 0) sanitized.log = sanitized.log.filter(e => e.seq > since);
+  return json(sanitized);
+}
+
+async function handleSurakartaMove(request, env) {
+  const kv = env.GAME_STATE; const body = await request.json();
+  const { accessCode, token, from, to } = body;
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+  const raw = await kv.get(`game:${accessCode}`); if (!raw) return json({ error: 'Game not found' }, 404);
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token); if (!player) return json({ error: 'Invalid token' }, 403);
+  state.requests = (state.requests || 0) + 1;
+  const result = makeSurakartaMove(state, player, from, to);
+  if (result.error) return json({ error: result.error }, 400);
+  const ttl = state.phase === 'finished' ? THIRTY_DAYS : SEVEN_DAYS;
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: ttl });
+  return json({ ok: true });
+}
+
+async function handleSurakartaLeave(request, env) {
+  const kv = env.GAME_STATE; const body = await request.json();
+  const { accessCode, token } = body;
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+  const raw = await kv.get(`game:${accessCode}`); if (!raw) return json({ error: 'Game not found' }, 404);
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token); if (!player) return json({ error: 'Invalid token' }, 403);
+  const opponent = player === 'p1' ? 'p2' : 'p1';
+  state.phase = 'finished';
+  state.result = { winner: state.players[opponent].token ? opponent : null, reason: 'abandon', abandonedBy: player, finalScore: [state.players.p1.captured, state.players.p2.captured] };
+  state.updatedAt = new Date().toISOString();
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: THIRTY_DAYS });
+  return json({ ok: true });
+}
+
+async function handleSurakartaStats(env) {
+  const kv = env.GAME_STATE; let cursor = null, total = 0, thisWeek = 0;
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  do {
+    const listOpts = { prefix: 'game:', limit: 1000 }; if (cursor) listOpts.cursor = cursor;
+    const list = await kv.list(listOpts);
+    for (const key of list.keys) { const raw = await kv.get(key.name); if (!raw) continue; try { const s = JSON.parse(raw); if (s.game !== 'surakarta') continue; total++; if (s.createdAt > oneWeekAgo) thisWeek++; } catch {} }
+    cursor = list.list_complete ? null : list.cursor;
+  } while (cursor);
+  return json({ total, thisWeek });
+}
+
+async function handleSurakartaReplay(route, env) {
+  const kv = env.GAME_STATE; const accessCode = route.replace('/replay/', '');
+  const raw = await kv.get(`game:${accessCode}`); if (!raw) return json({ error: 'Game not found' }, 404);
+  const state = JSON.parse(raw);
+  if (state.game !== 'surakarta') return json({ error: 'Game not found' }, 404);
+  return json({
+    accessCode: state.accessCode, game: state.game, phase: state.phase, result: state.result, settings: state.settings,
+    players: { p1: { title: 'Dark', captured: state.players.p1.captured, piecesLeft: state.players.p1.piecesLeft }, p2: { title: 'Light', captured: state.players.p2.captured, piecesLeft: state.players.p2.piecesLeft } },
+    log: state.log, createdAt: state.createdAt
+  });
+}
+
+// ═══════════════════════════════════════════════
+// ─── Seega API ───
+// ═══════════════════════════════════════════════
+
+async function handleSeegaApi(path, request, env) {
+  const route = path.replace('/play/seega/api', '');
+  const method = request.method;
+
+  try {
+    if (route === '/create' && method === 'POST') return await handleSeegaCreate(request, env);
+    if (route === '/join' && method === 'POST') return await handleSeegaJoin(request, env);
+    if (route === '/state' && method === 'GET') return await handleSeegaState(request, env);
+    if (route === '/place' && method === 'POST') return await handleSeegaPlace(request, env);
+    if (route === '/move' && method === 'POST') return await handleSeegaMove(request, env);
+    if (route === '/leave' && method === 'POST') return await handleSeegaLeave(request, env);
+    if (route === '/stats' && method === 'GET') return await handleSeegaStats(env);
+    if (route.startsWith('/replay/') && method === 'GET') return await handleSeegaReplay(route, env);
+    return json({ error: 'Not found' }, 404);
+  } catch (e) {
+    return json({ error: 'Internal error' }, 500);
+  }
+}
+
+async function handleSeegaCreate(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+
+  let accessCode;
+  for (let attempt = 0; attempt < 10; attempt++) {
+    accessCode = generateCode();
+    const existing = await kv.get(`code:${accessCode}`);
+    if (!existing) break;
+  }
+
+  const token = generateToken();
+  const state = createSeegaGame(accessCode);
+
+  if (body.settings) {
+    if (body.settings.drawByRepetition !== undefined) state.settings.drawByRepetition = !!body.settings.drawByRepetition;
+    if (body.settings.moveLimit !== undefined) {
+      const ml = parseInt(body.settings.moveLimit, 10);
+      if (ml >= 0 && ml <= 1000) state.settings.moveLimit = ml;
+    }
+  }
+
+  state.players.p1.token = token;
+  state.players.p1.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  state.theme = 'neutral';
+
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
+  await kv.put(`code:${accessCode}`, accessCode, { expirationTtl: SEVEN_DAYS });
+
+  return json({ accessCode, player: 'p1', token });
+}
+
+async function handleSeegaJoin(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const accessCode = (body.accessCode || '').toUpperCase().trim();
+
+  if (!accessCode) return json({ error: 'Access code required' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+
+  if (state.game !== 'seega') return json({ error: 'Game not found (wrong game type)' }, 404);
+  if (state.players.p2.token) return json({ error: 'Game already has two players.' }, 400);
+  if (state.phase !== 'waiting') return json({ error: 'Game is not accepting players' }, 400);
+
+  const token = generateToken();
+  state.players.p2.token = token;
+  state.players.p2.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  state.phase = 'placing';
+  state.turn.player = 'p1';
+  state.turn.action = 'place';
+  state.turn.placedThisTurn = 0;
+  state.requests = (state.requests || 0) + 1;
+  state.updatedAt = new Date().toISOString();
+
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
+
+  return json({ accessCode, player: 'p2', token });
+}
+
+async function handleSeegaState(request, env) {
+  const kv = env.GAME_STATE;
+  const url = new URL(request.url);
+  const accessCode = url.searchParams.get('game');
+  const token = url.searchParams.get('token');
+  const since = parseInt(url.searchParams.get('since') || '0', 10);
+
+  if (!accessCode || !token) return json({ error: 'Missing game or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  state.requests = (state.requests || 0) + 1;
+  if (!state.lastSeen) state.lastSeen = {};
+  state.lastSeen[player] = new Date().toISOString();
+
+  if (state.requests % 25 === 0) {
+    await kv.put(`game:${accessCode}`, JSON.stringify(state));
+  }
+
+  const sanitized = sanitizeSeega(state, player);
+  sanitized.you = player;
+
+  if (since > 0) {
+    sanitized.log = sanitized.log.filter(e => e.seq > since);
+  }
+
+  return json(sanitized);
+}
+
+async function handleSeegaPlace(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token, node } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  state.requests = (state.requests || 0) + 1;
+  const result = placeSeegaPiece(state, player, node);
+
+  if (result.error) return json({ error: result.error }, 400);
+
+  const ttl = state.phase === 'finished' ? THIRTY_DAYS : SEVEN_DAYS;
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: ttl });
+
+  return json({ ok: true });
+}
+
+async function handleSeegaMove(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token, from, to } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  state.requests = (state.requests || 0) + 1;
+  const result = makeSeegaMove(state, player, from, to);
+
+  if (result.error) return json({ error: result.error }, 400);
+
+  const ttl = state.phase === 'finished' ? THIRTY_DAYS : SEVEN_DAYS;
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: ttl });
+
+  return json({ ok: true });
+}
+
+async function handleSeegaLeave(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  const opponent = player === 'p1' ? 'p2' : 'p1';
+  state.phase = 'finished';
+  state.result = {
+    winner: state.players[opponent].token ? opponent : null,
+    reason: 'abandon',
+    abandonedBy: player,
+    finalScore: [state.players.p1.captured, state.players.p2.captured]
+  };
+  state.updatedAt = new Date().toISOString();
+
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: THIRTY_DAYS });
+
+  return json({ ok: true });
+}
+
+async function handleSeegaStats(env) {
+  const kv = env.GAME_STATE;
+  let cursor = null;
+  let total = 0;
+  let thisWeek = 0;
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+  do {
+    const listOpts = { prefix: 'game:', limit: 1000 };
+    if (cursor) listOpts.cursor = cursor;
+    const list = await kv.list(listOpts);
+
+    for (const key of list.keys) {
+      const raw = await kv.get(key.name);
+      if (!raw) continue;
+      try {
+        const state = JSON.parse(raw);
+        if (state.game !== 'seega') continue;
+        total++;
+        if (state.createdAt > oneWeekAgo) thisWeek++;
+      } catch {}
+    }
+
+    cursor = list.list_complete ? null : list.cursor;
+  } while (cursor);
+
+  return json({ total, thisWeek });
+}
+
+async function handleSeegaReplay(route, env) {
+  const kv = env.GAME_STATE;
+  const accessCode = route.replace('/replay/', '');
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  if (state.game !== 'seega') return json({ error: 'Game not found' }, 404);
+
+  return json({
+    accessCode: state.accessCode,
+    game: state.game,
+    phase: state.phase,
+    result: state.result,
+    settings: state.settings,
+    players: {
+      p1: { title: 'Dark', piecesLeft: state.players.p1.piecesLeft, captured: state.players.p1.captured },
+      p2: { title: 'Light', piecesLeft: state.players.p2.piecesLeft, captured: state.players.p2.captured }
+    },
+    log: state.log,
+    createdAt: state.createdAt
+  });
+}
+
+// ═══════════════════════════════════════════════
 // ─── Admin API (protected by Cloudflare Access Zero Trust) ───
 // ═══════════════════════════════════════════════
 
@@ -1559,25 +1962,27 @@ async function handleAdminGames(request, env) {
       const isLOA = state.game === 'lines-of-action';
       const isAbalone = state.game === 'abalone';
       const isTablut = state.game === 'tablut';
+      const isSurakarta = state.game === 'surakarta';
+      const isSeega = state.game === 'seega';
       // Score extraction per game type
-      const p1Score = isAbalone ? (state.players.p1.eliminated ?? 0) : (isFanorona || isLOA || isTablut) ? (state.players.p1.captured ?? 0) : isMorris ? (state.players.p2.piecesLost ?? 0) : (state.players.p1.score ?? 0);
-      const p2Score = isAbalone ? (state.players.p2.eliminated ?? 0) : (isFanorona || isLOA || isTablut) ? (state.players.p2.captured ?? 0) : isMorris ? (state.players.p1.piecesLost ?? 0) : (state.players.p2.score ?? 0);
+      const p1Score = isAbalone ? (state.players.p1.eliminated ?? 0) : (isFanorona || isLOA || isTablut || isSurakarta || isSeega) ? (state.players.p1.captured ?? 0) : isMorris ? (state.players.p2.piecesLost ?? 0) : (state.players.p1.score ?? 0);
+      const p2Score = isAbalone ? (state.players.p2.eliminated ?? 0) : (isFanorona || isLOA || isTablut || isSurakarta || isSeega) ? (state.players.p2.captured ?? 0) : isMorris ? (state.players.p1.piecesLost ?? 0) : (state.players.p2.score ?? 0);
 
       games.push({
         code: state.accessCode,
         game: state.game || 'ouroboros',
-        theme: isTablut ? 'tablut' : isAbalone ? 'abalone' : isLOA ? 'lines-of-action' : isFanorona ? 'fanorona' : isMorris ? 'nine-mens-morris' : state.theme,
+        theme: isSeega ? 'seega' : isSurakarta ? 'surakarta' : isTablut ? 'tablut' : isAbalone ? 'abalone' : isLOA ? 'lines-of-action' : isFanorona ? 'fanorona' : isMorris ? 'nine-mens-morris' : state.theme,
         phase: state.phase,
         created: state.createdAt,
         updated: state.updatedAt,
         p1: {
-          name: state.players.p1.name || state.players.p1.title || (isMorris ? 'Dark' : isLOA ? 'Black' : 'P1'),
+          name: state.players.p1.name || state.players.p1.title || (isMorris ? 'Dark' : (isLOA || isSeega) ? 'Dark' : 'P1'),
           ip: state.players.p1.ip || 'n/a',
           score: p1Score,
           holding: state.players.p1.holding?.length || 0
         },
         p2: {
-          name: state.players.p2.name || state.players.p2.title || (isMorris ? 'Light' : isLOA ? 'White' : 'P2'),
+          name: state.players.p2.name || state.players.p2.title || (isMorris ? 'Light' : (isLOA || isSeega) ? 'Light' : 'P2'),
           ip: state.players.p2.ip || 'n/a',
           score: p2Score,
           holding: state.players.p2.holding?.length || 0
