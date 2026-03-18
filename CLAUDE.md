@@ -44,8 +44,10 @@ public/play/{game-slug}/          Each game is self-contained here
     js/version.js                 Build version and date
 
 worker/index.js                   API router, all game handlers
-docs/rulebooks/{game-slug}/       Design reference (not deployed)
-docs/rulebooks/boards/            SVG board layout references
+docs/rulebooks/{game-slug}/
+    mechanics.md                  Game rules in Markdown (viewable on GitHub)
+docs/rulebooks/boards/
+    {game-slug}.svg               Board diagram in SVG (embeddable in Markdown)
 ```
 
 ## Build Rules
@@ -145,17 +147,20 @@ Follow these steps in order when building a new game. Each step should be comple
 
 Create design reference documents in `docs/`. These are not loaded at runtime.
 
-- `docs/rulebooks/{game-slug}/mechanics.html` -- Complete rules reference
-  - Uses shared stylesheet: `../../css/style.css`
-  - Defines `:root` color variables for the game
+- `docs/rulebooks/{game-slug}/mechanics.md` -- Complete rules reference (Markdown)
   - Covers: components, board layout, setup, movement, capture/scoring, winning, draws
-  - Includes implementation notes (settings, game state shape)
-- `docs/rulebooks/boards/{game-slug}.html` -- SVG board layout
+  - Includes implementation notes (settings, game state shape, board data model, phase machine, API endpoints)
+  - Embed the board SVG with `![Board diagram](../boards/{game-slug}.svg)`
+  - Use blockquotes (`> `) for callouts, `> **Warning:**` for warnings
+  - Use Markdown tables, fenced code blocks, standard formatting
+  - Do not use em dashes. Use ` - ` instead.
+- `docs/rulebooks/boards/{game-slug}.svg` -- Standalone SVG board diagram
   - Shows all intersections/cells with labels
-  - Shows initial piece placement
-  - Includes legend for piece colors and line types
+  - Shows initial piece placement with correct colors
+  - Include a background rect, board lines, pieces, and coordinate labels
+  - Viewable directly on GitHub and embeddable in Markdown
 
-Follow the HTML structure pattern from existing rulebooks: `title-block`, `role-grid`, sections with `h2`/`h3`, `callout` boxes, tables.
+Follow the structure of existing rulebooks (see `docs/rulebooks/lines-of-action/mechanics.md` as a reference).
 
 ### Step 2: Architecture and Data Model
 

@@ -11,6 +11,8 @@
   - Abalone hex outline corrected from pointy-top to flat-top orientation
 - Rulebooks converted from HTML to Markdown for GitHub readability
 - Board diagrams extracted as standalone SVG files viewable on GitHub
+- Deleted HTML versions of mechanics and board files (replaced by .md and .svg)
+  - Only Ouroboros themed rulebooks (wyrd, dominion, inner-work) remain as HTML
 - Tablut v0.1.0: full game implementation
   - Engine: 9x9 grid, rook movement, custodian capture, hostile squares (throne/corners), king capture (4-side/3-side/2-side), raichi/tuichi detection
   - Frontend: 9x9 SVG board with throne/corner markers, king piece with crown, selectable/selected rings
