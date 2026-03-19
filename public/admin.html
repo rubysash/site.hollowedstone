@@ -85,7 +85,8 @@
 <div class="meta">
   <span id="admin-email"></span>
   <span id="last-refresh"></span>
-  <button class="refresh-btn" onclick="loadGames()" style="margin-left:1rem;">Refresh</button>
+  <button class="refresh-btn" onclick="loadAll()" style="margin-left:1rem;">Refresh</button>
+  <span id="feedback-badge" style="margin-left:1rem;background:#6a0dad;color:#fff;padding:0.2rem 0.6rem;border-radius:10px;font-size:0.8rem;font-weight:bold;display:none;">0</span>
   <select id="limit" onchange="loadGames()" style="margin-left:0.5rem;background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:0.3rem 0.5rem;border-radius:4px;font-size:0.85rem;">
     <option value="25">Last 25</option>
     <option value="50" selected>Last 50</option>
@@ -93,6 +94,8 @@
     <option value="200">Last 200</option>
   </select>
 </div>
+
+<div id="feedback-section" style="margin-bottom:1.5rem;"></div>
 
 <div class="stats" id="stats"></div>
 
@@ -226,7 +229,77 @@ async function loadGames() {
   }
 }
 
-loadGames();
+async function loadFeedback() {
+  const section = document.getElementById('feedback-section');
+  const badge = document.getElementById('feedback-badge');
+  try {
+    const resp = await fetch('/admin/api/feedback');
+    if (!resp.ok) { section.innerHTML = ''; return; }
+    const data = await resp.json();
+
+    if (data.total > 0) {
+      badge.textContent = data.total + ' Feedback';
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
+    }
+
+    if (data.items.length === 0) {
+      section.innerHTML = '<div style="color:#7a8599;font-size:0.85rem;margin-bottom:0.5rem;">No feedback.</div>';
+      return;
+    }
+
+    let html = '<h2 style="font-size:1rem;margin-bottom:0.8rem;color:#c9d1d9;">Feedback (' + data.total + ')</h2>';
+    for (const item of data.items) {
+      const typeColor = item.type === 'bug' ? '#f85149' : item.type === 'sponsor' ? '#4ade80' : '#b388ff';
+      const typeLabel = item.type === 'bug' ? 'Bug' : item.type === 'sponsor' ? 'Sponsor' : 'Suggestion';
+      const created = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'n/a';
+      const contactInfo = [item.email, item.phone].filter(Boolean).join(' / ') || 'none';
+      const desc = (item.description || '').length > 300 ? item.description.slice(0, 300) + '...' : (item.description || '');
+      const websiteLink = item.website ? `<div style="font-size:0.8rem;margin-top:0.2rem;"><a href="${esc(item.website)}" target="_blank" rel="noopener" style="color:#b388ff;">${esc(item.website)}</a></div>` : '';
+      html += `<div style="background:#161b22;border:1px solid ${item.type === 'sponsor' ? '#4ade80' : '#30363d'};border-radius:8px;padding:0.8rem 1rem;margin-bottom:0.6rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+          <div>
+            <span style="display:inline-block;padding:0.1rem 0.4rem;border-radius:3px;background:${typeColor};color:#fff;font-size:0.75rem;font-weight:bold;">${typeLabel}</span>
+            ${item.gameCode ? '<span class="code" style="margin-left:0.5rem;font-size:0.8rem;">' + item.gameCode + '</span>' : ''}
+            <span class="time" style="margin-left:0.5rem;">${created}</span>
+          </div>
+          <button class="refresh-btn" onclick="clearFeedback('${item.key}')">Clear</button>
+        </div>
+        <div style="font-weight:bold;margin-bottom:0.3rem;">${esc(item.title)}</div>
+        ${websiteLink}
+        <div style="font-size:0.85rem;color:#8b949e;white-space:pre-wrap;">${esc(desc)}</div>
+        <div style="font-size:0.75rem;color:#7a8599;margin-top:0.3rem;">
+          Contact: ${item.contact ? 'Yes' : 'No'} | ${esc(contactInfo)} | IP: <span class="ip">${item.ip}</span>
+        </div>
+      </div>`;
+    }
+    section.innerHTML = html;
+  } catch (e) {
+    section.innerHTML = '';
+  }
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+async function clearFeedback(key) {
+  try {
+    await fetch('/admin/api/feedback/clear', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key })
+    });
+    loadFeedback();
+  } catch (e) {}
+}
+
+function loadAll() { loadFeedback(); loadGames(); }
+
+loadAll();
 </script>
 </body>
 </html>

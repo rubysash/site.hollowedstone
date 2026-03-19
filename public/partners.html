@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Partners - Hollowed Stone</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+  }
+  .container { max-width: 640px; width: 100%; }
+  h1 { font-size: 1.8rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.3rem; text-align: center; }
+  .tagline { color: #7a8599; font-size: 0.9rem; text-align: center; margin-bottom: 2rem; }
+  .intro { font-size: 0.9rem; color: #b0b8c4; line-height: 1.7; margin-bottom: 2rem; }
+  .intro a { color: #b388ff; text-decoration: none; }
+  .intro a:hover { text-decoration: underline; }
+
+  .sponsor-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .sponsor-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+  }
+  .sponsor-name a { color: #b388ff; text-decoration: none; }
+  .sponsor-name a:hover { text-decoration: underline; }
+  .sponsor-desc {
+    font-size: 0.85rem;
+    color: #8b949e;
+    line-height: 1.5;
+  }
+  .sponsor-since {
+    font-size: 0.7rem;
+    color: #484f58;
+    margin-top: 0.4rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #7a8599;
+  }
+  .empty-state p { margin-bottom: 1rem; }
+
+  .cta {
+    background: #161b22;
+    border: 1px solid #4ade80;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-top: 2rem;
+  }
+  .cta p { color: #b0b8c4; font-size: 0.9rem; margin-bottom: 0.8rem; }
+  .cta-btn {
+    display: inline-block;
+    background: #6a0dad;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+  }
+  .cta-btn:hover { background: #7b1fa2; }
+
+  .footer { margin-top: 2.5rem; font-size: 0.8rem; color: #484f58; text-align: center; }
+  .footer a { color: #b388ff; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>Partners</h1>
+<div class="tagline">People and organizations who support Hollowed Stone</div>
+
+<div class="intro">
+  <p>Hollowed Stone is a free, open-source platform for abstract strategy board games. It runs on zero revenue and zero ads. Partners help keep the lights on and show that this kind of project has value.</p>
+  <p>Sponsors are listed here with a link to their site or business. If you'd like to support the project, <a href="#" onclick="event.preventDefault();import('/shared/feedback.js').then(m=>m.openFeedback())">get in touch through the Feedback form</a> and select "Become a Sponsor."</p>
+</div>
+
+<!-- Sponsor cards go here. Add manually after approving via /admin. -->
+<!-- Template:
+<div class="sponsor-card">
+  <div class="sponsor-name"><a href="https://example.com" target="_blank" rel="noopener">Sponsor Name</a></div>
+  <div class="sponsor-desc">Short description of what they do or why they sponsor.</div>
+  <div class="sponsor-since">Partner since March 2026</div>
+</div>
+-->
+
+<div class="empty-state">
+  <p>No sponsors yet. Be the first!</p>
+  <p>Your name, link, and a short description will appear here.</p>
+</div>
+
+<div class="cta">
+  <p>Sponsorship starts at $5/month. Your support keeps 1,000 players gaming for free.</p>
+  <a href="#" class="cta-btn" onclick="event.preventDefault();import('/shared/feedback.js').then(m=>m.openFeedback())">Become a Sponsor</a>
+</div>
+
+</div>
+
+<div class="footer">
+  <a href="/" style="color:#b388ff;text-decoration:none;">Play Games</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="https://github.com/rubysash/site.hollowedstone/tree/main/docs/rulebooks" target="_blank" rel="noopener" style="color:#b388ff;text-decoration:none;">Rulebooks</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="/about" style="color:#b388ff;text-decoration:none;">About</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="/partners" style="color:#b388ff;text-decoration:none;">Partners</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="#" onclick="event.preventDefault();import('/shared/feedback.js').then(m=>m.openFeedback())" style="color:#b388ff;text-decoration:none;">Feedback</a>
+  <div style="margin-top:0.3rem;font-size:0.65rem;opacity:0.5;">
+    <a href="/terms" style="color:#b388ff;text-decoration:none;">Terms</a> <span style="margin:0 0.3rem;">|</span> <a href="/privacy" style="color:#b388ff;text-decoration:none;">Privacy</a>
+  </div>
+  <div class="build-tag" style="margin-top:0.3rem;font-size:0.7rem;color:#484f58;opacity:0.6;" id="build-tag"></div>
+</div>
+
+<script type="module">
+import { PLATFORM_VERSION } from '/shared/version.js';
+document.getElementById('build-tag').textContent = `v${PLATFORM_VERSION}`;
+</script>
+</body>
+</html>

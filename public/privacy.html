@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Privacy Policy - Hollowed Stone</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0d1117; color: #c9d1d9; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
+  .container { max-width: 640px; width: 100%; }
+  h1 { font-size: 1.8rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.3rem; text-align: center; }
+  .tagline { color: #7a8599; font-size: 0.9rem; text-align: center; margin-bottom: 2rem; }
+  .content { line-height: 1.8; font-size: 0.9rem; color: #b0b8c4; }
+  .content h2 { color: #c9d1d9; font-size: 1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; letter-spacing: 0.08em; }
+  .content p { margin-bottom: 0.8rem; }
+  .content ul { padding-left: 1.5rem; margin-bottom: 0.8rem; }
+  .content li { margin-bottom: 0.3rem; }
+  .content strong { color: #c9d1d9; }
+  .updated { font-size: 0.75rem; color: #484f58; text-align: center; margin-bottom: 1.5rem; }
+  .footer { margin-top: 2.5rem; font-size: 0.8rem; color: #484f58; text-align: center; }
+  .footer a { color: #b388ff; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Privacy Policy</h1>
+<div class="tagline">Hollowed Stone</div>
+<div class="updated">Last updated: March 19, 2026</div>
+
+<div class="content">
+
+<h2>The short version</h2>
+<p>We collect almost nothing. No accounts. No cookies. No analytics. No ads. No tracking pixels. No third-party scripts.</p>
+
+<h2>What we collect</h2>
+
+<p><strong>During gameplay:</strong></p>
+<ul>
+  <li><strong>Game state</strong> (board positions, move history) stored temporarily in Cloudflare KV. This contains no personal information.</li>
+  <li><strong>IP address</strong> recorded when you create or join a game. Used for rate limiting and abuse prevention. Stored with the game state and deleted when the game expires (7-30 days).</li>
+  <li><strong>Player token</strong> (random string) stored in your browser's localStorage to identify you within a game session. Not linked to any personal identity.</li>
+</ul>
+
+<p><strong>Feedback form (voluntary):</strong></p>
+<ul>
+  <li>If you submit feedback, we store what you typed: title, description, and optionally your email, phone, and website.</li>
+  <li>This is stored in Cloudflare KV for up to 90 days.</li>
+  <li>Your IP is recorded with the submission for rate limiting (max 2 unread submissions per IP).</li>
+  <li>Feedback is only visible to the site administrator. It is never displayed publicly.</li>
+</ul>
+
+<h2>What we do NOT collect</h2>
+<ul>
+  <li>No user accounts or passwords</li>
+  <li>No cookies (we use localStorage only, which does not transmit to the server)</li>
+  <li>No analytics or tracking scripts (no Google Analytics, no Plausible, nothing)</li>
+  <li>No advertising or ad-related tracking</li>
+  <li>No third-party scripts of any kind</li>
+  <li>No fingerprinting or device identification</li>
+</ul>
+
+<h2>Where data is stored</h2>
+<p>All data is stored in Cloudflare's KV storage infrastructure. Cloudflare operates data centers worldwide. The data is encrypted in transit (HTTPS) and at rest. We do not control which Cloudflare data center stores your game state.</p>
+
+<h2>Data retention</h2>
+<ul>
+  <li><strong>Active games:</strong> 7 days after last activity, then auto-deleted</li>
+  <li><strong>Finished games:</strong> 30 days, then auto-deleted</li>
+  <li><strong>Feedback submissions:</strong> 90 days, or until cleared by the administrator</li>
+  <li><strong>IP rate limit counters:</strong> 30 days, then auto-deleted</li>
+</ul>
+
+<h2>Third parties</h2>
+<p>The only third-party service involved is <strong>Cloudflare</strong>, which hosts the site and stores game data. Cloudflare's privacy policy applies to their infrastructure: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener" style="color:#b388ff;">cloudflare.com/privacypolicy</a>.</p>
+<p>Donations are processed through <strong>PayPal</strong>. We do not receive or store your payment information. PayPal's privacy policy applies to those transactions.</p>
+
+<h2>Children</h2>
+<p>The platform does not knowingly collect personal information from children. No account creation means no age data is collected. Games can be played without providing any personal information.</p>
+
+<h2>Your rights</h2>
+<p>Since we collect almost no personal data, there is little to request. If you submitted feedback and want it removed, use the feedback form to ask, or email the contact listed on the <a href="/about" style="color:#b388ff;">About</a> page.</p>
+
+<h2>Changes</h2>
+<p>This policy may be updated at any time. The "last updated" date at the top reflects the most recent revision.</p>
+
+</div>
+</div>
+
+<div class="footer">
+  <a href="/" style="color:#b388ff;text-decoration:none;">Play Games</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="https://github.com/rubysash/site.hollowedstone/tree/main/docs/rulebooks" target="_blank" rel="noopener" style="color:#b388ff;text-decoration:none;">Rulebooks</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="/about" style="color:#b388ff;text-decoration:none;">About</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="/partners" style="color:#b388ff;text-decoration:none;">Partners</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="#" onclick="event.preventDefault();import('/shared/feedback.js').then(m=>m.openFeedback())" style="color:#b388ff;text-decoration:none;">Feedback</a>
+  <div style="margin-top:0.3rem;font-size:0.65rem;opacity:0.5;">
+    <a href="/terms" style="color:#b388ff;text-decoration:none;">Terms</a> <span style="margin:0 0.3rem;">|</span> <a href="/privacy" style="color:#b388ff;text-decoration:none;">Privacy</a>
+  </div>
+</div>
+</body>
+</html>

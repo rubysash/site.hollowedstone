@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>About - Hollowed Stone</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+  }
+  .about-container {
+    max-width: 640px;
+    width: 100%;
+  }
+  h1 {
+    font-size: 1.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+    text-align: center;
+  }
+  .tagline {
+    color: #7a8599;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .story {
+    line-height: 1.8;
+    font-size: 0.95rem;
+    color: #b0b8c4;
+  }
+  .story p {
+    margin-bottom: 1.2rem;
+  }
+  .story strong {
+    color: #c9d1d9;
+  }
+  .highlight {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: center;
+  }
+  .highlight p {
+    margin-bottom: 0.8rem;
+    color: #c9d1d9;
+    font-size: 1rem;
+  }
+  .highlight .small {
+    font-size: 0.8rem;
+    color: #7a8599;
+    margin-bottom: 0;
+  }
+  .donate-btn {
+    display: inline-block;
+    background: #6a0dad;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 2rem;
+    font-family: inherit;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+  }
+  .donate-btn:hover { background: #7b1fa2; }
+  .stats-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+  }
+  .stat-item {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 0.8rem 1.2rem;
+    text-align: center;
+    min-width: 100px;
+  }
+  .stat-item .num {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #b388ff;
+  }
+  .stat-item .label {
+    font-size: 0.7rem;
+    color: #7a8599;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .footer {
+    margin-top: 2.5rem;
+    font-size: 0.8rem;
+    color: #484f58;
+    text-align: center;
+  }
+  .footer a { color: #b388ff; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="about-container">
+
+<h1>Hollowed Stone</h1>
+<div class="tagline">Built by James Fraze</div>
+
+<div class="story">
+
+<p>My grandfather taught me board games on boards he made himself. Not the kind you buy at a store. Hand-drawn grids on scrap wood, stones and buttons for pieces, rules explained from memory. Those games stuck with me longer than anything that came in a box.</p>
+
+<p>I grew up playing abstract strategy games with my kids the same way. No dice, no luck, just two people thinking. But where I live, not many people play these kinds of games. Finding an opponent for Tablut or Fanorona isn't something you can do at a local game night.</p>
+
+<p>So I started building. First in Python, running locally on my machine. Those took months. I carved boards with a CNC router, printed pieces on a 3D printer, and drew SVG layouts for games most people have never heard of. The physical side was satisfying, but the audience was small.</p>
+
+<p>With the help of AI, I've been able to build web versions of these games much faster than I ever could alone. What used to take months now takes days. The entire platform runs on free infrastructure. No accounts. No tracking. No ads. Just games.</p>
+
+<p>Every game on this site is <strong>free to play, forever</strong>. The source code is <a href="https://github.com/rubysash/site.hollowedstone" target="_blank" rel="noopener" style="color:#b388ff;">open source on GitHub</a> under the MIT license. I'm not building a business. I'm building something I wish existed when I was looking for someone to play Surakarta with.</p>
+
+</div>
+
+<div class="stats-row">
+  <div class="stat-item"><div class="num">10</div><div class="label">Games</div></div>
+  <div class="stat-item"><div class="num">0</div><div class="label">Ads</div></div>
+  <div class="stat-item"><div class="num">$0</div><div class="label">Hosting cost</div></div>
+  <div class="stat-item"><div class="num">MIT</div><div class="label">License</div></div>
+</div>
+
+<div class="highlight">
+  <p>$5 keeps 1,000 people playing for a month. That's the actual server cost if this grows beyond the free tier.</p>
+  <p>Beyond hosting, there's AI tooling, 3D printer upgrades, and the time to research, design, and build each game. Any donation shows me people find value in this, and that's what keeps me going.</p>
+  <a href="https://www.paypal.com/donate/?hosted_button_id=8F2JVZ6PWZ63J" target="_blank" rel="noopener" class="donate-btn">Give $5 to Sponsor 1,000 Players for a Month</a>
+  <p class="small">One-time. No account needed. No recurring charges.</p>
+</div>
+
+<div class="story">
+<p>If you've played a game here and enjoyed it, that's already enough. If you want to help keep it going, anything you send means I'll keep building.</p>
+<p>Want your name or business listed on our <a href="/partners" style="color:#b388ff;">Partners page</a> with a link to your site? Sponsors start at $5/month. <a href="#" onclick="event.preventDefault();import('/shared/feedback.js').then(m=>m.openFeedback())" style="color:#b388ff;">Get in touch through the Feedback form</a> and select "Become a Sponsor."</p>
+</div>
+
+<div class="highlight" style="text-align:left;">
+  <p style="text-align:center; color:#c9d1d9; margin-bottom:0.8rem;"><strong>How this stays free</strong></p>
+  <p class="small" style="margin-bottom:0.8rem;">The site runs on Cloudflare's free tier. No servers, no monthly bills. But the free tier has limits. Here's where things stand:</p>
+  <table style="width:100%; font-size:0.8rem; color:#b0b8c4; border-collapse:collapse;">
+    <tr style="border-bottom:1px solid #30363d;">
+      <td style="padding:0.3rem 0; color:#7a8599;">Resource</td>
+      <td style="padding:0.3rem 0; color:#7a8599;">Free tier</td>
+      <td style="padding:0.3rem 0; color:#7a8599;">Paid ($5/mo)</td>
+    </tr>
+    <tr style="border-bottom:1px solid #21262d;">
+      <td style="padding:0.3rem 0;">API requests</td>
+      <td style="padding:0.3rem 0;">100k/day</td>
+      <td style="padding:0.3rem 0;">10M/month</td>
+    </tr>
+    <tr style="border-bottom:1px solid #21262d;">
+      <td style="padding:0.3rem 0;">Storage reads</td>
+      <td style="padding:0.3rem 0;">100k/day</td>
+      <td style="padding:0.3rem 0;">10M/month</td>
+    </tr>
+    <tr style="border-bottom:1px solid #21262d;">
+      <td style="padding:0.3rem 0;">Storage writes</td>
+      <td style="padding:0.3rem 0;">1k/day</td>
+      <td style="padding:0.3rem 0;">1M/month</td>
+    </tr>
+    <tr>
+      <td style="padding:0.3rem 0;">Storage space</td>
+      <td style="padding:0.3rem 0;">1 GB</td>
+      <td style="padding:0.3rem 0;">1 GB (+ $0.50/GB)</td>
+    </tr>
+  </table>
+  <p class="small" style="margin-top:0.8rem;">Each game uses about 35-45 writes. On the free tier, that's roughly 25 games per day before hitting the write limit. If the site grows beyond that, the $5/month paid tier gives 1,000x more writes. Donations help cover that threshold if we get there.</p>
+</div>
+
+</div>
+
+<div class="footer">
+  <a href="/" style="color:#b388ff;text-decoration:none;">Play Games</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="https://github.com/rubysash/site.hollowedstone/tree/main/docs/rulebooks" target="_blank" rel="noopener" style="color:#b388ff;text-decoration:none;">Rulebooks</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="/about" style="color:#b388ff;text-decoration:none;">About</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="/partners" style="color:#b388ff;text-decoration:none;">Partners</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="#" onclick="event.preventDefault();import('/shared/feedback.js').then(m=>m.openFeedback())" style="color:#b388ff;text-decoration:none;">Feedback</a>
+  <div style="margin-top:0.3rem;font-size:0.65rem;opacity:0.5;">
+    <a href="/terms" style="color:#b388ff;text-decoration:none;">Terms</a> <span style="margin:0 0.3rem;">|</span> <a href="/privacy" style="color:#b388ff;text-decoration:none;">Privacy</a>
+  </div>
+  <div class="build-tag" style="margin-top:0.3rem;font-size:0.7rem;color:#484f58;opacity:0.6;" id="build-tag"></div>
+</div>
+
+<script type="module">
+import { PLATFORM_VERSION } from '/shared/version.js';
+document.getElementById('build-tag').textContent = `v${PLATFORM_VERSION}`;
+</script>
+</body>
+</html>

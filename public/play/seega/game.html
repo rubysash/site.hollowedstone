@@ -48,13 +48,18 @@
       <span class="poll-status"></span>
     </div>
     <div class="site-footer">
-      <a href="/">Home</a>
-      <span>|</span>
-      <a href="https://github.com/rubysash/site.hollowedstone" target="_blank" rel="noopener">Git</a>
+      <a href="/">Play Games</a>
       <span>|</span>
       <a href="https://github.com/rubysash/site.hollowedstone/tree/main/docs/rulebooks" target="_blank" rel="noopener">Rulebooks</a>
       <span>|</span>
-      <a href="https://www.paypal.com/donate/?hosted_button_id=8F2JVZ6PWZ63J" target="_blank" rel="noopener">Donate</a>
+      <a href="/about">About</a>
+      <span>|</span>
+      <a href="/partners">Partners</a>
+      <span>|</span>
+      <a href="#" onclick="event.preventDefault();import('/shared/feedback.js').then(m=>m.openFeedback())">Feedback</a>
+      <div style="margin-top:0.3rem;font-size:0.65rem;opacity:0.5;">
+        <a href="/terms">Terms</a> <span>|</span> <a href="/privacy">Privacy</a>
+      </div>
       <span class="build-tag"></span>
     </div>
   </div>
@@ -78,6 +83,10 @@ document.querySelector('.build-tag').textContent = `v${BUILD}`;
 document.getElementById('btn-leave').addEventListener('click', leaveGame);
 
 startGame();
+import('/shared/feedback.js').then(m => {
+  const code = document.querySelector('.access-code')?.textContent;
+  m.initFeedback({ gameCode: code });
+});
 </script>
 </body>
 </html>

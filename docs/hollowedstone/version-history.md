@@ -12,6 +12,34 @@
 - Rulebooks converted from HTML to Markdown for GitHub readability
 - Board diagrams extracted as standalone SVG files viewable on GitHub
 ### 2026-03-19
+- Added Terms of Service (`/terms`) and Privacy Policy (`/privacy`) pages
+- Footer restructured site-wide: removed Git link (moved to About page), added Partners link, added Terms | Privacy secondary row
+- Sponsor system: "Become a Sponsor" option in feedback modal, /partners page for approved sponsors
+  - Feedback modal now has three choices: Submit a Bug, Suggest a Game, Become a Sponsor
+  - Sponsor form collects name/org, website URL, description, email (required)
+  - Admin sees sponsor submissions with green badge and website link
+  - Partners page (`/partners`) lists approved sponsors (manually curated)
+  - About page links to partners page and sponsor form
+- Added infrastructure costs document (`docs/hollowedstone/infrastructure-costs.md`)
+- Added cost transparency table to the About page (free tier limits, paid tier pricing)
+- Versioning: split into platform version (`shared/version.js` v1.0.0) and per-game versions (`js/version.js`)
+  - Home page, about page, admin show platform version
+  - Game lobby and game pages show their own game version
+  - "Home" renamed to "Play Games" in all footers
+- Fix: Nine Men's Morris piece colors switched to inline style.fill/style.stroke to prevent browser dark mode inversion
+  - Added color-scheme: dark meta tag and forced-color-adjust: none on board SVG
+  - NOTE: Oroboros may have the same issue (still uses SVG attributes for piece colors, no color-scheme meta, no forced-color-adjust). Apply the same fix if reported.
+- Footer: replaced "Donate" with "About" linking to /about page. Footer links changed to #b388ff (light purple) site-wide.
+- Added About page (`/about`) with personal story, project stats, and donate call-to-action
+- Added customer avatar document (`docs/hollowedstone/customer-avatar.md`)
+- Added monetization strategy document (`docs/hollowedstone/monetization-ideas.md`)
+- Feedback system: bug reports and game suggestions
+  - Shared feedback modal (`public/shared/feedback.js`) with two forms (bug/suggestion)
+  - Math captcha, auto-fill game code on game pages, contact-back checkbox
+  - Worker API: POST /api/feedback (submit), GET /admin/api/feedback (list), POST /admin/api/feedback/clear (dismiss)
+  - IP rate limit: max 2 unread items per IP, counter decremented when admin clears
+  - Admin page: feedback section with badge count, shown before game metrics
+  - Feedback link added to footer on all HTML pages
 - Fix: TZAAR ring generation, hex-to-pixel conversion, and board centering (board was off-screen)
 - Fix: TZAAR rulebook SVG and home page thumbnail rebuilt with correct hex geometry
 - Fix: Fanorona rulebook SVG diagonals now match game code (one diagonal per cell, alternating direction)

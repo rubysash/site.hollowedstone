@@ -47,6 +47,10 @@ public/play/{game-slug}/          Each game is self-contained here
     js/help.js                    Rules overlay
     js/version.js                 Build version and date
 
+public/shared/
+    version.js                    Platform version (home, about, admin)
+    feedback.js                   Feedback modal (shared across all pages)
+
 worker/index.js                   API router, all game handlers
 docs/rulebooks/{game-slug}/
     mechanics.md                  Game rules in Markdown (viewable on GitHub)
@@ -61,12 +65,25 @@ docs/rulebooks/boards/
 - Other sites are generally fine for research.
 
 ### Version Bumping
-Before every deploy, update `js/version.js` for each changed game:
+
+Two separate versions exist:
+
+**Platform version** (`public/shared/version.js`):
+- Covers the worker, home page, about page, admin, shared modules (feedback.js), footer, layout
+- Shown on the home page, about page, and admin
+- Bump when infrastructure, shared modules, or platform-wide changes are made
+
+**Game versions** (each game's `js/version.js`):
+- Covers that game's engine, board, UI, theme, help
+- Shown on that game's lobby and game pages
+- Bump when that specific game is changed
+
+Both follow the same scheme:
 - Patch for bug fixes (0.1.12 to 0.1.13)
 - Minor for new features (0.1.13 to 0.2.0)
 - Major for breaking changes (0.2.0 to 1.0.0)
-- Update `BUILD_DATE` to today's date
-- Add a summary entry to `docs/version-history.md` (newest first)
+- Update the date to today
+- Add a summary entry to `docs/hollowedstone/version-history.md` (newest first)
 
 ### Writing Style
 - Do not use em dashes or other obvious AI fingerprints in any writing.
@@ -120,7 +137,7 @@ All games use the same three-column layout:
   |     |-- .status-bar (turn info)
   |     |-- .board-svg (the game board)
   |     |-- .game-footer (Help, Leave buttons, poll status)
-  |     +-- .site-footer (Home | Git | Rulebooks | Donate + version)
+  |     +-- .site-footer (Play Games | Rulebooks | About | Partners | Feedback (+ Terms | Privacy secondary row) + version)
   |
   +-- .player-panel.right-panel[data-player="p1"]  (margin-top 4rem, width 200px)
 ```
@@ -150,7 +167,7 @@ All games use the same three-column layout:
 - `.board-svg` goes to `width: 95vw`.
 
 ### Footer
-Every page must include: `Home | Git | Rulebooks | Donate` links + version tag.
+Every page must include: `Play Games | Rulebooks | About | Partners | Feedback (+ Terms | Privacy secondary row)` links + version tag.
 - Game pages use `.site-footer` class.
 - Lobby/landing pages use `.footer` or `.links` class with the same links.
 
@@ -331,7 +348,7 @@ Run through this list before considering any work done. It covers recurring mist
 ### HTML Pages and Layout
 - [ ] `<meta name="color-scheme" content="dark">` on all game pages
 - [ ] `forced-color-adjust: none` on `.board-svg` in CSS
-- [ ] Footer on every page: Home | Git | Rulebooks | Donate + version tag
+- [ ] Footer on every page: Play Games | Rulebooks | About | Partners | Feedback (+ Terms | Privacy secondary row) + version tag
 - [ ] Lobby page disables button and shows loading text during create/join
 - [ ] Lobby page supports Enter key on code input
 - [ ] Game page has Help button, Leave button, poll status indicator
@@ -361,9 +378,10 @@ Run through this list before considering any work done. It covers recurring mist
 - [ ] Request counter incremented in state but only written to KV every 25 polls
 
 ### Versioning
-- [ ] `js/version.js` bumped (patch for fixes, minor for features, major for breaking changes)
-- [ ] `BUILD_DATE` updated to today
-- [ ] Entry added to `docs/version-history.md` (newest first)
+- [ ] Game `js/version.js` bumped if game code changed
+- [ ] Platform `shared/version.js` bumped if worker, shared modules, or platform-wide changes made
+- [ ] Dates updated to today on whichever version file changed
+- [ ] Entry added to `docs/hollowedstone/version-history.md` (newest first)
 
 ### Platform Integration
 - [ ] Game card added to `public/index.html` with SVG thumbnail and stats fetch

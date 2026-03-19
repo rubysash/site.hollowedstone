@@ -129,6 +129,11 @@ export default {
       return handleTzaarApi(path, request, env);
     }
 
+    // Feedback API (public submit)
+    if (path === '/api/feedback' && request.method === 'POST') {
+      return handleFeedbackSubmit(request, env);
+    }
+
     // Admin API routes (Zero Trust handles auth before this runs)
     if (path.startsWith('/admin/api/')) {
       return handleAdminApi(path, request, env);
@@ -2445,9 +2450,11 @@ async function handleAdminApi(path, request, env) {
 
   try {
     if (route === '/games') return await handleAdminGames(request, env);
+    if (route === '/feedback') return await handleAdminFeedback(env);
+    if (route === '/feedback/clear' && request.method === 'POST') return await handleAdminFeedbackClear(request, env);
     return json({ error: 'Not found' }, 404);
   } catch (e) {
-    return json({ error: 'Internal error', detail: e.message }, 500);
+    return json({ error: 'Internal error' }, 500);
   }
 }
 
@@ -2518,4 +2525,112 @@ async function handleAdminGames(request, env) {
   const adminEmail = request.headers.get('CF-Access-Authenticated-User-Email') || 'unknown';
 
   return json({ admin: adminEmail, total: games.length, showing: limit, games });
+}
+
+// ═══════════════════════════════════════════════
+// ─── Feedback API ───
+// ═══════════════════════════════════════════════
+
+const NINETY_DAYS = 60 * 60 * 24 * 90;
+const FEEDBACK_IP_LIMIT = 2;
+
+async function handleFeedbackSubmit(request, env) {
+  const kv = env.GAME_STATE;
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+
+  // Rate limit: max 2 unread per IP
+  const ipKey = `feedback-ip:${ip}`;
+  const ipCount = parseInt(await kv.get(ipKey) || '0', 10);
+  if (ipCount >= FEEDBACK_IP_LIMIT) {
+    return json({ error: "You've submitted the maximum feedback for now. Please try again later." }, 429);
+  }
+
+  let body;
+  try { body = await request.json(); } catch { return json({ error: 'Invalid JSON' }, 400); }
+
+  const type = body.type;
+  if (type !== 'bug' && type !== 'suggestion' && type !== 'sponsor') return json({ error: 'Invalid type' }, 400);
+
+  const title = String(body.title || '').slice(0, 100).trim();
+  const description = String(body.description || '').slice(0, 2000).trim();
+  if (!title) return json({ error: 'Title is required' }, 400);
+  if (type !== 'sponsor' && !description) return json({ error: 'Description is required' }, 400);
+
+  const gameCode = String(body.gameCode || '').slice(0, 6).trim().toUpperCase();
+  const email = String(body.email || '').slice(0, 100).trim();
+  const phone = String(body.phone || '').slice(0, 15).trim();
+  const contact = !!body.contact;
+  const website = String(body.website || '').slice(0, 200).trim();
+
+  if (type === 'sponsor' && !email) return json({ error: 'Email is required for sponsor inquiries' }, 400);
+
+  const entry = {
+    type, title, description: description || null, gameCode: gameCode || null,
+    email: email || null, phone: phone || null, contact,
+    website: website || null,
+    ip, createdAt: new Date().toISOString()
+  };
+
+  const key = `feedback:${Date.now()}:${type}`;
+  await kv.put(key, JSON.stringify(entry), { expirationTtl: NINETY_DAYS });
+  await kv.put(ipKey, String(ipCount + 1), { expirationTtl: THIRTY_DAYS });
+
+  return json({ ok: true });
+}
+
+async function handleAdminFeedback(env) {
+  const kv = env.GAME_STATE;
+  const items = [];
+  let cursor = null;
+
+  do {
+    const listOpts = { prefix: 'feedback:', limit: 100 };
+    if (cursor) listOpts.cursor = cursor;
+    const list = await kv.list(listOpts);
+
+    for (const k of list.keys) {
+      if (k.name.startsWith('feedback-ip:')) continue;
+      const raw = await kv.get(k.name);
+      if (!raw) continue;
+      try {
+        const entry = JSON.parse(raw);
+        entry.key = k.name;
+        items.push(entry);
+      } catch {}
+    }
+
+    cursor = list.list_complete ? null : list.cursor;
+  } while (cursor);
+
+  items.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  return json({ total: items.length, items });
+}
+
+async function handleAdminFeedbackClear(request, env) {
+  const kv = env.GAME_STATE;
+  let body;
+  try { body = await request.json(); } catch { return json({ error: 'Invalid JSON' }, 400); }
+
+  const key = body.key;
+  if (!key || !key.startsWith('feedback:')) return json({ error: 'Invalid key' }, 400);
+
+  // Get the entry to find the IP
+  const raw = await kv.get(key);
+  if (raw) {
+    try {
+      const entry = JSON.parse(raw);
+      if (entry.ip) {
+        const ipKey = `feedback-ip:${entry.ip}`;
+        const count = parseInt(await kv.get(ipKey) || '0', 10);
+        if (count <= 1) {
+          await kv.delete(ipKey);
+        } else {
+          await kv.put(ipKey, String(count - 1), { expirationTtl: THIRTY_DAYS });
+        }
+      }
+    } catch {}
+  }
+
+  await kv.delete(key);
+  return json({ ok: true });
 }

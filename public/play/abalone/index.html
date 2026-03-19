@@ -22,7 +22,7 @@
   input[type="text"]:focus { outline: none; border-color: #6a0dad; }
   .error { color: #f85149; font-size: 0.85rem; margin-top: 0.6rem; min-height: 1.2em; }
   .footer { margin-top: 3rem; font-size: 0.8rem; color: #484f58; }
-  .footer a { color: #6a0dad; text-decoration: none; }
+  .footer a { color: #b388ff; text-decoration: none; }
   .build-tag { margin-top: 0.5rem; font-size: 0.7rem; color: #484f58; opacity: 0.6; }
 </style>
 </head>
@@ -46,14 +46,19 @@
 </div>
 
 <div class="footer">
-  <a href="/">Home</a>
+  <a href="/" style="color:#b388ff;text-decoration:none;">Play Games</a>
   <span style="margin:0 0.5rem;">|</span>
-  <a href="https://github.com/rubysash/site.hollowedstone" target="_blank" rel="noopener">Git</a>
+  <a href="https://github.com/rubysash/site.hollowedstone/tree/main/docs/rulebooks" target="_blank" rel="noopener" style="color:#b388ff;text-decoration:none;">Rulebooks</a>
   <span style="margin:0 0.5rem;">|</span>
-  <a href="https://github.com/rubysash/site.hollowedstone/tree/main/docs/rulebooks" target="_blank" rel="noopener">Rulebooks</a>
+  <a href="/about" style="color:#b388ff;text-decoration:none;">About</a>
   <span style="margin:0 0.5rem;">|</span>
-  <a href="https://www.paypal.com/donate/?hosted_button_id=8F2JVZ6PWZ63J" target="_blank" rel="noopener">Donate</a>
-  <div class="build-tag" id="build-tag"></div>
+  <a href="/partners" style="color:#b388ff;text-decoration:none;">Partners</a>
+  <span style="margin:0 0.5rem;">|</span>
+  <a href="#" onclick="event.preventDefault();import('/shared/feedback.js').then(m=>m.openFeedback())" style="color:#b388ff;text-decoration:none;">Feedback</a>
+  <div style="margin-top:0.3rem;font-size:0.65rem;opacity:0.5;">
+    <a href="/terms" style="color:#b388ff;text-decoration:none;">Terms</a> <span style="margin:0 0.3rem;">|</span> <a href="/privacy" style="color:#b388ff;text-decoration:none;">Privacy</a>
+  </div>
+  <div class="build-tag" style="margin-top:0.3rem;font-size:0.7rem;color:#484f58;opacity:0.6;" id="build-tag"></div>
 </div>
 
 <script type="module">

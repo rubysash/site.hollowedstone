@@ -134,20 +134,20 @@ export function updateBoard(boardState, theme, lastMove) {
 
     const circle = el('circle', {
       cx: pos.x, cy: pos.y, r: PIECE_RADIUS,
-      fill: pInfo.pieceColor,
-      stroke: pInfo.strokeColor,
       'stroke-width': 2.5
     });
+    circle.style.fill = pInfo.pieceColor;
+    circle.style.stroke = pInfo.strokeColor;
     group.appendChild(circle);
 
     // Inner ring for visual distinction
     const inner = el('circle', {
       cx: pos.x, cy: pos.y, r: PIECE_RADIUS * 0.6,
-      fill: 'none',
-      stroke: pInfo.strokeColor,
       'stroke-width': 1.5,
       opacity: 0.6
     });
+    inner.style.fill = 'none';
+    inner.style.stroke = pInfo.strokeColor;
     group.appendChild(inner);
 
     _pieceLayer.appendChild(group);

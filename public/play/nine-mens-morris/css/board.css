@@ -18,6 +18,13 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html { color-scheme: dark; }
+
+.board-svg {
+  forced-color-adjust: none;
+  -ms-high-contrast-adjust: none;
+}
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -345,7 +352,7 @@ body {
   margin-top: 0.3rem;
 }
 .site-footer a {
-  color: #6a0dad;
+  color: #b388ff;
   text-decoration: none;
 }
 .site-footer a:hover { text-decoration: underline; }
