@@ -23,21 +23,6 @@ Modern classic by James Ernest (from Patrick Rothfuss's *Kingkiller Chronicle*).
 <tr>
 <td width="300" align="center">
 
-![Amazons](placeholder)
-
-</td>
-<td>
-
-### Amazons
-**Strategy: High**
-
-Played on a 10x10 grid. Each player has 4 amazons (queens). On your turn, move one amazon like a chess queen, then it shoots a blocking arrow (also queen-movement) that permanently fills a square. The board shrinks every turn. Win by being the last player who can move. Territory and isolation game. Dramatic endgames where you wall off sections. Computationally interesting (PSPACE-complete). Clean to implement — just queens and burned squares.
-
-</td>
-</tr>
-<tr>
-<td width="300" align="center">
-
 ![Quoridor](placeholder)
 
 </td>
@@ -53,22 +38,7 @@ Played on a 10x10 grid. Each player has 4 amazons (queens). On your turn, move o
 <tr>
 <td width="300" align="center">
 
-![Tzaar](placeholder)
-
-</td>
-<td>
-
-### Tzaar
-**Strategy: High**
-
-GIPF series game on a hex board (60 intersections). Three piece types (tzaar, tzarra, tott) — you lose if any type is eliminated. Each turn: first move must capture, second move can capture or strengthen (stack on your own piece). Stacks move as one and can capture equal-or-shorter stacks. Constant tension between attacking and preserving your diversity. Clean rules, deep tactics. The GIPF series games are all tournament-quality.
-
-</td>
-</tr>
-<tr>
-<td width="300" align="center">
-
-![Konane](placeholder)
+![Konane](../rulebooks/boards/konane.svg)
 
 </td>
 <td>
@@ -98,7 +68,7 @@ Japanese custodian-capture game on a 9x9 board. Each player has 9 or 18 pieces (
 <tr>
 <td width="300" align="center">
 
-![Fox and Geese](placeholder)
+![Fox and Geese](../rulebooks/boards/fox-and-geese.svg)
 
 </td>
 <td>
@@ -257,4 +227,4 @@ Five-in-a-row on a hex grid with custodian capture (place stones to sandwich and
 - Konane might be too close to Fanorona (mandatory jumps, chain captures)
 - Shogi intentionally left off - too many piece types and promotion rules for clean SVG UI
 - Reversi left off - heavily served by existing apps, wouldn't stand out
-- Tablut, Abalone, Lines of Action, Surakarta, and Seega have been built and moved off this list
+- Tablut, Abalone, Lines of Action, Surakarta, Seega, Amazons, and TZAAR have been built and moved off this list

@@ -14,6 +14,8 @@ A platform for hosting strategic 2-player abstract board games at hollowedstone.
 | Tablut | `tablut` | 9x9 grid, asymmetric | `docs/rulebooks/tablut/` |
 | Surakarta | `surakarta` | 6x6 grid, corner loops | `docs/rulebooks/surakarta/` |
 | Seega | `seega` | 5x5 grid, center safe zone | `docs/rulebooks/seega/` |
+| Amazons | `amazons` | 10x10 grid, arrow shooting | `docs/rulebooks/amazons/` |
+| TZAAR | `tzaar` | 60-space hex, stacking | `docs/rulebooks/tzaar/` |
 
 Game rules live in the rulebooks, not in this file.
 

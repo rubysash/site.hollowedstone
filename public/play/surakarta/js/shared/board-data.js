@@ -194,8 +194,8 @@ for (const node of ALL_NODES) {
 }
 
 // SVG positions
-// ViewBox 700x700. Grid from 100,100 to 600,600. Spacing 100px.
-const MARGIN = 100;
+// ViewBox 800x800. Grid from 150,150 to 650,650. Spacing 100px. Centered.
+const MARGIN = 150;
 const CELL = 100;
 export const NODE_POSITIONS = {};
 for (const node of ALL_NODES) {

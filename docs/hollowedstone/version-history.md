@@ -11,6 +11,24 @@
   - Abalone hex outline corrected from pointy-top to flat-top orientation
 - Rulebooks converted from HTML to Markdown for GitHub readability
 - Board diagrams extracted as standalone SVG files viewable on GitHub
+### 2026-03-19
+- Added Bolgars vs Pirates (Fox and Geese) rulebook and SVG board reference (`docs/rulebooks/fox-and-geese/`)
+- Fix: Surakarta game board arcs aligned to grid intersections and centered in viewBox (MARGIN 100->150)
+- Added Konane rulebook and SVG board reference (`docs/rulebooks/konane/`)
+- TZAAR v0.1.0: full game implementation
+  - Engine: 60-space hex board (center hole), cube coordinates, 3 piece types, stacking, two-action turns (mandatory capture then capture/stack/pass), height-based capture restriction
+  - Frontend: hex SVG board with piece type labels (T/Z/t), stack height badges, pass button, standard three-column layout
+  - Worker API: create, join, state, move, pass, leave, stats, replay
+  - Admin and home page integration
+- Added TZAAR rulebook and SVG board reference (`docs/rulebooks/tzaar/`)
+- Amazons v0.1.0: full game implementation
+  - Engine: 10x10 grid, queen movement, two-part turn (move amazon then shoot arrow), permanent arrow blocking, territory-based win
+  - Frontend: 10x10 checkerboard SVG, two-phase turn UI (move then shoot), arrow markers
+  - Worker API: create, join, state, move, shoot, leave, stats, replay
+  - Admin and home page integration
+- Added Amazons rulebook and SVG board reference (`docs/rulebooks/amazons/`)
+
+### 2026-03-18
 - Seega v0.1.0: full game implementation
   - Engine: 5x5 grid, placement phase (2 per turn), custodian capture, center safe square, first-move-to-center rule
   - Frontend: 5x5 checkerboard SVG with center marker, placement and movement phases, standard three-column layout

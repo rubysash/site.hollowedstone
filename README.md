@@ -126,7 +126,11 @@ site.hollowedstone/
 |   |   |-- abalone/                         Abalone rules
 |   |   |-- tablut/                          Tablut rules
 |   |   |-- surakarta/                       Surakarta rules
-|   |   +-- seega/                           Seega rules
+|   |   |-- seega/                           Seega rules
+|   |   |-- amazons/                         Amazons rules
+|   |   |-- tzaar/                           TZAAR rules
+|   |   |-- konane/                          Konane rules
+|   |   +-- fox-and-geese/                   Bolgars vs Pirates rules
 |   +-- css/
 |       +-- style.css                        Shared rulebook stylesheet
 |
@@ -174,6 +178,8 @@ See [CLAUDE.md](CLAUDE.md) for the full new-game build process with detailed ste
 | [Tablut](/public/play/tablut/) | 9x9 grid, asymmetric | Regicide / Race (capture king or escape to corner) |
 | [Surakarta](/public/play/surakarta/) | 6x6 grid, corner loops | Capture (loop-based elimination) |
 | [Seega](/public/play/seega/) | 5x5 grid, center safe zone | Capture (custodian sandwich) |
+| [Amazons](/public/play/amazons/) | 10x10 grid, arrow shooting | Blockade (last player to move wins) |
+| [TZAAR](/public/play/tzaar/) | 60-space hex, stacking | Capture (lose a piece type and you lose) |
 
 Rules for each game are in `docs/rulebooks/{game-slug}/`.
 

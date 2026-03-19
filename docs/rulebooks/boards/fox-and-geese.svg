@@ -1,0 +1,201 @@
+<svg viewBox="0 0 700 800" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="800" fill="#f5edd6"/>
+
+  <text x="350" y="35" text-anchor="middle" font-size="18" font-family="Georgia, serif" fill="#222" letter-spacing="0.15em" font-weight="bold">BOLGARS vs PIRATES</text>
+  <text x="350" y="55" text-anchor="middle" font-size="11" font-family="Georgia, serif" fill="#555" font-style="italic">Cross-shaped Alquerque board - 33 positions - asymmetric hunt game</text>
+
+  <!--
+    33-position cross board made from 5 overlapping 3x3 Alquerque squares.
+    Grid: columns a-g (0-6), rows 1-7 (bottom to top in game, top to bottom in SVG).
+
+    SVG layout: center at 350,400. Spacing 80px.
+    Col positions: a=110, b=190, c=270, d=350, e=430, f=510, g=590
+    Row positions (row 7 at top): 7=80, 6=160, 5=240, 4=320, 3=400, 2=480, 1=560
+
+    Valid positions (cross shape):
+    Row 7: c7, d7, e7
+    Row 6: c6, d6, e6
+    Row 5: a5, b5, c5, d5, e5, f5, g5
+    Row 4: a4, b4, c4, d4, e4, f4, g4
+    Row 3: a3, b3, c3, d3, e3, f3, g3
+    Row 2: c2, d2, e2
+    Row 1: c1, d1, e1
+  -->
+
+  <!-- Board outline (cross shape) -->
+  <polygon points="230,40 470,40 470,200 630,200 630,440 470,440 470,600 230,600 230,440 70,440 70,200 230,200"
+    fill="#e8dfc8" stroke="#1a1a1a" stroke-width="2.5"/>
+
+  <!-- Diagonal lines (single-cell diagonals, every cell gets an X) -->
+  <!-- Spacing 80px. Cols: a=110,b=190,c=270,d=350,e=430,f=510,g=590 -->
+  <!-- Rows: 7=80,6=160,5=240,4=320,3=400,2=480,1=560 -->
+
+  <!-- Top sub-square (rows 7-5, cols c-e): 4 cells -->
+  <!-- c7-d6 X -->
+  <line x1="270" y1="80" x2="350" y2="160" stroke="#a09078" stroke-width="1"/>
+  <line x1="350" y1="80" x2="270" y2="160" stroke="#a09078" stroke-width="1"/>
+  <!-- d7-e6 X -->
+  <line x1="350" y1="80" x2="430" y2="160" stroke="#a09078" stroke-width="1"/>
+  <line x1="430" y1="80" x2="350" y2="160" stroke="#a09078" stroke-width="1"/>
+  <!-- c6-d5 X -->
+  <line x1="270" y1="160" x2="350" y2="240" stroke="#a09078" stroke-width="1"/>
+  <line x1="350" y1="160" x2="270" y2="240" stroke="#a09078" stroke-width="1"/>
+  <!-- d6-e5 X -->
+  <line x1="350" y1="160" x2="430" y2="240" stroke="#a09078" stroke-width="1"/>
+  <line x1="430" y1="160" x2="350" y2="240" stroke="#a09078" stroke-width="1"/>
+
+  <!-- Left sub-square (rows 5-3, cols a-c): 4 cells -->
+  <!-- a5-b4 X -->
+  <line x1="110" y1="240" x2="190" y2="320" stroke="#a09078" stroke-width="1"/>
+  <line x1="190" y1="240" x2="110" y2="320" stroke="#a09078" stroke-width="1"/>
+  <!-- b5-c4 X -->
+  <line x1="190" y1="240" x2="270" y2="320" stroke="#a09078" stroke-width="1"/>
+  <line x1="270" y1="240" x2="190" y2="320" stroke="#a09078" stroke-width="1"/>
+  <!-- a4-b3 X -->
+  <line x1="110" y1="320" x2="190" y2="400" stroke="#a09078" stroke-width="1"/>
+  <line x1="190" y1="320" x2="110" y2="400" stroke="#a09078" stroke-width="1"/>
+  <!-- b4-c3 X -->
+  <line x1="190" y1="320" x2="270" y2="400" stroke="#a09078" stroke-width="1"/>
+  <line x1="270" y1="320" x2="190" y2="400" stroke="#a09078" stroke-width="1"/>
+
+  <!-- Center sub-square (rows 5-3, cols c-e): 4 cells -->
+  <!-- c5-d4 X -->
+  <line x1="270" y1="240" x2="350" y2="320" stroke="#a09078" stroke-width="1"/>
+  <line x1="350" y1="240" x2="270" y2="320" stroke="#a09078" stroke-width="1"/>
+  <!-- d5-e4 X -->
+  <line x1="350" y1="240" x2="430" y2="320" stroke="#a09078" stroke-width="1"/>
+  <line x1="430" y1="240" x2="350" y2="320" stroke="#a09078" stroke-width="1"/>
+  <!-- c4-d3 X -->
+  <line x1="270" y1="320" x2="350" y2="400" stroke="#a09078" stroke-width="1"/>
+  <line x1="350" y1="320" x2="270" y2="400" stroke="#a09078" stroke-width="1"/>
+  <!-- d4-e3 X -->
+  <line x1="350" y1="320" x2="430" y2="400" stroke="#a09078" stroke-width="1"/>
+  <line x1="430" y1="320" x2="350" y2="400" stroke="#a09078" stroke-width="1"/>
+
+  <!-- Right sub-square (rows 5-3, cols e-g): 4 cells -->
+  <!-- e5-f4 X -->
+  <line x1="430" y1="240" x2="510" y2="320" stroke="#a09078" stroke-width="1"/>
+  <line x1="510" y1="240" x2="430" y2="320" stroke="#a09078" stroke-width="1"/>
+  <!-- f5-g4 X -->
+  <line x1="510" y1="240" x2="590" y2="320" stroke="#a09078" stroke-width="1"/>
+  <line x1="590" y1="240" x2="510" y2="320" stroke="#a09078" stroke-width="1"/>
+  <!-- e4-f3 X -->
+  <line x1="430" y1="320" x2="510" y2="400" stroke="#a09078" stroke-width="1"/>
+  <line x1="510" y1="320" x2="430" y2="400" stroke="#a09078" stroke-width="1"/>
+  <!-- f4-g3 X -->
+  <line x1="510" y1="320" x2="590" y2="400" stroke="#a09078" stroke-width="1"/>
+  <line x1="590" y1="320" x2="510" y2="400" stroke="#a09078" stroke-width="1"/>
+
+  <!-- Bottom sub-square (rows 3-1, cols c-e): 4 cells -->
+  <!-- c3-d2 X -->
+  <line x1="270" y1="400" x2="350" y2="480" stroke="#a09078" stroke-width="1"/>
+  <line x1="350" y1="400" x2="270" y2="480" stroke="#a09078" stroke-width="1"/>
+  <!-- d3-e2 X -->
+  <line x1="350" y1="400" x2="430" y2="480" stroke="#a09078" stroke-width="1"/>
+  <line x1="430" y1="400" x2="350" y2="480" stroke="#a09078" stroke-width="1"/>
+  <!-- c2-d1 X -->
+  <line x1="270" y1="480" x2="350" y2="560" stroke="#a09078" stroke-width="1"/>
+  <line x1="350" y1="480" x2="270" y2="560" stroke="#a09078" stroke-width="1"/>
+  <!-- d2-e1 X -->
+  <line x1="350" y1="480" x2="430" y2="560" stroke="#a09078" stroke-width="1"/>
+  <line x1="430" y1="480" x2="350" y2="560" stroke="#a09078" stroke-width="1"/>
+
+  <!-- Orthogonal grid lines -->
+  <!-- Horizontal lines -->
+  <line x1="270" y1="80" x2="430" y2="80" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="270" y1="160" x2="430" y2="160" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="110" y1="240" x2="590" y2="240" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="110" y1="320" x2="590" y2="320" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="110" y1="400" x2="590" y2="400" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="270" y1="480" x2="430" y2="480" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="270" y1="560" x2="430" y2="560" stroke="#1a1a1a" stroke-width="2"/>
+
+  <!-- Vertical lines -->
+  <line x1="270" y1="80" x2="270" y2="560" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="350" y1="80" x2="350" y2="560" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="430" y1="80" x2="430" y2="560" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="110" y1="240" x2="110" y2="400" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="190" y1="240" x2="190" y2="400" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="510" y1="240" x2="510" y2="400" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="590" y1="240" x2="590" y2="400" stroke="#1a1a1a" stroke-width="2"/>
+
+  <!-- Pieces: Bolgars (2, in top square) -->
+  <circle cx="270" cy="80" r="18" fill="#c0392b" stroke="#922b21" stroke-width="2.5"/>
+  <text x="270" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff" font-family="sans-serif">B</text>
+  <circle cx="430" cy="80" r="18" fill="#c0392b" stroke="#922b21" stroke-width="2.5"/>
+  <text x="430" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff" font-family="sans-serif">B</text>
+
+  <!-- Empty positions in top square -->
+  <circle cx="350" cy="80" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="270" cy="160" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="350" cy="160" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="430" cy="160" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+
+  <!-- Empty positions in center row top -->
+  <circle cx="110" cy="240" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="190" cy="240" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="270" cy="240" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="350" cy="240" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="430" cy="240" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="510" cy="240" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="590" cy="240" r="6" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+
+  <!-- Pirates (24, filling rows 3-4 and bottom arm) -->
+  <!-- Row 4 (y=320): all 7 -->
+  <circle cx="110" cy="320" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="190" cy="320" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="270" cy="320" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="350" cy="320" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="430" cy="320" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="510" cy="320" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="590" cy="320" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- Row 3 (y=400): all 7 -->
+  <circle cx="110" cy="400" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="190" cy="400" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="270" cy="400" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="350" cy="400" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="430" cy="400" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="510" cy="400" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="590" cy="400" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- Row 2 (y=480): 3 -->
+  <circle cx="270" cy="480" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="350" cy="480" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="430" cy="480" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <!-- Row 1 (y=560): 3 -->
+  <circle cx="270" cy="560" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="350" cy="560" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+  <circle cx="430" cy="560" r="14" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+
+  <!-- Labels -->
+  <style>.label { font-size: 12px; fill: #666; font-family: Georgia, serif; }</style>
+  <text class="label" x="110" y="430" text-anchor="middle">a</text>
+  <text class="label" x="190" y="430" text-anchor="middle">b</text>
+  <text class="label" x="270" y="590" text-anchor="middle">c</text>
+  <text class="label" x="350" y="590" text-anchor="middle">d</text>
+  <text class="label" x="430" y="590" text-anchor="middle">e</text>
+  <text class="label" x="510" y="430" text-anchor="middle">f</text>
+  <text class="label" x="590" y="430" text-anchor="middle">g</text>
+
+  <text class="label" x="240" y="84" text-anchor="end">7</text>
+  <text class="label" x="240" y="164" text-anchor="end">6</text>
+  <text class="label" x="80" y="244" text-anchor="end">5</text>
+  <text class="label" x="80" y="324" text-anchor="end">4</text>
+  <text class="label" x="80" y="404" text-anchor="end">3</text>
+  <text class="label" x="240" y="484" text-anchor="end">2</text>
+  <text class="label" x="240" y="564" text-anchor="end">1</text>
+
+  <!-- Legend -->
+  <g font-family="Georgia, serif" font-size="11" fill="#333">
+    <circle cx="120" cy="660" r="12" fill="#c0392b" stroke="#922b21" stroke-width="1.5"/>
+    <text x="140" y="665">Bolgar x2 (can jump-capture)</text>
+    <circle cx="400" cy="660" r="10" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
+    <text x="418" y="665">Pirate x20 (move only, no capture)</text>
+  </g>
+
+  <!-- Sub-square labels -->
+  <text x="350" y="135" text-anchor="middle" font-size="9" fill="#a09078" font-family="Georgia, serif" opacity="0.6">TOP</text>
+  <text x="150" y="325" text-anchor="middle" font-size="9" fill="#a09078" font-family="Georgia, serif" opacity="0.6">LEFT</text>
+  <text x="350" y="325" text-anchor="middle" font-size="9" fill="#a09078" font-family="Georgia, serif" opacity="0.6">CENTER</text>
+  <text x="550" y="325" text-anchor="middle" font-size="9" fill="#a09078" font-family="Georgia, serif" opacity="0.6">RIGHT</text>
+  <text x="350" y="525" text-anchor="middle" font-size="9" fill="#a09078" font-family="Georgia, serif" opacity="0.6">BOTTOM</text>
+</svg>

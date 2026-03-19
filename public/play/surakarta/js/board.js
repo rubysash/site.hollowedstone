@@ -6,7 +6,7 @@ import { BOARD_SIZE } from './shared/constants.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const CELL = 100;
-const MARGIN = 100;
+const MARGIN = 150;
 const PIECE_RADIUS = 22;
 const NODE_RADIUS = 24;
 
@@ -36,17 +36,25 @@ export function initBoard(svgElement, onNodeClick) {
   const loopLayer = el('g', { class: 'loop-layer' });
   _svg.appendChild(loopLayer);
 
-  // Outer loops (radius 200, red)
-  loopLayer.appendChild(arc('M 350,100 A 200,200 0 1,0 100,350', '#c0392b'));  // top-left
-  loopLayer.appendChild(arc('M 450,100 A 200,200 0 1,1 700,350', '#c0392b'));  // top-right
-  loopLayer.appendChild(arc('M 100,450 A 200,200 0 1,0 350,700', '#c0392b'));  // bottom-left
-  loopLayer.appendChild(arc('M 700,450 A 200,200 0 1,1 450,700', '#c0392b'));  // bottom-right
+  // Outer loops (radius 200, red) - connect 3rd intersection from each corner
+  // top-left: c1=(350,150) to a3=(150,350)
+  loopLayer.appendChild(arc('M 350,150 A 200,200 0 1,0 150,350', '#c0392b'));
+  // top-right: d1=(450,150) to f3=(650,350)
+  loopLayer.appendChild(arc('M 450,150 A 200,200 0 1,1 650,350', '#c0392b'));
+  // bottom-left: a4=(150,450) to c6=(350,650)
+  loopLayer.appendChild(arc('M 150,450 A 200,200 0 1,0 350,650', '#c0392b'));
+  // bottom-right: f4=(650,450) to d6=(450,650)
+  loopLayer.appendChild(arc('M 650,450 A 200,200 0 1,1 450,650', '#c0392b'));
 
-  // Inner loops (radius 100, blue)
-  loopLayer.appendChild(arc('M 250,100 A 100,100 0 1,0 100,250', '#2471a3'));  // top-left
-  loopLayer.appendChild(arc('M 550,100 A 100,100 0 1,1 700,250', '#2471a3'));  // top-right
-  loopLayer.appendChild(arc('M 100,550 A 100,100 0 1,0 250,700', '#2471a3'));  // bottom-left
-  loopLayer.appendChild(arc('M 700,550 A 100,100 0 1,1 550,700', '#2471a3'));  // bottom-right
+  // Inner loops (radius 100, blue) - connect 2nd intersection from each corner
+  // top-left: b1=(250,150) to a2=(150,250)
+  loopLayer.appendChild(arc('M 250,150 A 100,100 0 1,0 150,250', '#2471a3'));
+  // top-right: e1=(550,150) to f2=(650,250)
+  loopLayer.appendChild(arc('M 550,150 A 100,100 0 1,1 650,250', '#2471a3'));
+  // bottom-left: a5=(150,550) to b6=(250,650)
+  loopLayer.appendChild(arc('M 150,550 A 100,100 0 1,0 250,650', '#2471a3'));
+  // bottom-right: f5=(650,550) to e6=(550,650)
+  loopLayer.appendChild(arc('M 650,550 A 100,100 0 1,1 550,650', '#2471a3'));
 
   // Grid lines
   const lineLayer = el('g', { class: 'line-layer' });

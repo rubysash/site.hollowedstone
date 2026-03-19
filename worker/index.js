@@ -38,6 +38,26 @@
 //   GET  /play/seega/api/stats   — public game metrics
 //   GET  /play/seega/api/replay/:id — full move log
 //
+// Amazons API routes:
+//   POST /play/amazons/api/create  — create a new game
+//   POST /play/amazons/api/join    — join with access code
+//   GET  /play/amazons/api/state   — poll game state
+//   POST /play/amazons/api/move    — move an amazon
+//   POST /play/amazons/api/shoot   — shoot an arrow
+//   POST /play/amazons/api/leave   — abandon game
+//   GET  /play/amazons/api/stats   — public game metrics
+//   GET  /play/amazons/api/replay/:id — full move log
+//
+// TZAAR API routes:
+//   POST /play/tzaar/api/create  — create a new game
+//   POST /play/tzaar/api/join    — join with access code
+//   GET  /play/tzaar/api/state   — poll game state
+//   POST /play/tzaar/api/move    — capture or stack
+//   POST /play/tzaar/api/pass    — pass second action
+//   POST /play/tzaar/api/leave   — abandon game
+//   GET  /play/tzaar/api/stats   — public game metrics
+//   GET  /play/tzaar/api/replay/:id — full move log
+//
 // Admin API routes (protected by Cloudflare Access Zero Trust):
 //   GET  /admin/api/games             — list all games with player IPs
 //
@@ -51,6 +71,8 @@ import { createGame as createAbaloneGame, makeMove as makeAbaloneMove, sanitizeF
 import { createGame as createTablutGame, makeMove as makeTablutMove, sanitizeForPlayer as sanitizeTablut } from '../public/play/tablut/js/shared/engine.js';
 import { createGame as createSurakartaGame, makeMove as makeSurakartaMove, sanitizeForPlayer as sanitizeSurakarta } from '../public/play/surakarta/js/shared/engine.js';
 import { createGame as createSeegaGame, placePiece as placeSeegaPiece, makeMove as makeSeegaMove, sanitizeForPlayer as sanitizeSeega } from '../public/play/seega/js/shared/engine.js';
+import { createGame as createAmazonsGame, moveAmazon as moveAmazonsAmazon, shootArrow as shootAmazonsArrow, sanitizeForPlayer as sanitizeAmazons } from '../public/play/amazons/js/shared/engine.js';
+import { createGame as createTzaarGame, makeMove as makeTzaarMove, passTurn as passTzaarTurn, sanitizeForPlayer as sanitizeTzaar } from '../public/play/tzaar/js/shared/engine.js';
 
 export default {
   async fetch(request, env) {
@@ -95,6 +117,16 @@ export default {
     // Seega API routes
     if (path.startsWith('/play/seega/api/')) {
       return handleSeegaApi(path, request, env);
+    }
+
+    // Amazons API routes
+    if (path.startsWith('/play/amazons/api/')) {
+      return handleAmazonsApi(path, request, env);
+    }
+
+    // TZAAR API routes
+    if (path.startsWith('/play/tzaar/api/')) {
+      return handleTzaarApi(path, request, env);
     }
 
     // Admin API routes (Zero Trust handles auth before this runs)
@@ -1923,6 +1955,488 @@ async function handleSeegaReplay(route, env) {
 }
 
 // ═══════════════════════════════════════════════
+// ─── Amazons API ───
+// ═══════════════════════════════════════════════
+
+async function handleAmazonsApi(path, request, env) {
+  const route = path.replace('/play/amazons/api', '');
+  const method = request.method;
+  try {
+    if (route === '/create' && method === 'POST') return await handleAmazonsCreate(request, env);
+    if (route === '/join' && method === 'POST') return await handleAmazonsJoin(request, env);
+    if (route === '/state' && method === 'GET') return await handleAmazonsState(request, env);
+    if (route === '/move' && method === 'POST') return await handleAmazonsMove(request, env);
+    if (route === '/shoot' && method === 'POST') return await handleAmazonsShoot(request, env);
+    if (route === '/leave' && method === 'POST') return await handleAmazonsLeave(request, env);
+    if (route === '/stats' && method === 'GET') return await handleAmazonsStats(env);
+    if (route.startsWith('/replay/') && method === 'GET') return await handleAmazonsReplay(route, env);
+    return json({ error: 'Not found' }, 404);
+  } catch (e) {
+    return json({ error: 'Internal error' }, 500);
+  }
+}
+
+async function handleAmazonsCreate(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+
+  let accessCode;
+  for (let attempt = 0; attempt < 10; attempt++) {
+    accessCode = generateCode();
+    const existing = await kv.get(`code:${accessCode}`);
+    if (!existing) break;
+  }
+
+  const token = generateToken();
+  const state = createAmazonsGame(accessCode);
+
+  state.players.p1.token = token;
+  state.players.p1.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  state.theme = 'neutral';
+
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
+  await kv.put(`code:${accessCode}`, accessCode, { expirationTtl: SEVEN_DAYS });
+
+  return json({ accessCode, player: 'p1', token });
+}
+
+async function handleAmazonsJoin(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const accessCode = (body.accessCode || '').toUpperCase().trim();
+
+  if (!accessCode) return json({ error: 'Access code required' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+
+  if (state.game !== 'amazons') return json({ error: 'Game not found (wrong game type)' }, 404);
+  if (state.players.p2.token) return json({ error: 'Game already has two players.' }, 400);
+  if (state.phase !== 'waiting') return json({ error: 'Game is not accepting players' }, 400);
+
+  const token = generateToken();
+  state.players.p2.token = token;
+  state.players.p2.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  state.phase = 'playing';
+  state.turn = { player: 'p1', action: 'move', amazon: null };
+  state.requests = (state.requests || 0) + 1;
+  state.updatedAt = new Date().toISOString();
+
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
+
+  return json({ accessCode, player: 'p2', token });
+}
+
+async function handleAmazonsState(request, env) {
+  const kv = env.GAME_STATE;
+  const url = new URL(request.url);
+  const accessCode = url.searchParams.get('game');
+  const token = url.searchParams.get('token');
+  const since = parseInt(url.searchParams.get('since') || '0', 10);
+
+  if (!accessCode || !token) return json({ error: 'Missing game or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  state.requests = (state.requests || 0) + 1;
+  if (!state.lastSeen) state.lastSeen = {};
+  state.lastSeen[player] = new Date().toISOString();
+
+  if (state.requests % 25 === 0) {
+    await kv.put(`game:${accessCode}`, JSON.stringify(state));
+  }
+
+  const sanitized = sanitizeAmazons(state, player);
+  sanitized.you = player;
+
+  if (since > 0) {
+    sanitized.log = sanitized.log.filter(e => e.seq > since);
+  }
+
+  return json(sanitized);
+}
+
+async function handleAmazonsMove(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token, from, to } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  state.requests = (state.requests || 0) + 1;
+  const result = moveAmazonsAmazon(state, player, from, to);
+
+  if (result.error) return json({ error: result.error }, 400);
+
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
+
+  return json({ ok: true, needsShoot: result.needsShoot || false });
+}
+
+async function handleAmazonsShoot(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token, target } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  state.requests = (state.requests || 0) + 1;
+  const result = shootAmazonsArrow(state, player, target);
+
+  if (result.error) return json({ error: result.error }, 400);
+
+  const ttl = state.phase === 'finished' ? THIRTY_DAYS : SEVEN_DAYS;
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: ttl });
+
+  return json({ ok: true, finished: result.finished || false });
+}
+
+async function handleAmazonsLeave(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  const opponent = player === 'p1' ? 'p2' : 'p1';
+  state.phase = 'finished';
+  state.result = {
+    winner: state.players[opponent].token ? opponent : null,
+    reason: 'abandon',
+    abandonedBy: player,
+    arrowCount: state.arrowCount
+  };
+  state.updatedAt = new Date().toISOString();
+
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: THIRTY_DAYS });
+
+  return json({ ok: true });
+}
+
+async function handleAmazonsStats(env) {
+  const kv = env.GAME_STATE;
+  let cursor = null;
+  let total = 0;
+  let thisWeek = 0;
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+  do {
+    const listOpts = { prefix: 'game:', limit: 1000 };
+    if (cursor) listOpts.cursor = cursor;
+    const list = await kv.list(listOpts);
+
+    for (const key of list.keys) {
+      const raw = await kv.get(key.name);
+      if (!raw) continue;
+      try {
+        const state = JSON.parse(raw);
+        if (state.game !== 'amazons') continue;
+        total++;
+        if (state.createdAt > oneWeekAgo) thisWeek++;
+      } catch {}
+    }
+
+    cursor = list.list_complete ? null : list.cursor;
+  } while (cursor);
+
+  return json({ total, thisWeek });
+}
+
+async function handleAmazonsReplay(route, env) {
+  const kv = env.GAME_STATE;
+  const accessCode = route.replace('/replay/', '');
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  if (state.game !== 'amazons') return json({ error: 'Game not found' }, 404);
+
+  return json({
+    accessCode: state.accessCode,
+    game: state.game,
+    phase: state.phase,
+    result: state.result,
+    arrowCount: state.arrowCount,
+    players: {
+      p1: { title: 'White' },
+      p2: { title: 'Black' }
+    },
+    log: state.log,
+    createdAt: state.createdAt
+  });
+}
+
+// ═══════════════════════════════════════════════
+// ─── TZAAR API ───
+// ═══════════════════════════════════════════════
+
+async function handleTzaarApi(path, request, env) {
+  const route = path.replace('/play/tzaar/api', '');
+  const method = request.method;
+
+  try {
+    if (route === '/create' && method === 'POST') return await handleTzaarCreate(request, env);
+    if (route === '/join' && method === 'POST') return await handleTzaarJoin(request, env);
+    if (route === '/state' && method === 'GET') return await handleTzaarState(request, env);
+    if (route === '/move' && method === 'POST') return await handleTzaarMove(request, env);
+    if (route === '/pass' && method === 'POST') return await handleTzaarPass(request, env);
+    if (route === '/leave' && method === 'POST') return await handleTzaarLeave(request, env);
+    if (route === '/stats' && method === 'GET') return await handleTzaarStats(env);
+    if (route.startsWith('/replay/') && method === 'GET') return await handleTzaarReplay(route, env);
+    return json({ error: 'Not found' }, 404);
+  } catch (e) {
+    return json({ error: 'Internal error' }, 500);
+  }
+}
+
+async function handleTzaarCreate(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+
+  let accessCode;
+  for (let attempt = 0; attempt < 10; attempt++) {
+    accessCode = generateCode();
+    const existing = await kv.get(`code:${accessCode}`);
+    if (!existing) break;
+  }
+
+  const token = generateToken();
+  const state = createTzaarGame(accessCode);
+
+  state.players.p1.token = token;
+  state.players.p1.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  state.theme = 'neutral';
+
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
+  await kv.put(`code:${accessCode}`, accessCode, { expirationTtl: SEVEN_DAYS });
+
+  return json({ accessCode, player: 'p1', token });
+}
+
+async function handleTzaarJoin(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const accessCode = (body.accessCode || '').toUpperCase().trim();
+
+  if (!accessCode) return json({ error: 'Access code required' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+
+  if (state.game !== 'tzaar') return json({ error: 'Game not found (wrong game type)' }, 404);
+  if (state.players.p2.token) return json({ error: 'Game already has two players.' }, 400);
+  if (state.phase !== 'waiting') return json({ error: 'Game is not accepting players' }, 400);
+
+  const token = generateToken();
+  state.players.p2.token = token;
+  state.players.p2.ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  state.phase = 'playing';
+  state.requests = (state.requests || 0) + 1;
+  state.updatedAt = new Date().toISOString();
+
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: SEVEN_DAYS });
+
+  return json({ accessCode, player: 'p2', token });
+}
+
+async function handleTzaarState(request, env) {
+  const kv = env.GAME_STATE;
+  const url = new URL(request.url);
+  const accessCode = url.searchParams.get('game');
+  const token = url.searchParams.get('token');
+  const since = parseInt(url.searchParams.get('since') || '0', 10);
+
+  if (!accessCode || !token) return json({ error: 'Missing game or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  state.requests = (state.requests || 0) + 1;
+  if (!state.lastSeen) state.lastSeen = {};
+  state.lastSeen[player] = new Date().toISOString();
+
+  if (state.requests % 25 === 0) {
+    await kv.put(`game:${accessCode}`, JSON.stringify(state));
+  }
+
+  const sanitized = sanitizeTzaar(state, player);
+  sanitized.you = player;
+
+  if (since > 0) {
+    sanitized.log = sanitized.log.filter(e => e.seq > since);
+  }
+
+  return json(sanitized);
+}
+
+async function handleTzaarMove(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token, from, to } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  state.requests = (state.requests || 0) + 1;
+  const result = makeTzaarMove(state, player, from, to);
+
+  if (result.error) return json({ error: result.error }, 400);
+
+  const ttl = state.phase === 'finished' ? THIRTY_DAYS : SEVEN_DAYS;
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: ttl });
+
+  return json({ ok: true });
+}
+
+async function handleTzaarPass(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  state.requests = (state.requests || 0) + 1;
+  const result = passTzaarTurn(state, player);
+
+  if (result.error) return json({ error: result.error }, 400);
+
+  const ttl = state.phase === 'finished' ? THIRTY_DAYS : SEVEN_DAYS;
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: ttl });
+
+  return json({ ok: true });
+}
+
+async function handleTzaarLeave(request, env) {
+  const kv = env.GAME_STATE;
+  const body = await request.json();
+  const { accessCode, token } = body;
+
+  if (!accessCode || !token) return json({ error: 'Missing accessCode or token' }, 400);
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  const player = identifyPlayer(state, token);
+  if (!player) return json({ error: 'Invalid token' }, 403);
+
+  const opponent = player === 'p1' ? 'p2' : 'p1';
+  state.phase = 'finished';
+  state.result = {
+    winner: state.players[opponent].token ? opponent : null,
+    reason: 'abandon',
+    abandonedBy: player,
+    finalScore: [state.players.p1.captured, state.players.p2.captured]
+  };
+  state.updatedAt = new Date().toISOString();
+
+  await kv.put(`game:${accessCode}`, JSON.stringify(state), { expirationTtl: THIRTY_DAYS });
+
+  return json({ ok: true });
+}
+
+async function handleTzaarStats(env) {
+  const kv = env.GAME_STATE;
+  let cursor = null;
+  let total = 0;
+  let thisWeek = 0;
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+  do {
+    const listOpts = { prefix: 'game:', limit: 1000 };
+    if (cursor) listOpts.cursor = cursor;
+    const list = await kv.list(listOpts);
+
+    for (const key of list.keys) {
+      const raw = await kv.get(key.name);
+      if (!raw) continue;
+      try {
+        const state = JSON.parse(raw);
+        if (state.game !== 'tzaar') continue;
+        total++;
+        if (state.createdAt > oneWeekAgo) thisWeek++;
+      } catch {}
+    }
+
+    cursor = list.list_complete ? null : list.cursor;
+  } while (cursor);
+
+  return json({ total, thisWeek });
+}
+
+async function handleTzaarReplay(route, env) {
+  const kv = env.GAME_STATE;
+  const accessCode = route.replace('/replay/', '');
+
+  const raw = await kv.get(`game:${accessCode}`);
+  if (!raw) return json({ error: 'Game not found' }, 404);
+
+  const state = JSON.parse(raw);
+  if (state.game !== 'tzaar') return json({ error: 'Game not found' }, 404);
+
+  return json({
+    accessCode: state.accessCode,
+    game: state.game,
+    phase: state.phase,
+    result: state.result,
+    players: {
+      p1: { title: 'White', captured: state.players.p1.captured },
+      p2: { title: 'Black', captured: state.players.p2.captured }
+    },
+    log: state.log,
+    createdAt: state.createdAt
+  });
+}
+
+// ═══════════════════════════════════════════════
 // ─── Admin API (protected by Cloudflare Access Zero Trust) ───
 // ═══════════════════════════════════════════════
 
@@ -1964,25 +2478,27 @@ async function handleAdminGames(request, env) {
       const isTablut = state.game === 'tablut';
       const isSurakarta = state.game === 'surakarta';
       const isSeega = state.game === 'seega';
+      const isAmazons = state.game === 'amazons';
+      const isTzaar = state.game === 'tzaar';
       // Score extraction per game type
-      const p1Score = isAbalone ? (state.players.p1.eliminated ?? 0) : (isFanorona || isLOA || isTablut || isSurakarta || isSeega) ? (state.players.p1.captured ?? 0) : isMorris ? (state.players.p2.piecesLost ?? 0) : (state.players.p1.score ?? 0);
-      const p2Score = isAbalone ? (state.players.p2.eliminated ?? 0) : (isFanorona || isLOA || isTablut || isSurakarta || isSeega) ? (state.players.p2.captured ?? 0) : isMorris ? (state.players.p1.piecesLost ?? 0) : (state.players.p2.score ?? 0);
+      const p1Score = isAmazons ? (state.arrowCount ?? 0) : isAbalone ? (state.players.p1.eliminated ?? 0) : (isFanorona || isLOA || isTablut || isSurakarta || isSeega || isTzaar) ? (state.players.p1.captured ?? 0) : isMorris ? (state.players.p2.piecesLost ?? 0) : (state.players.p1.score ?? 0);
+      const p2Score = isAmazons ? (state.arrowCount ?? 0) : isAbalone ? (state.players.p2.eliminated ?? 0) : (isFanorona || isLOA || isTablut || isSurakarta || isSeega || isTzaar) ? (state.players.p2.captured ?? 0) : isMorris ? (state.players.p1.piecesLost ?? 0) : (state.players.p2.score ?? 0);
 
       games.push({
         code: state.accessCode,
         game: state.game || 'ouroboros',
-        theme: isSeega ? 'seega' : isSurakarta ? 'surakarta' : isTablut ? 'tablut' : isAbalone ? 'abalone' : isLOA ? 'lines-of-action' : isFanorona ? 'fanorona' : isMorris ? 'nine-mens-morris' : state.theme,
+        theme: isTzaar ? 'tzaar' : isAmazons ? 'amazons' : isSeega ? 'seega' : isSurakarta ? 'surakarta' : isTablut ? 'tablut' : isAbalone ? 'abalone' : isLOA ? 'lines-of-action' : isFanorona ? 'fanorona' : isMorris ? 'nine-mens-morris' : state.theme,
         phase: state.phase,
         created: state.createdAt,
         updated: state.updatedAt,
         p1: {
-          name: state.players.p1.name || state.players.p1.title || (isMorris ? 'Dark' : (isLOA || isSeega) ? 'Dark' : 'P1'),
+          name: state.players.p1.name || state.players.p1.title || (isTzaar ? 'White' : isAmazons ? 'White' : isMorris ? 'Dark' : (isLOA || isSeega) ? 'Dark' : 'P1'),
           ip: state.players.p1.ip || 'n/a',
           score: p1Score,
           holding: state.players.p1.holding?.length || 0
         },
         p2: {
-          name: state.players.p2.name || state.players.p2.title || (isMorris ? 'Light' : (isLOA || isSeega) ? 'Light' : 'P2'),
+          name: state.players.p2.name || state.players.p2.title || (isTzaar ? 'Black' : isAmazons ? 'Black' : isMorris ? 'Light' : (isLOA || isSeega) ? 'Light' : 'P2'),
           ip: state.players.p2.ip || 'n/a',
           score: p2Score,
           holding: state.players.p2.holding?.length || 0

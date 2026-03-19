@@ -1,0 +1,5 @@
+/* Amazons -- neutral theme overrides */
+:root {
+  --board-bg: #1a1520;
+  --board-line: #5a4a6a;
+}

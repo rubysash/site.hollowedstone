@@ -23,46 +23,41 @@
   <line x1="750" y1="50" x2="750" y2="450" stroke="#1a1a1a" stroke-width="2"/>
   <line x1="850" y1="50" x2="850" y2="450" stroke="#1a1a1a" stroke-width="2"/>
 
-  <!-- Diagonal lines (only where row+col is even) -->
-  <!-- Row 5-4 diagonals (y=50 to y=150) -->
-  <line x1="50"  y1="50"  x2="150" y2="150" stroke="#999" stroke-width="1.5"/>
-  <line x1="250" y1="50"  x2="350" y2="150" stroke="#999" stroke-width="1.5"/>
-  <line x1="450" y1="50"  x2="550" y2="150" stroke="#999" stroke-width="1.5"/>
-  <line x1="650" y1="50"  x2="750" y2="150" stroke="#999" stroke-width="1.5"/>
-  <line x1="150" y1="50"  x2="50"  y2="150" stroke="#999" stroke-width="1.5"/>
-  <line x1="350" y1="50"  x2="250" y2="150" stroke="#999" stroke-width="1.5"/>
-  <line x1="550" y1="50"  x2="450" y2="150" stroke="#999" stroke-width="1.5"/>
-  <line x1="750" y1="50"  x2="650" y2="150" stroke="#999" stroke-width="1.5"/>
-
-  <!-- Row 4-3 diagonals (y=150 to y=250) -->
-  <line x1="150" y1="150" x2="250" y2="250" stroke="#999" stroke-width="1.5"/>
-  <line x1="350" y1="150" x2="450" y2="250" stroke="#999" stroke-width="1.5"/>
-  <line x1="550" y1="150" x2="650" y2="250" stroke="#999" stroke-width="1.5"/>
-  <line x1="750" y1="150" x2="850" y2="250" stroke="#999" stroke-width="1.5"/>
-  <line x1="250" y1="150" x2="150" y2="250" stroke="#999" stroke-width="1.5"/>
-  <line x1="450" y1="150" x2="350" y2="250" stroke="#999" stroke-width="1.5"/>
-  <line x1="650" y1="150" x2="550" y2="250" stroke="#999" stroke-width="1.5"/>
-  <line x1="850" y1="150" x2="750" y2="250" stroke="#999" stroke-width="1.5"/>
-
-  <!-- Row 3-2 diagonals (y=250 to y=350) -->
-  <line x1="50"  y1="250" x2="150" y2="350" stroke="#999" stroke-width="1.5"/>
-  <line x1="250" y1="250" x2="350" y2="350" stroke="#999" stroke-width="1.5"/>
-  <line x1="450" y1="250" x2="550" y2="350" stroke="#999" stroke-width="1.5"/>
-  <line x1="650" y1="250" x2="750" y2="350" stroke="#999" stroke-width="1.5"/>
-  <line x1="150" y1="250" x2="50"  y2="350" stroke="#999" stroke-width="1.5"/>
-  <line x1="350" y1="250" x2="250" y2="350" stroke="#999" stroke-width="1.5"/>
-  <line x1="550" y1="250" x2="450" y2="350" stroke="#999" stroke-width="1.5"/>
-  <line x1="750" y1="250" x2="650" y2="350" stroke="#999" stroke-width="1.5"/>
-
-  <!-- Row 2-1 diagonals (y=350 to y=450) -->
+  <!-- Diagonal lines (matching game code: both endpoints must have hasDiagonals) -->
+  <!-- hasDiagonals(col,row) = (col + row) % 2 == 1, col 0-indexed, row 1-indexed -->
+  <!-- This produces one diagonal per cell, alternating direction -->
+  <line x1="50" y1="450" x2="150" y2="350" stroke="#999" stroke-width="1.5"/>
+  <line x1="50" y1="250" x2="150" y2="150" stroke="#999" stroke-width="1.5"/>
+  <line x1="50" y1="250" x2="150" y2="350" stroke="#999" stroke-width="1.5"/>
+  <line x1="50" y1="50" x2="150" y2="150" stroke="#999" stroke-width="1.5"/>
+  <line x1="150" y1="350" x2="250" y2="250" stroke="#999" stroke-width="1.5"/>
   <line x1="150" y1="350" x2="250" y2="450" stroke="#999" stroke-width="1.5"/>
+  <line x1="150" y1="150" x2="250" y2="50" stroke="#999" stroke-width="1.5"/>
+  <line x1="150" y1="150" x2="250" y2="250" stroke="#999" stroke-width="1.5"/>
+  <line x1="250" y1="450" x2="350" y2="350" stroke="#999" stroke-width="1.5"/>
+  <line x1="250" y1="250" x2="350" y2="150" stroke="#999" stroke-width="1.5"/>
+  <line x1="250" y1="250" x2="350" y2="350" stroke="#999" stroke-width="1.5"/>
+  <line x1="250" y1="50" x2="350" y2="150" stroke="#999" stroke-width="1.5"/>
+  <line x1="350" y1="350" x2="450" y2="250" stroke="#999" stroke-width="1.5"/>
   <line x1="350" y1="350" x2="450" y2="450" stroke="#999" stroke-width="1.5"/>
+  <line x1="350" y1="150" x2="450" y2="50" stroke="#999" stroke-width="1.5"/>
+  <line x1="350" y1="150" x2="450" y2="250" stroke="#999" stroke-width="1.5"/>
+  <line x1="450" y1="450" x2="550" y2="350" stroke="#999" stroke-width="1.5"/>
+  <line x1="450" y1="250" x2="550" y2="150" stroke="#999" stroke-width="1.5"/>
+  <line x1="450" y1="250" x2="550" y2="350" stroke="#999" stroke-width="1.5"/>
+  <line x1="450" y1="50" x2="550" y2="150" stroke="#999" stroke-width="1.5"/>
+  <line x1="550" y1="350" x2="650" y2="250" stroke="#999" stroke-width="1.5"/>
   <line x1="550" y1="350" x2="650" y2="450" stroke="#999" stroke-width="1.5"/>
+  <line x1="550" y1="150" x2="650" y2="50" stroke="#999" stroke-width="1.5"/>
+  <line x1="550" y1="150" x2="650" y2="250" stroke="#999" stroke-width="1.5"/>
+  <line x1="650" y1="450" x2="750" y2="350" stroke="#999" stroke-width="1.5"/>
+  <line x1="650" y1="250" x2="750" y2="150" stroke="#999" stroke-width="1.5"/>
+  <line x1="650" y1="250" x2="750" y2="350" stroke="#999" stroke-width="1.5"/>
+  <line x1="650" y1="50" x2="750" y2="150" stroke="#999" stroke-width="1.5"/>
+  <line x1="750" y1="350" x2="850" y2="250" stroke="#999" stroke-width="1.5"/>
   <line x1="750" y1="350" x2="850" y2="450" stroke="#999" stroke-width="1.5"/>
-  <line x1="250" y1="350" x2="150" y2="450" stroke="#999" stroke-width="1.5"/>
-  <line x1="450" y1="350" x2="350" y2="450" stroke="#999" stroke-width="1.5"/>
-  <line x1="650" y1="350" x2="550" y2="450" stroke="#999" stroke-width="1.5"/>
-  <line x1="850" y1="350" x2="750" y2="450" stroke="#999" stroke-width="1.5"/>
+  <line x1="750" y1="150" x2="850" y2="50" stroke="#999" stroke-width="1.5"/>
+  <line x1="750" y1="150" x2="850" y2="250" stroke="#999" stroke-width="1.5"/>
 
   <!-- ═══ INITIAL SETUP ═══ -->
 

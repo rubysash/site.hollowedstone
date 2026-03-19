@@ -1,0 +1,124 @@
+<svg viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="700" fill="#f5edd6"/>
+
+  <text x="350" y="35" text-anchor="middle" font-size="18" font-family="Georgia, serif" fill="#222" letter-spacing="0.15em" font-weight="bold">TZAAR</text>
+  <text x="350" y="55" text-anchor="middle" font-size="11" font-family="Georgia, serif" fill="#555" font-style="italic">60-space hex board - 3 piece types - stacking - GIPF series</text>
+
+  <!-- Board lines connecting intersections (3 axes / 6 directions) -->
+  <!-- Using the same hex geometry as the Agon board but with center removed -->
+  <!-- Center at 350,350. Ring spacing ~65px. -->
+
+  <!-- Radial lines from center outward (12 spokes) -->
+  <g stroke="#a09078" stroke-width="1.5" opacity="0.7">
+    <!-- 6 main directions, each from ring 1 to ring 4 -->
+    <!-- Direction 0 (right): -->
+    <line x1="415" y1="350" x2="610" y2="350"/>
+    <!-- Direction 1 (upper-right): -->
+    <line x1="383" y1="294" x2="545" y2="70"/>
+    <!-- Direction 2 (upper-left): -->
+    <line x1="318" y1="294" x2="155" y2="70"/>
+    <!-- Direction 3 (left): -->
+    <line x1="285" y1="350" x2="90" y2="350"/>
+    <!-- Direction 4 (lower-left): -->
+    <line x1="318" y1="406" x2="155" y2="630"/>
+    <!-- Direction 5 (lower-right): -->
+    <line x1="383" y1="406" x2="545" y2="630"/>
+  </g>
+
+  <!-- Ring circles (concentric hexagonal rings) -->
+  <!-- Ring 1 (6 nodes) -->
+  <polygon points="415,350 383,294 318,294 285,350 318,406 383,406" fill="none" stroke="#a09078" stroke-width="1.5" opacity="0.7"/>
+  <!-- Ring 2 (12 nodes) -->
+  <polygon points="480,350 447,238 350,182 253,238 220,350 253,462 350,518 447,462" fill="none" stroke="#a09078" stroke-width="1.5" opacity="0.7"/>
+  <!-- Ring 3 (18 nodes) -->
+  <polygon points="545,350 512,182 415,126 318,70 188,126 122,238 90,350 122,462 188,574 318,630 415,574 512,518" fill="none" stroke="#a09078" stroke-width="1.5" opacity="0.5"/>
+  <!-- Ring 4 (24 nodes) -->
+  <polygon points="610,350 577,126 480,70 350,14 220,70 123,126 90,350 123,574 220,630 350,686 480,630 577,574" fill="none" stroke="#a09078" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Central hole marker -->
+  <circle cx="350" cy="350" r="12" fill="none" stroke="#a09078" stroke-width="2" stroke-dasharray="4 3" opacity="0.5"/>
+
+  <!-- Intersection nodes (60 total, center removed) -->
+  <!-- Ring 1 (6 nodes) -->
+  <circle cx="415" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="383" cy="294" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="318" cy="294" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="285" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="318" cy="406" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="383" cy="406" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+
+  <!-- Ring 2 (12 nodes) -->
+  <circle cx="480" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="447" cy="238" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="415" cy="294" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="350" cy="182" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="285" cy="294" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="253" cy="238" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="220" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="253" cy="462" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="285" cy="406" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="350" cy="518" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="415" cy="406" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="447" cy="462" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+
+  <!-- Ring 3 (18 nodes) - approximate positions -->
+  <circle cx="545" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="512" cy="238" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="480" cy="294" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="512" cy="182" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="415" cy="126" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="350" cy="126" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="253" cy="182" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="188" cy="238" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="220" cy="294" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="155" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="188" cy="462" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="220" cy="406" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="253" cy="518" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="350" cy="574" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="415" cy="518" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="480" cy="406" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="512" cy="462" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="512" cy="518" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+
+  <!-- Ring 4 (24 nodes) - outermost -->
+  <circle cx="610" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="577" cy="238" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="545" cy="294" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="577" cy="182" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="545" cy="126" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="480" cy="70" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="415" cy="70" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="350" cy="70" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="285" cy="70" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="220" cy="126" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="155" cy="182" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="123" cy="238" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="90" cy="350" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="123" cy="462" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="155" cy="518" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="188" cy="574" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="220" cy="630" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="285" cy="630" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="350" cy="630" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="415" cy="630" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="480" cy="574" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="545" cy="518" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="577" cy="462" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="577" cy="518" r="14" fill="#d4a574" stroke="#1a1a1a" stroke-width="1.5"/>
+
+  <!-- Legend -->
+  <g font-family="Georgia, serif" font-size="11" fill="#333">
+    <circle cx="120" cy="670" r="10" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
+    <text x="138" y="675">Tzaar (6 each)</text>
+    <circle cx="280" cy="670" r="8" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
+    <text x="296" y="675">Tzarra (9 each)</text>
+    <circle cx="440" cy="670" r="6" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
+    <text x="454" y="675">Tott (15 each)</text>
+    <circle cx="120" cy="694" r="10" fill="#fefefe" stroke="#555" stroke-width="1.5"/>
+    <text x="138" y="699">White pieces</text>
+    <circle cx="280" cy="694" r="10" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
+    <text x="298" y="699">Black pieces</text>
+    <text x="440" y="699" fill="#888">60 spaces, center hole</text>
+  </g>
+</svg>

@@ -1,0 +1,18 @@
+{
+  "id": "neutral",
+  "name": "Amazons",
+  "subtitle": "Territory strategy game with arrow shooting",
+  "cssFile": "css/themes/neutral.css",
+
+  "players": {
+    "p1": { "name": "Player 1", "title": "White", "color": "#fefefe", "pieceColor": "#fefefe", "strokeColor": "#555" },
+    "p2": { "name": "Player 2", "title": "Black", "color": "#1a1a1a", "pieceColor": "#1a1a1a", "strokeColor": "#666" }
+  },
+
+  "objectives": {
+    "playing_move": "Move an amazon",
+    "playing_shoot": "Shoot an arrow",
+    "playing_wait": "Opponent's turn...",
+    "finished": "Game over."
+  }
+}
