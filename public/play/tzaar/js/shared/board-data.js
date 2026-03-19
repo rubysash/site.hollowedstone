@@ -12,25 +12,26 @@ const _cubeToId = {};
 const _idToCube = {};
 const _allNodes = [];
 
-// Generate all hex positions at distance 1-4 from center
+// 6 cube directions for walking around a ring
+const HEX_DIRS = [
+  [1, 0, -1], [0, 1, -1], [-1, 1, 0],
+  [-1, 0, 1], [0, -1, 1], [1, -1, 0]
+];
+
+// Generate all hex positions at a given distance from center
 function generateRing(distance) {
   const nodes = [];
   if (distance === 0) return nodes;
 
-  // Start at one corner and walk around the ring
-  // 6 sides, 'distance' steps per side
-  const directions = [
-    [1, -1, 0], [0, -1, 1], [-1, 0, 1],
-    [-1, 1, 0], [0, 1, -1], [1, 0, -1]
-  ];
+  // Start at the "top-right" corner of the ring
+  let x = 0, y = -distance, z = distance;
 
-  let x = 0, y = -distance, z = distance; // start at "top" corner
   for (let side = 0; side < 6; side++) {
     for (let step = 0; step < distance; step++) {
       nodes.push([x, y, z]);
-      x += directions[side][0];
-      y += directions[side][1];
-      z += directions[side][2];
+      x += HEX_DIRS[side][0];
+      y += HEX_DIRS[side][1];
+      z += HEX_DIRS[side][2];
     }
   }
   return nodes;
@@ -96,16 +97,15 @@ export function getReachableTargets(board, from) {
 
 // SVG positions for each node
 // ViewBox 700x700, center at 350,350
-// Use cube-to-pixel conversion for pointy-top hex layout
+// Pointy-top hex: px = S * sqrt(3) * (x + z/2), py = S * 3/2 * z
 const CX = 350, CY = 350;
-const HEX_SPACING = 58;
+const HEX_SPACING = 43;
 
 export const NODE_POSITIONS = {};
 for (const id of ALL_NODES) {
   const c = _idToCube[id];
-  // Cube to pixel (pointy-top orientation)
-  const px = CX + HEX_SPACING * (Math.sqrt(3) * c.x + Math.sqrt(3) / 2 * c.z);
-  const py = CY + HEX_SPACING * (3 / 2 * c.z);
+  const px = CX + HEX_SPACING * Math.sqrt(3) * (c.x + c.z / 2);
+  const py = CY + HEX_SPACING * 1.5 * c.z;
   NODE_POSITIONS[id] = { x: Math.round(px * 10) / 10, y: Math.round(py * 10) / 10 };
 }
 

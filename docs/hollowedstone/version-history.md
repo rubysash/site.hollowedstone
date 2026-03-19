@@ -12,6 +12,10 @@
 - Rulebooks converted from HTML to Markdown for GitHub readability
 - Board diagrams extracted as standalone SVG files viewable on GitHub
 ### 2026-03-19
+- Fix: TZAAR ring generation, hex-to-pixel conversion, and board centering (board was off-screen)
+- Fix: TZAAR rulebook SVG and home page thumbnail rebuilt with correct hex geometry
+- Fix: Fanorona rulebook SVG diagonals now match game code (one diagonal per cell, alternating direction)
+- Fix: Fox and Geese rulebook SVG diagonals now span single cells (were crossing two cells)
 - Added Bolgars vs Pirates (Fox and Geese) rulebook and SVG board reference (`docs/rulebooks/fox-and-geese/`)
 - Fix: Surakarta game board arcs aligned to grid intersections and centered in viewBox (MARGIN 100->150)
 - Added Konane rulebook and SVG board reference (`docs/rulebooks/konane/`)
